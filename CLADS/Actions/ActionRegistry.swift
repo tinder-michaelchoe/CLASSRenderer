@@ -68,6 +68,15 @@ public final class ActionRegistry: @unchecked Sendable {
             handlers[actionType] != nil
         }
     }
+
+    /// Get a handler that supports cancellation
+    /// - Parameter actionType: The action type identifier
+    /// - Returns: The registered handler if it conforms to CancellableActionHandler, or nil
+    public func getCancellableHandler(for actionType: String) -> CancellableActionHandler? {
+        queue.sync {
+            handlers[actionType] as? CancellableActionHandler
+        }
+    }
 }
 
 // MARK: - Closure Action Handler

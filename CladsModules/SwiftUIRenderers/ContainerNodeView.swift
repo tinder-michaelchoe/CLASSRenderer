@@ -22,7 +22,7 @@ public struct ContainerNodeSwiftUIRenderer: SwiftUINodeRendering {
         }
         return AnyView(
             ContainerNodeView(node: containerNode, context: context)
-                .environmentObject(context.tree.stateStore)
+                .environmentObject(context.stateStore)
                 .environmentObject(context.actionContext)
         )
     }

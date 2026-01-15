@@ -405,21 +405,31 @@ public struct ImageNode {
         case system(name: String)
         case asset(name: String)
         case url(URL)
+        /// Dynamic URL from state - supports templates like "${artwork.primaryImage}"
+        case statePath(String)
     }
 
     public let id: String?
     public let source: Source
+    /// Placeholder image shown when URL is empty/invalid or on error (default: .system(name: "photo"))
+    public let placeholder: Source?
+    /// Loading indicator shown while image is being fetched (default: ProgressView spinner)
+    public let loading: Source?
     public let style: IR.Style
     public let onTap: Document.Component.ActionBinding?
 
     public init(
         id: String? = nil,
         source: Source,
+        placeholder: Source? = nil,
+        loading: Source? = nil,
         style: IR.Style = IR.Style(),
         onTap: Document.Component.ActionBinding? = nil
     ) {
         self.id = id
         self.source = source
+        self.placeholder = placeholder
+        self.loading = loading
         self.style = style
         self.onTap = onTap
     }

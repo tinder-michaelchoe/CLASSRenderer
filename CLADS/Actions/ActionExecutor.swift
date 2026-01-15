@@ -12,8 +12,9 @@ import UIKit
 @MainActor
 public final class ActionContext: ObservableObject, ActionExecutionContext {
     public let stateStore: StateStore
+    public let documentId: String
+    public let actionRegistry: ActionRegistry
     private let actionDefinitions: [String: Document.Action]
-    private let registry: ActionRegistry
 
     /// Alert presenter for showing alerts (injectable for testing)
     private let alertPresenter: AlertPresenting
@@ -34,12 +35,14 @@ public final class ActionContext: ObservableObject, ActionExecutionContext {
         stateStore: StateStore,
         actionDefinitions: [String: Document.Action],
         registry: ActionRegistry,
+        documentId: String = UUID().uuidString,
         actionDelegate: CladsActionDelegate? = nil,
         alertPresenter: AlertPresenting = UIKitAlertPresenter()
     ) {
         self.stateStore = stateStore
         self.actionDefinitions = actionDefinitions
-        self.registry = registry
+        self.actionRegistry = registry
+        self.documentId = documentId
         self.actionDelegate = actionDelegate
         self.alertPresenter = alertPresenter
     }
@@ -124,7 +127,7 @@ public final class ActionContext: ObservableObject, ActionExecutionContext {
     /// 2. Action delegate
     public func executeAction(type actionType: String, parameters: ActionParameters) async {
         // 1. Check registry handlers first (includes ClosureActionHandler for custom actions)
-        if let handler = registry.handler(for: actionType) {
+        if let handler = actionRegistry.handler(for: actionType) {
             await handler.execute(parameters: parameters, context: self)
             return
         }

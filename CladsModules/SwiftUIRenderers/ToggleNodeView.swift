@@ -22,7 +22,7 @@ public struct ToggleNodeSwiftUIRenderer: SwiftUINodeRendering {
         }
         return AnyView(
             ToggleNodeView(node: toggleNode)
-                .environmentObject(context.tree.stateStore)
+                .environmentObject(context.stateStore)
         )
     }
 }

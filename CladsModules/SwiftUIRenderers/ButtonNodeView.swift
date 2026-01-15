@@ -22,7 +22,7 @@ public struct ButtonNodeSwiftUIRenderer: SwiftUINodeRendering {
         }
         return AnyView(
             ButtonNodeView(node: buttonNode, actionContext: context.actionContext)
-                .environmentObject(context.tree.stateStore)
+                .environmentObject(context.stateStore)
         )
     }
 }

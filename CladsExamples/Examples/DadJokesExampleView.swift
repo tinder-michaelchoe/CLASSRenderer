@@ -129,7 +129,7 @@ private func splitJoke(_ joke: String) -> (setup: String, punchline: String) {
 
 // MARK: - JSON
 
-let dadJokesJSON = """
+public let dadJokesJSON = """
 {
   "id": "dad-jokes",
   "version": "1.0",

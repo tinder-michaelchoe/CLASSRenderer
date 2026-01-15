@@ -380,13 +380,13 @@ struct ComponentImageTests {
         let json = """
         {
             "type": "image",
-            "image": { "system": "star.fill" }
+            "image": { "sfsymbol": "star.fill" }
         }
         """
         let data = json.data(using: .utf8)!
         let component = try JSONDecoder().decode(Document.Component.self, from: data)
         
-        #expect(component.image?.system == "star.fill")
+        #expect(component.image?.sfsymbol == "star.fill")
         #expect(component.image?.url == nil)
     }
     
@@ -401,7 +401,84 @@ struct ComponentImageTests {
         let component = try JSONDecoder().decode(Document.Component.self, from: data)
         
         #expect(component.image?.url == "https://example.com/image.png")
-        #expect(component.image?.system == nil)
+        #expect(component.image?.sfsymbol == nil)
+    }
+    
+    @Test func decodesAssetImage() throws {
+        let json = """
+        {
+            "type": "image",
+            "image": { "asset": "AppLogo" }
+        }
+        """
+        let data = json.data(using: .utf8)!
+        let component = try JSONDecoder().decode(Document.Component.self, from: data)
+        
+        #expect(component.image?.asset == "AppLogo")
+        #expect(component.image?.sfsymbol == nil)
+        #expect(component.image?.url == nil)
+    }
+    
+    @Test func decodesTemplateURLImage() throws {
+        let json = """
+        {
+            "type": "image",
+            "image": { "url": "${artwork.primaryImage}" }
+        }
+        """
+        let data = json.data(using: .utf8)!
+        let component = try JSONDecoder().decode(Document.Component.self, from: data)
+        
+        #expect(component.image?.url == "${artwork.primaryImage}")
+    }
+    
+    @Test func decodesImageWithPlaceholder() throws {
+        let json = """
+        {
+            "type": "image",
+            "image": {
+                "url": "${imageUrl}",
+                "placeholder": { "sfsymbol": "photo" }
+            }
+        }
+        """
+        let data = json.data(using: .utf8)!
+        let component = try JSONDecoder().decode(Document.Component.self, from: data)
+        
+        #expect(component.image?.url == "${imageUrl}")
+        #expect(component.image?.placeholder?.sfsymbol == "photo")
+    }
+    
+    @Test func decodesImageWithAssetPlaceholder() throws {
+        let json = """
+        {
+            "type": "image",
+            "image": {
+                "url": "https://example.com/img.png",
+                "placeholder": { "asset": "placeholder_image" }
+            }
+        }
+        """
+        let data = json.data(using: .utf8)!
+        let component = try JSONDecoder().decode(Document.Component.self, from: data)
+        
+        #expect(component.image?.placeholder?.asset == "placeholder_image")
+    }
+    
+    @Test func decodesImageWithURLPlaceholder() throws {
+        let json = """
+        {
+            "type": "image",
+            "image": {
+                "url": "${dynamicUrl}",
+                "placeholder": { "url": "https://example.com/placeholder.png" }
+            }
+        }
+        """
+        let data = json.data(using: .utf8)!
+        let component = try JSONDecoder().decode(Document.Component.self, from: data)
+        
+        #expect(component.image?.placeholder?.url == "https://example.com/placeholder.png")
     }
 }
 
@@ -674,6 +751,31 @@ struct ImageSourceTests {
         #expect(system1 == system2)
         #expect(system1 != system3)
         #expect(system1 != url1)
+    }
+    
+    @Test func imageSourceWithAsset() {
+        let asset = Document.ImageSource(asset: "myImage")
+        #expect(asset.asset == "myImage")
+        #expect(asset.sfsymbol == nil)
+        #expect(asset.url == nil)
+    }
+    
+    @Test func imageSourceWithPlaceholder() {
+        let placeholder = Document.ImagePlaceholder(system: "photo")
+        let source = Document.ImageSource(url: "${imageUrl}", placeholder: placeholder)
+        
+        #expect(source.url == "${imageUrl}")
+        #expect(source.placeholder?.sfsymbol == "photo")
+    }
+    
+    @Test func imageSourceEqualityWithPlaceholder() {
+        let placeholder = Document.ImagePlaceholder(system: "photo")
+        let source1 = Document.ImageSource(url: "https://example.com", placeholder: placeholder)
+        let source2 = Document.ImageSource(url: "https://example.com", placeholder: placeholder)
+        let source3 = Document.ImageSource(url: "https://example.com")
+        
+        #expect(source1 == source2)
+        #expect(source1 != source3)
     }
 }
 

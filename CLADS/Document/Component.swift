@@ -354,22 +354,56 @@ extension Document {
 // MARK: - Image Source
 
 extension Document {
+    /// Placeholder image source (cannot have nested placeholders)
+    ///
+    /// JSON examples:
+    /// ```json
+    /// { "sfsymbol": "photo" }                   // SF Symbol placeholder
+    /// { "asset": "placeholder_image" }          // Asset catalog placeholder
+    /// { "url": "https://example.com/ph.png" }   // URL placeholder (static only)
+    /// ```
+    public struct ImagePlaceholder: Codable, Equatable, Sendable {
+        /// SF Symbol name
+        public let sfsymbol: String?
+        /// Remote image URL (static only, no template syntax)
+        public let url: String?
+        /// Asset catalog image name
+        public let asset: String?
+
+        public init(sfsymbol: String? = nil, url: String? = nil, asset: String? = nil) {
+            self.sfsymbol = sfsymbol
+            self.url = url
+            self.asset = asset
+        }
+    }
+    
     /// Image source for image components.
     ///
     /// JSON examples:
     /// ```json
-    /// { "system": "star.fill" }                 // SF Symbol
+    /// { "sfsymbol": "star.fill" }               // SF Symbol
     /// { "url": "https://example.com/img.png" }  // Remote URL
+    /// { "url": "${artwork.primaryImage}", "placeholder": { "sfsymbol": "photo" }, "loading": { "sfsymbol": "arrow.2.circlepath" } }
+    /// { "asset": "myImage" }                    // Asset catalog image
     /// ```
     public struct ImageSource: Codable, Equatable, Sendable {
-        /// SF Symbol name (mutually exclusive with `url`)
-        public let system: String?
-        /// Remote image URL (mutually exclusive with `system`)
+        /// SF Symbol name
+        public let sfsymbol: String?
+        /// Remote image URL (supports ${template} syntax for dynamic URLs)
         public let url: String?
+        /// Asset catalog image name
+        public let asset: String?
+        /// Placeholder image shown when URL is empty/invalid or on error
+        public let placeholder: ImagePlaceholder?
+        /// Loading indicator shown while image is being fetched
+        public let loading: ImagePlaceholder?
 
-        public init(system: String? = nil, url: String? = nil) {
-            self.system = system
+        public init(sfsymbol: String? = nil, url: String? = nil, asset: String? = nil, placeholder: ImagePlaceholder? = nil, loading: ImagePlaceholder? = nil) {
+            self.sfsymbol = sfsymbol
             self.url = url
+            self.asset = asset
+            self.placeholder = placeholder
+            self.loading = loading
         }
     }
 }

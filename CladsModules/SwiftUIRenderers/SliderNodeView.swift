@@ -22,7 +22,7 @@ public struct SliderNodeSwiftUIRenderer: SwiftUINodeRendering {
         }
         return AnyView(
             SliderNodeView(node: sliderNode)
-                .environmentObject(context.tree.stateStore)
+                .environmentObject(context.stateStore)
         )
     }
 }

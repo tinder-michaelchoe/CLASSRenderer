@@ -12,7 +12,7 @@ import Foundation
 
 // MARK: Labels
 
-let labelsJSON = """
+public let labelsJSON = """
 {
   "id": "labels-example",
   "version": "1.0",
@@ -44,7 +44,7 @@ let labelsJSON = """
 
 // MARK: Buttons
 
-let buttonsJSON = """
+public let buttonsJSON = """
 {
   "id": "buttons-example",
   "version": "1.0",
@@ -110,7 +110,7 @@ let buttonsJSON = """
 
 // MARK: Text Fields
 
-let textFieldsJSON = """
+public let textFieldsJSON = """
 {
   "id": "textfields-example",
   "version": "1.0",
@@ -150,7 +150,7 @@ let textFieldsJSON = """
 
 // MARK: Toggles
 
-let togglesJSON = """
+public let togglesJSON = """
 {
   "id": "toggles-example",
   "version": "1.0",
@@ -200,7 +200,7 @@ let togglesJSON = """
 
 // MARK: Sliders
 
-let slidersJSON = """
+public let slidersJSON = """
 {
   "id": "sliders-example",
   "version": "1.0",
@@ -274,7 +274,7 @@ let slidersJSON = """
 
 // MARK: Images
 
-let imagesJSON = """
+public let imagesJSON = """
 {
   "id": "images-example",
   "version": "1.0",
@@ -300,28 +300,28 @@ let imagesJSON = """
             {
               "type": "vstack", "spacing": 4,
               "children": [
-                { "type": "image", "image": { "system": "star.fill" }, "styleId": "iconDefault" },
+                { "type": "image", "image": { "sfsymbol": "star.fill" }, "styleId": "iconDefault" },
                 { "type": "label", "text": "Default", "styleId": "caption" }
               ]
             },
             {
               "type": "vstack", "spacing": 4,
               "children": [
-                { "type": "image", "image": { "system": "heart.fill" }, "styleId": "iconRed" },
+                { "type": "image", "image": { "sfsymbol": "heart.fill" }, "styleId": "iconRed" },
                 { "type": "label", "text": "Red Tint", "styleId": "caption" }
               ]
             },
             {
               "type": "vstack", "spacing": 4,
               "children": [
-                { "type": "image", "image": { "system": "bell.fill" }, "styleId": "iconBlue" },
+                { "type": "image", "image": { "sfsymbol": "bell.fill" }, "styleId": "iconBlue" },
                 { "type": "label", "text": "Blue Tint", "styleId": "caption" }
               ]
             },
             {
               "type": "vstack", "spacing": 4,
               "children": [
-                { "type": "image", "image": { "system": "checkmark.circle.fill" }, "styleId": "iconGreen" },
+                { "type": "image", "image": { "sfsymbol": "checkmark.circle.fill" }, "styleId": "iconGreen" },
                 { "type": "label", "text": "Green Tint", "styleId": "caption" }
               ]
             }
@@ -337,7 +337,7 @@ let imagesJSON = """
 
 // MARK: Gradients
 
-let gradientsJSON = """
+public let gradientsJSON = """
 {
   "id": "gradients-example",
   "version": "1.0",
@@ -410,7 +410,7 @@ let gradientsJSON = """
 
 // MARK: VStack & HStack
 
-let vstackHstackJSON = """
+public let vstackHstackJSON = """
 {
   "id": "stacks-example",
   "version": "1.0",
@@ -454,7 +454,7 @@ let vstackHstackJSON = """
 
 // MARK: ZStack
 
-let zstackJSON = """
+public let zstackJSON = """
 {
   "id": "zstack-example",
   "version": "1.0",
@@ -515,7 +515,7 @@ let zstackJSON = """
 
 // MARK: Nested
 
-let nestedJSON = """
+public let nestedJSON = """
 {
   "id": "nested-example",
   "version": "1.0",
@@ -696,7 +696,7 @@ let nestedJSON = """
 
 // MARK: Section Layout - List
 
-let sectionListJSON = """
+public let sectionListJSON = """
 {
   "id": "section-list-example",
   "version": "1.0",
@@ -734,7 +734,7 @@ let sectionListJSON = """
           {
             "type": "hstack", "padding": { "vertical": 14 },
             "children": [
-              { "type": "image", "image": { "system": "person.fill" }, "styleId": "iconBlue" },
+              { "type": "image", "image": { "sfsymbol": "person.fill" }, "styleId": "iconBlue" },
               {
                 "type": "vstack", "spacing": 2, "alignment": "leading", "padding": { "leading": 12 },
                 "children": [
@@ -748,7 +748,7 @@ let sectionListJSON = """
           {
             "type": "hstack", "padding": { "vertical": 14 },
             "children": [
-              { "type": "image", "image": { "system": "bell.fill" }, "styleId": "iconOrange" },
+              { "type": "image", "image": { "sfsymbol": "bell.fill" }, "styleId": "iconOrange" },
               {
                 "type": "vstack", "spacing": 2, "alignment": "leading", "padding": { "leading": 12 },
                 "children": [
@@ -762,7 +762,7 @@ let sectionListJSON = """
           {
             "type": "hstack", "padding": { "vertical": 14 },
             "children": [
-              { "type": "image", "image": { "system": "lock.fill" }, "styleId": "iconGreen" },
+              { "type": "image", "image": { "sfsymbol": "lock.fill" }, "styleId": "iconGreen" },
               {
                 "type": "vstack", "spacing": 2, "alignment": "leading", "padding": { "leading": 12 },
                 "children": [
@@ -776,7 +776,7 @@ let sectionListJSON = """
           {
             "type": "hstack", "padding": { "vertical": 14 },
             "children": [
-              { "type": "image", "image": { "system": "paintbrush.fill" }, "styleId": "iconPurple" },
+              { "type": "image", "image": { "sfsymbol": "paintbrush.fill" }, "styleId": "iconPurple" },
               {
                 "type": "vstack", "spacing": 2, "alignment": "leading", "padding": { "leading": 12 },
                 "children": [
@@ -790,7 +790,7 @@ let sectionListJSON = """
           {
             "type": "hstack", "padding": { "vertical": 14 },
             "children": [
-              { "type": "image", "image": { "system": "icloud.fill" }, "styleId": "iconTeal" },
+              { "type": "image", "image": { "sfsymbol": "icloud.fill" }, "styleId": "iconTeal" },
               {
                 "type": "vstack", "spacing": 2, "alignment": "leading", "padding": { "leading": 12 },
                 "children": [
@@ -804,7 +804,7 @@ let sectionListJSON = """
           {
             "type": "hstack", "padding": { "vertical": 14 },
             "children": [
-              { "type": "image", "image": { "system": "heart.fill" }, "styleId": "iconPink" },
+              { "type": "image", "image": { "sfsymbol": "heart.fill" }, "styleId": "iconPink" },
               {
                 "type": "vstack", "spacing": 2, "alignment": "leading", "padding": { "leading": 12 },
                 "children": [
@@ -818,7 +818,7 @@ let sectionListJSON = """
           {
             "type": "hstack", "padding": { "vertical": 14 },
             "children": [
-              { "type": "image", "image": { "system": "questionmark.circle.fill" }, "styleId": "iconBlue" },
+              { "type": "image", "image": { "sfsymbol": "questionmark.circle.fill" }, "styleId": "iconBlue" },
               {
                 "type": "vstack", "spacing": 2, "alignment": "leading", "padding": { "leading": 12 },
                 "children": [
@@ -832,7 +832,7 @@ let sectionListJSON = """
           {
             "type": "hstack", "padding": { "vertical": 14 },
             "children": [
-              { "type": "image", "image": { "system": "arrow.right.square.fill" }, "styleId": "iconRed" },
+              { "type": "image", "image": { "sfsymbol": "arrow.right.square.fill" }, "styleId": "iconRed" },
               {
                 "type": "vstack", "spacing": 2, "alignment": "leading", "padding": { "leading": 12 },
                 "children": [
@@ -861,7 +861,7 @@ let sectionListJSON = """
           {
             "type": "hstack", "padding": { "vertical": 14 },
             "children": [
-              { "type": "image", "image": { "system": "info.circle.fill" }, "styleId": "iconBlue" },
+              { "type": "image", "image": { "sfsymbol": "info.circle.fill" }, "styleId": "iconBlue" },
               {
                 "type": "vstack", "spacing": 2, "alignment": "leading", "padding": { "leading": 12 },
                 "children": [
@@ -875,7 +875,7 @@ let sectionListJSON = """
           {
             "type": "hstack", "padding": { "vertical": 14 },
             "children": [
-              { "type": "image", "image": { "system": "doc.text.fill" }, "styleId": "iconGreen" },
+              { "type": "image", "image": { "sfsymbol": "doc.text.fill" }, "styleId": "iconGreen" },
               {
                 "type": "vstack", "spacing": 2, "alignment": "leading", "padding": { "leading": 12 },
                 "children": [
@@ -889,7 +889,7 @@ let sectionListJSON = """
           {
             "type": "hstack", "padding": { "vertical": 14 },
             "children": [
-              { "type": "image", "image": { "system": "hand.raised.fill" }, "styleId": "iconOrange" },
+              { "type": "image", "image": { "sfsymbol": "hand.raised.fill" }, "styleId": "iconOrange" },
               {
                 "type": "vstack", "spacing": 2, "alignment": "leading", "padding": { "leading": 12 },
                 "children": [
@@ -903,7 +903,7 @@ let sectionListJSON = """
           {
             "type": "hstack", "padding": { "vertical": 14 },
             "children": [
-              { "type": "image", "image": { "system": "star.fill" }, "styleId": "iconPurple" },
+              { "type": "image", "image": { "sfsymbol": "star.fill" }, "styleId": "iconPurple" },
               {
                 "type": "vstack", "spacing": 2, "alignment": "leading", "padding": { "leading": 12 },
                 "children": [
@@ -923,7 +923,7 @@ let sectionListJSON = """
 
 // MARK: Section Layout - Grid
 
-let sectionGridJSON = """
+public let sectionGridJSON = """
 {
   "id": "section-grid-example",
   "version": "1.0",
@@ -952,12 +952,12 @@ let sectionGridJSON = """
           "padding": { "bottom": 12 }
         },
         "children": [
-          { "type": "vstack", "spacing": 8, "styleId": "gridItem", "children": [{ "type": "image", "image": { "system": "photo.fill" }, "styleId": "itemIcon" }, { "type": "label", "text": "Photos", "styleId": "itemLabel" }] },
-          { "type": "vstack", "spacing": 8, "styleId": "gridItem", "children": [{ "type": "image", "image": { "system": "video.fill" }, "styleId": "itemIcon" }, { "type": "label", "text": "Videos", "styleId": "itemLabel" }] },
-          { "type": "vstack", "spacing": 8, "styleId": "gridItem", "children": [{ "type": "image", "image": { "system": "doc.fill" }, "styleId": "itemIcon" }, { "type": "label", "text": "Files", "styleId": "itemLabel" }] },
-          { "type": "vstack", "spacing": 8, "styleId": "gridItem", "children": [{ "type": "image", "image": { "system": "music.note" }, "styleId": "itemIcon" }, { "type": "label", "text": "Music", "styleId": "itemLabel" }] },
-          { "type": "vstack", "spacing": 8, "styleId": "gridItem", "children": [{ "type": "image", "image": { "system": "book.fill" }, "styleId": "itemIcon" }, { "type": "label", "text": "Books", "styleId": "itemLabel" }] },
-          { "type": "vstack", "spacing": 8, "styleId": "gridItem", "children": [{ "type": "image", "image": { "system": "gamecontroller.fill" }, "styleId": "itemIcon" }, { "type": "label", "text": "Games", "styleId": "itemLabel" }] }
+          { "type": "vstack", "spacing": 8, "styleId": "gridItem", "children": [{ "type": "image", "image": { "sfsymbol": "photo.fill" }, "styleId": "itemIcon" }, { "type": "label", "text": "Photos", "styleId": "itemLabel" }] },
+          { "type": "vstack", "spacing": 8, "styleId": "gridItem", "children": [{ "type": "image", "image": { "sfsymbol": "video.fill" }, "styleId": "itemIcon" }, { "type": "label", "text": "Videos", "styleId": "itemLabel" }] },
+          { "type": "vstack", "spacing": 8, "styleId": "gridItem", "children": [{ "type": "image", "image": { "sfsymbol": "doc.fill" }, "styleId": "itemIcon" }, { "type": "label", "text": "Files", "styleId": "itemLabel" }] },
+          { "type": "vstack", "spacing": 8, "styleId": "gridItem", "children": [{ "type": "image", "image": { "sfsymbol": "music.note" }, "styleId": "itemIcon" }, { "type": "label", "text": "Music", "styleId": "itemLabel" }] },
+          { "type": "vstack", "spacing": 8, "styleId": "gridItem", "children": [{ "type": "image", "image": { "sfsymbol": "book.fill" }, "styleId": "itemIcon" }, { "type": "label", "text": "Books", "styleId": "itemLabel" }] },
+          { "type": "vstack", "spacing": 8, "styleId": "gridItem", "children": [{ "type": "image", "image": { "sfsymbol": "gamecontroller.fill" }, "styleId": "itemIcon" }, { "type": "label", "text": "Games", "styleId": "itemLabel" }] }
         ]
       }]
     }]
@@ -967,7 +967,7 @@ let sectionGridJSON = """
 
 // MARK: Section Layout - Flow
 
-let sectionFlowJSON = """
+public let sectionFlowJSON = """
 {
   "id": "section-flow-example",
   "version": "1.0",
@@ -1028,7 +1028,7 @@ let sectionFlowJSON = """
 
 // MARK: Section Layout - Horizontal
 
-let sectionHorizontalJSON = """
+public let sectionHorizontalJSON = """
 {
   "id": "section-horizontal-example",
   "version": "1.0",
@@ -1072,7 +1072,7 @@ let sectionHorizontalJSON = """
 
 // MARK: Set State
 
-let setStateJSON = """
+public let setStateJSON = """
 {
   "id": "setstate-example",
   "version": "1.0",
@@ -1120,7 +1120,7 @@ let setStateJSON = """
 
 // MARK: Toggle State
 
-let toggleStateJSON = """
+public let toggleStateJSON = """
 {
   "id": "togglestate-example",
   "version": "1.0",
@@ -1170,7 +1170,7 @@ let toggleStateJSON = """
 
 // MARK: Show Alert
 
-let showAlertJSON = """
+public let showAlertJSON = """
 {
   "id": "showalert-example",
   "version": "1.0",
@@ -1235,7 +1235,7 @@ let showAlertJSON = """
 
 // MARK: Dismiss
 
-let dismissJSON = """
+public let dismissJSON = """
 {
   "id": "dismiss-example",
   "version": "1.0",
@@ -1261,7 +1261,7 @@ let dismissJSON = """
       "alignment": "center",
       "children": [
         { "type": "spacer" },
-        { "type": "image", "image": { "system": "checkmark.circle.fill" }, "styleId": "successIcon" },
+        { "type": "image", "image": { "sfsymbol": "checkmark.circle.fill" }, "styleId": "successIcon" },
         { "type": "label", "text": "Success!", "styleId": "title" },
         { "type": "label", "text": "Tap the button to dismiss this view", "styleId": "subtitle" },
         { "type": "spacer" },
@@ -1274,7 +1274,7 @@ let dismissJSON = """
 
 // MARK: Navigate
 
-let navigateJSON = """
+public let navigateJSON = """
 {
   "id": "navigate-example",
   "version": "1.0",
@@ -1306,10 +1306,10 @@ let navigateJSON = """
           "children": [{
             "type": "hstack",
             "children": [
-              { "type": "image", "image": { "system": "person.circle" }, "styleId": "rowIcon" },
+              { "type": "image", "image": { "sfsymbol": "person.circle" }, "styleId": "rowIcon" },
               { "type": "label", "text": "Go to Profile", "styleId": "rowTitle", "padding": { "leading": 12 } },
               { "type": "spacer" },
-              { "type": "image", "image": { "system": "chevron.right" }, "styleId": "chevron" }
+              { "type": "image", "image": { "sfsymbol": "chevron.right" }, "styleId": "chevron" }
             ]
           }]
         },
@@ -1319,10 +1319,10 @@ let navigateJSON = """
           "children": [{
             "type": "hstack",
             "children": [
-              { "type": "image", "image": { "system": "gear" }, "styleId": "rowIcon" },
+              { "type": "image", "image": { "sfsymbol": "gear" }, "styleId": "rowIcon" },
               { "type": "label", "text": "Go to Settings", "styleId": "rowTitle", "padding": { "leading": 12 } },
               { "type": "spacer" },
-              { "type": "image", "image": { "system": "chevron.right" }, "styleId": "chevron" }
+              { "type": "image", "image": { "sfsymbol": "chevron.right" }, "styleId": "chevron" }
             ]
           }]
         }
@@ -1334,7 +1334,7 @@ let navigateJSON = """
 
 // MARK: Sequence
 
-let sequenceJSON = """
+public let sequenceJSON = """
 {
   "id": "sequence-example",
   "version": "1.0",
@@ -1384,7 +1384,7 @@ let sequenceJSON = """
 
 // MARK: Array Actions
 
-let arrayActionsJSON = """
+public let arrayActionsJSON = """
 {
   "id": "arrayactions-example",
   "version": "1.0",
@@ -1449,7 +1449,7 @@ let arrayActionsJSON = """
 
 // MARK: Static Data
 
-let staticDataJSON = """
+public let staticDataJSON = """
 {
   "id": "staticdata-example",
   "version": "1.0",
@@ -1501,7 +1501,7 @@ let staticDataJSON = """
 
 // MARK: Binding Data
 
-let bindingDataJSON = """
+public let bindingDataJSON = """
 {
   "id": "bindingdata-example",
   "version": "1.0",
@@ -1543,7 +1543,7 @@ let bindingDataJSON = """
 
 // MARK: Expression Data
 
-let expressionDataJSON = """
+public let expressionDataJSON = """
 {
   "id": "expressiondata-example",
   "version": "1.0",
@@ -1582,7 +1582,7 @@ let expressionDataJSON = """
 
 // MARK: State Interpolation
 
-let stateInterpolationJSON = """
+public let stateInterpolationJSON = """
 {
   "id": "interpolation-example",
   "version": "1.0",
@@ -1630,7 +1630,7 @@ let stateInterpolationJSON = """
 
 // MARK: Basic Styles
 
-let basicStylesJSON = """
+public let basicStylesJSON = """
 {
   "id": "basicstyles-example",
   "version": "1.0",
@@ -1674,7 +1674,7 @@ let basicStylesJSON = """
 
 // MARK: Style Inheritance
 
-let styleInheritanceJSON = """
+public let styleInheritanceJSON = """
 {
   "id": "styleinheritance-example",
   "version": "1.0",
@@ -1724,7 +1724,7 @@ let styleInheritanceJSON = """
 
 // MARK: Conditional Styles
 
-let conditionalStylesJSON = """
+public let conditionalStylesJSON = """
 {
   "id": "conditionalstyles-example",
   "version": "1.0",
@@ -1785,7 +1785,7 @@ let conditionalStylesJSON = """
 
 // MARK: Shopping Cart
 
-let shoppingCartJSON = """
+public let shoppingCartJSON = """
 {
   "id": "shopping-cart",
   "version": "1.0",
@@ -1916,7 +1916,7 @@ let shoppingCartJSON = """
                 {
                   "type": "button",
                   "actions": { "onTap": "close" },
-                  "children": [{ "type": "image", "image": { "system": "xmark.circle.fill" }, "styleId": "closeButton" }]
+                  "children": [{ "type": "image", "image": { "sfsymbol": "xmark.circle.fill" }, "styleId": "closeButton" }]
                 }
               ]
             }
@@ -1932,7 +1932,7 @@ let shoppingCartJSON = """
                 {
                   "type": "zstack", "styleId": "productImage",
                   "children": [
-                    { "type": "image", "image": { "system": "headphones" }, "styleId": "productIcon" }
+                    { "type": "image", "image": { "sfsymbol": "headphones" }, "styleId": "productIcon" }
                   ]
                 },
                 {
@@ -1960,7 +1960,7 @@ let shoppingCartJSON = """
                 {
                   "type": "zstack", "styleId": "productImage",
                   "children": [
-                    { "type": "image", "image": { "system": "applewatch" }, "styleId": "productIcon" }
+                    { "type": "image", "image": { "sfsymbol": "applewatch" }, "styleId": "productIcon" }
                   ]
                 },
                 {
@@ -1988,7 +1988,7 @@ let shoppingCartJSON = """
                 {
                   "type": "zstack", "styleId": "productImage",
                   "children": [
-                    { "type": "image", "image": { "system": "iphone" }, "styleId": "productIcon" }
+                    { "type": "image", "image": { "sfsymbol": "iphone" }, "styleId": "productIcon" }
                   ]
                 },
                 {
@@ -2085,7 +2085,7 @@ let shoppingCartJSON = """
 
 // MARK: Music Player
 
-let musicPlayerJSON = """
+public let musicPlayerJSON = """
 {
   "id": "music-player",
   "version": "1.0",
@@ -2188,7 +2188,7 @@ let musicPlayerJSON = """
             {
               "type": "button",
               "actions": { "onTap": "close" },
-              "children": [{ "type": "image", "image": { "system": "xmark.circle.fill" }, "styleId": "closeButton" }]
+              "children": [{ "type": "image", "image": { "sfsymbol": "xmark.circle.fill" }, "styleId": "closeButton" }]
             }
           ]
         },
@@ -2205,7 +2205,7 @@ let musicPlayerJSON = """
               "gradientStart": "topLeading", "gradientEnd": "bottomTrailing",
               "styleId": "albumGradient"
             },
-            { "type": "image", "image": { "system": "music.note" }, "styleId": "albumIcon" }
+            { "type": "image", "image": { "sfsymbol": "music.note" }, "styleId": "albumIcon" }
           ]
         },
         {
@@ -2216,7 +2216,7 @@ let musicPlayerJSON = """
               "actions": { "onTap": "toggleFavorite" },
               "children": [{
                 "type": "image",
-                "image": { "system": "heart.fill" },
+                "image": { "sfsymbol": "heart.fill" },
                 "styles": { "normal": "heartIcon", "selected": "heartIconFilled" },
                 "isSelectedBinding": "isFavorite"
               }]
@@ -2257,7 +2257,7 @@ let musicPlayerJSON = """
               "actions": { "onTap": "toggleShuffle" },
               "children": [{
                 "type": "image",
-                "image": { "system": "shuffle" },
+                "image": { "sfsymbol": "shuffle" },
                 "styles": { "normal": "shuffleIcon", "selected": "shuffleIconActive" },
                 "isSelectedBinding": "isShuffled"
               }]
@@ -2265,26 +2265,26 @@ let musicPlayerJSON = """
             {
               "type": "button",
               "actions": { "onTap": "skipPrevious" },
-              "children": [{ "type": "image", "image": { "system": "backward.fill" }, "styleId": "skipIcon" }]
+              "children": [{ "type": "image", "image": { "sfsymbol": "backward.fill" }, "styleId": "skipIcon" }]
             },
             {
               "type": "button", "styleId": "playButton",
               "actions": { "onTap": "togglePlay" },
               "children": [{
                 "type": "image",
-                "image": { "system": "play.fill" },
+                "image": { "sfsymbol": "play.fill" },
                 "styleId": "playIcon"
               }]
             },
             {
               "type": "button",
               "actions": { "onTap": "skipNext" },
-              "children": [{ "type": "image", "image": { "system": "forward.fill" }, "styleId": "skipIcon" }]
+              "children": [{ "type": "image", "image": { "sfsymbol": "forward.fill" }, "styleId": "skipIcon" }]
             },
             {
               "type": "button", "styleId": "shuffleButton",
               "children": [{
-                "type": "image", "image": { "system": "repeat" }, "styleId": "shuffleIcon"
+                "type": "image", "image": { "sfsymbol": "repeat" }, "styleId": "shuffleIcon"
               }]
             }
           ]
@@ -2292,9 +2292,9 @@ let musicPlayerJSON = """
         {
           "type": "hstack", "spacing": 12,
           "children": [
-            { "type": "image", "image": { "system": "speaker.fill" }, "styleId": "volumeIcon" },
+            { "type": "image", "image": { "sfsymbol": "speaker.fill" }, "styleId": "volumeIcon" },
             { "type": "slider", "bind": "volume", "minValue": 0, "maxValue": 1, "styleId": "volumeSlider" },
-            { "type": "image", "image": { "system": "speaker.wave.3.fill" }, "styleId": "volumeIcon" }
+            { "type": "image", "image": { "sfsymbol": "speaker.wave.3.fill" }, "styleId": "volumeIcon" }
           ]
         },
         {
@@ -2316,7 +2316,7 @@ let musicPlayerJSON = """
                 "children": [
                   {
                     "type": "zstack", "styleId": "queueImage",
-                    "children": [{ "type": "image", "image": { "system": "music.note" }, "styleId": "queueIcon" }]
+                    "children": [{ "type": "image", "image": { "sfsymbol": "music.note" }, "styleId": "queueIcon" }]
                   },
                   {
                     "type": "vstack", "spacing": 2, "alignment": "leading",
@@ -2339,7 +2339,7 @@ let musicPlayerJSON = """
                 "children": [
                   {
                     "type": "zstack", "styleId": "queueImage",
-                    "children": [{ "type": "image", "image": { "system": "music.note" }, "styleId": "queueIcon" }]
+                    "children": [{ "type": "image", "image": { "sfsymbol": "music.note" }, "styleId": "queueIcon" }]
                   },
                   {
                     "type": "vstack", "spacing": 2, "alignment": "leading",
@@ -2356,7 +2356,7 @@ let musicPlayerJSON = """
                 "children": [
                   {
                     "type": "zstack", "styleId": "queueImage",
-                    "children": [{ "type": "image", "image": { "system": "music.note" }, "styleId": "queueIcon" }]
+                    "children": [{ "type": "image", "image": { "sfsymbol": "music.note" }, "styleId": "queueIcon" }]
                   },
                   {
                     "type": "vstack", "spacing": 2, "alignment": "leading",
@@ -2379,7 +2379,7 @@ let musicPlayerJSON = """
 
 // MARK: Weather Dashboard
 
-let weatherDashboardJSON = """
+public let weatherDashboardJSON = """
 {
   "id": "weather-dashboard",
   "version": "1.0",
@@ -2552,7 +2552,7 @@ let weatherDashboardJSON = """
                     {
                       "type": "button",
                       "actions": { "onTap": "close" },
-                      "children": [{ "type": "image", "image": { "system": "xmark.circle.fill" }, "styleId": "closeButton" }]
+                      "children": [{ "type": "image", "image": { "sfsymbol": "xmark.circle.fill" }, "styleId": "closeButton" }]
                     }
                   ]
                 }
@@ -2580,7 +2580,7 @@ let weatherDashboardJSON = """
                       ]
                     },
                     { "type": "spacer" },
-                    { "type": "image", "image": { "system": "sun.max.fill" }, "styleId": "weatherIcon" }
+                    { "type": "image", "image": { "sfsymbol": "sun.max.fill" }, "styleId": "weatherIcon" }
                   ]
                 }
               ]
@@ -2592,7 +2592,7 @@ let weatherDashboardJSON = """
                 {
                   "type": "hstack", "spacing": 12, "styleId": "statCard",
                   "children": [
-                    { "type": "image", "image": { "system": "humidity.fill" }, "styleId": "statIcon" },
+                    { "type": "image", "image": { "sfsymbol": "humidity.fill" }, "styleId": "statIcon" },
                     {
                       "type": "vstack", "spacing": 2, "alignment": "leading",
                       "children": [
@@ -2605,7 +2605,7 @@ let weatherDashboardJSON = """
                 {
                   "type": "hstack", "spacing": 12, "styleId": "statCard",
                   "children": [
-                    { "type": "image", "image": { "system": "wind" }, "styleId": "statIcon" },
+                    { "type": "image", "image": { "sfsymbol": "wind" }, "styleId": "statIcon" },
                     {
                       "type": "vstack", "spacing": 2, "alignment": "leading",
                       "children": [
@@ -2618,7 +2618,7 @@ let weatherDashboardJSON = """
                 {
                   "type": "hstack", "spacing": 12, "styleId": "statCard",
                   "children": [
-                    { "type": "image", "image": { "system": "sun.max.fill" }, "styleId": "statIcon" },
+                    { "type": "image", "image": { "sfsymbol": "sun.max.fill" }, "styleId": "statIcon" },
                     {
                       "type": "vstack", "spacing": 2, "alignment": "leading",
                       "children": [
@@ -2631,7 +2631,7 @@ let weatherDashboardJSON = """
                 {
                   "type": "hstack", "spacing": 12, "styleId": "statCard",
                   "children": [
-                    { "type": "image", "image": { "system": "eye.fill" }, "styleId": "statIcon" },
+                    { "type": "image", "image": { "sfsymbol": "eye.fill" }, "styleId": "statIcon" },
                     {
                       "type": "vstack", "spacing": 2, "alignment": "leading",
                       "children": [
@@ -2652,7 +2652,7 @@ let weatherDashboardJSON = """
                   "type": "vstack", "spacing": 8, "alignment": "center", "styleId": "hourCardSelected",
                   "children": [
                     { "type": "label", "dataSourceId": "hour0Label", "styleId": "hourText" },
-                    { "type": "image", "image": { "system": "sun.max.fill" }, "styleId": "hourIcon" },
+                    { "type": "image", "image": { "sfsymbol": "sun.max.fill" }, "styleId": "hourIcon" },
                     { "type": "label", "dataSourceId": "hour0Temp", "styleId": "hourTemp" }
                   ]
                 },
@@ -2660,7 +2660,7 @@ let weatherDashboardJSON = """
                   "type": "vstack", "spacing": 8, "alignment": "center", "styleId": "hourCard",
                   "children": [
                     { "type": "label", "dataSourceId": "hour1Label", "styleId": "hourText" },
-                    { "type": "image", "image": { "system": "cloud.sun.fill" }, "styleId": "hourIcon" },
+                    { "type": "image", "image": { "sfsymbol": "cloud.sun.fill" }, "styleId": "hourIcon" },
                     { "type": "label", "dataSourceId": "hour1Temp", "styleId": "hourTemp" }
                   ]
                 },
@@ -2668,7 +2668,7 @@ let weatherDashboardJSON = """
                   "type": "vstack", "spacing": 8, "alignment": "center", "styleId": "hourCard",
                   "children": [
                     { "type": "label", "dataSourceId": "hour2Label", "styleId": "hourText" },
-                    { "type": "image", "image": { "system": "cloud.fill" }, "styleId": "hourIcon" },
+                    { "type": "image", "image": { "sfsymbol": "cloud.fill" }, "styleId": "hourIcon" },
                     { "type": "label", "dataSourceId": "hour2Temp", "styleId": "hourTemp" }
                   ]
                 },
@@ -2676,7 +2676,7 @@ let weatherDashboardJSON = """
                   "type": "vstack", "spacing": 8, "alignment": "center", "styleId": "hourCard",
                   "children": [
                     { "type": "label", "dataSourceId": "hour3Label", "styleId": "hourText" },
-                    { "type": "image", "image": { "system": "cloud.fill" }, "styleId": "hourIcon" },
+                    { "type": "image", "image": { "sfsymbol": "cloud.fill" }, "styleId": "hourIcon" },
                     { "type": "label", "dataSourceId": "hour3Temp", "styleId": "hourTemp" }
                   ]
                 },
@@ -2684,7 +2684,7 @@ let weatherDashboardJSON = """
                   "type": "vstack", "spacing": 8, "alignment": "center", "styleId": "hourCard",
                   "children": [
                     { "type": "label", "dataSourceId": "hour4Label", "styleId": "hourText" },
-                    { "type": "image", "image": { "system": "cloud.sun.fill" }, "styleId": "hourIcon" },
+                    { "type": "image", "image": { "sfsymbol": "cloud.sun.fill" }, "styleId": "hourIcon" },
                     { "type": "label", "dataSourceId": "hour4Temp", "styleId": "hourTemp" }
                   ]
                 },
@@ -2692,7 +2692,7 @@ let weatherDashboardJSON = """
                   "type": "vstack", "spacing": 8, "alignment": "center", "styleId": "hourCard",
                   "children": [
                     { "type": "label", "dataSourceId": "hour5Label", "styleId": "hourText" },
-                    { "type": "image", "image": { "system": "sun.max.fill" }, "styleId": "hourIcon" },
+                    { "type": "image", "image": { "sfsymbol": "sun.max.fill" }, "styleId": "hourIcon" },
                     { "type": "label", "dataSourceId": "hour5Temp", "styleId": "hourTemp" }
                   ]
                 }
@@ -2705,7 +2705,7 @@ let weatherDashboardJSON = """
                 {
                   "type": "vstack", "spacing": 8, "alignment": "center", "styleId": "sunTimeCard",
                   "children": [
-                    { "type": "image", "image": { "system": "sunrise.fill" }, "styleId": "sunIcon" },
+                    { "type": "image", "image": { "sfsymbol": "sunrise.fill" }, "styleId": "sunIcon" },
                     { "type": "label", "text": "6:52 AM", "styleId": "sunTime" },
                     { "type": "label", "text": "Sunrise", "styleId": "sunLabel" }
                   ]
@@ -2713,7 +2713,7 @@ let weatherDashboardJSON = """
                 {
                   "type": "vstack", "spacing": 8, "alignment": "center", "styleId": "sunTimeCard",
                   "children": [
-                    { "type": "image", "image": { "system": "sunset.fill" }, "styleId": "sunIcon" },
+                    { "type": "image", "image": { "sfsymbol": "sunset.fill" }, "styleId": "sunIcon" },
                     { "type": "label", "text": "5:18 PM", "styleId": "sunTime" },
                     { "type": "label", "text": "Sunset", "styleId": "sunLabel" }
                   ]
@@ -2729,7 +2729,7 @@ let weatherDashboardJSON = """
                   "type": "hstack", "styleId": "dayRow",
                   "children": [
                     { "type": "label", "dataSourceId": "day0Label", "styleId": "dayName" },
-                    { "type": "image", "image": { "system": "sun.max.fill" }, "styleId": "dayIcon" },
+                    { "type": "image", "image": { "sfsymbol": "sun.max.fill" }, "styleId": "dayIcon" },
                     { "type": "spacer" },
                     { "type": "label", "dataSourceId": "day0High", "styleId": "dayTempHigh" },
                     { "type": "label", "dataSourceId": "day0Low", "styleId": "dayTempLow" }
@@ -2739,7 +2739,7 @@ let weatherDashboardJSON = """
                   "type": "hstack", "styleId": "dayRow",
                   "children": [
                     { "type": "label", "dataSourceId": "day1Label", "styleId": "dayName" },
-                    { "type": "image", "image": { "system": "cloud.sun.fill" }, "styleId": "dayIcon" },
+                    { "type": "image", "image": { "sfsymbol": "cloud.sun.fill" }, "styleId": "dayIcon" },
                     { "type": "spacer" },
                     { "type": "label", "dataSourceId": "day1High", "styleId": "dayTempHigh" },
                     { "type": "label", "dataSourceId": "day1Low", "styleId": "dayTempLow" }
@@ -2749,7 +2749,7 @@ let weatherDashboardJSON = """
                   "type": "hstack", "styleId": "dayRow",
                   "children": [
                     { "type": "label", "dataSourceId": "day2Label", "styleId": "dayName" },
-                    { "type": "image", "image": { "system": "cloud.rain.fill" }, "styleId": "dayIcon" },
+                    { "type": "image", "image": { "sfsymbol": "cloud.rain.fill" }, "styleId": "dayIcon" },
                     { "type": "spacer" },
                     { "type": "label", "dataSourceId": "day2High", "styleId": "dayTempHigh" },
                     { "type": "label", "dataSourceId": "day2Low", "styleId": "dayTempLow" }
@@ -2759,7 +2759,7 @@ let weatherDashboardJSON = """
                   "type": "hstack", "styleId": "dayRow",
                   "children": [
                     { "type": "label", "dataSourceId": "day3Label", "styleId": "dayName" },
-                    { "type": "image", "image": { "system": "cloud.fill" }, "styleId": "dayIcon" },
+                    { "type": "image", "image": { "sfsymbol": "cloud.fill" }, "styleId": "dayIcon" },
                     { "type": "spacer" },
                     { "type": "label", "dataSourceId": "day3High", "styleId": "dayTempHigh" },
                     { "type": "label", "dataSourceId": "day3Low", "styleId": "dayTempLow" }
@@ -2769,7 +2769,7 @@ let weatherDashboardJSON = """
                   "type": "hstack", "styleId": "dayRow",
                   "children": [
                     { "type": "label", "dataSourceId": "day4Label", "styleId": "dayName" },
-                    { "type": "image", "image": { "system": "sun.max.fill" }, "styleId": "dayIcon" },
+                    { "type": "image", "image": { "sfsymbol": "sun.max.fill" }, "styleId": "dayIcon" },
                     { "type": "spacer" },
                     { "type": "label", "dataSourceId": "day4High", "styleId": "dayTempHigh" },
                     { "type": "label", "dataSourceId": "day4Low", "styleId": "dayTempLow" }

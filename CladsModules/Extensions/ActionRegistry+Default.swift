@@ -29,5 +29,9 @@ extension ActionRegistry {
         register(ToggleInArrayActionHandler())
         register(SetArrayItemActionHandler())
         register(ClearArrayActionHandler())
+
+        // HTTP request handlers
+        register(RequestActionHandler())
+        register(CancelRequestActionHandler())
     }
 }

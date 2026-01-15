@@ -6,6 +6,7 @@
 //
 
 import CLADS
+import Combine
 import SwiftUI
 
 // MARK: - TextField Node SwiftUI Renderer
@@ -21,8 +22,7 @@ public struct TextFieldNodeSwiftUIRenderer: SwiftUINodeRendering {
             return AnyView(EmptyView())
         }
         return AnyView(
-            TextFieldNodeView(node: textFieldNode)
-                .environmentObject(context.tree.stateStore)
+            TextFieldNodeView(node: textFieldNode, stateStore: context.stateStore)
         )
     }
 }
@@ -31,21 +31,40 @@ public struct TextFieldNodeSwiftUIRenderer: SwiftUINodeRendering {
 
 struct TextFieldNodeView: View {
     let node: TextFieldNode
-    @EnvironmentObject var stateStore: StateStore
+    @ObservedObject var stateStore: StateStore
     @State private var text: String = ""
+    @State private var isUpdatingFromState: Bool = false
 
     var body: some View {
         TextField(node.placeholder, text: $text)
             .applyTextStyle(node.style)
             .onAppear {
-                if let path = node.bindingPath {
-                    text = stateStore.get(path) as? String ?? ""
-                }
+                syncFromState()
             }
             .onChange(of: text) { _, newValue in
+                // Only update state if the change came from user input, not from state sync
+                guard !isUpdatingFromState else { return }
                 if let path = node.bindingPath {
                     stateStore.set(path, value: newValue)
                 }
             }
+            .onReceive(stateStore.objectWillChange) { _ in
+                // Sync from state when state changes externally
+                syncFromState()
+            }
+    }
+    
+    private func syncFromState() {
+        if let path = node.bindingPath {
+            let stateValue = stateStore.get(path) as? String ?? ""
+            if stateValue != text {
+                isUpdatingFromState = true
+                text = stateValue
+                // Reset flag after a brief delay to allow the onChange to fire
+                DispatchQueue.main.async {
+                    isUpdatingFromState = false
+                }
+            }
+        }
     }
 }

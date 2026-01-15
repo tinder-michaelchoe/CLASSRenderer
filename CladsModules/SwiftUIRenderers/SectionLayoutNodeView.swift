@@ -32,7 +32,7 @@ public struct SectionLayoutNodeSwiftUIRenderer: SwiftUINodeRendering {
         }
         return AnyView(
             SectionLayoutView(node: sectionLayoutNode, context: context, sectionLayoutRegistry: sectionLayoutRegistry)
-                .environmentObject(context.tree.stateStore)
+                .environmentObject(context.stateStore)
                 .environmentObject(context.actionContext)
         )
     }
@@ -44,6 +44,11 @@ struct SectionLayoutView: View {
     let node: SectionLayoutNode
     let context: SwiftUIRenderContext
     let sectionLayoutRegistry: SwiftUISectionLayoutRendererRegistry?
+    
+    /// The trailing edge inset from the root, used to offset scroll indicators to the screen edge
+    private var trailingInset: CGFloat {
+        context.tree.root.edgeInsets?.trailing?.value ?? 0
+    }
 
     var body: some View {
         ScrollView {
@@ -52,7 +57,10 @@ struct SectionLayoutView: View {
                     SectionView(section: section, context: context, sectionLayoutRegistry: sectionLayoutRegistry)
                 }
             }
+            .frame(maxWidth: .infinity)
         }
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .contentMargins(.trailing, -trailingInset, for: .scrollIndicators)
     }
 }
 

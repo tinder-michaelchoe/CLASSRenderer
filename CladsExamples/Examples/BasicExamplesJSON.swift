@@ -345,7 +345,7 @@ public let componentShowcaseJSON = """
                     "type": "vstack",
                     "spacing": 4,
                     "children": [
-                      { "type": "image", "image": { "system": "star.fill" }, "styleId": "iconStyle" },
+                      { "type": "image", "image": { "sfsymbol": "star.fill" }, "styleId": "iconStyle" },
                       { "type": "label", "text": "Default", "styleId": "captionText" }
                     ]
                   },
@@ -353,7 +353,7 @@ public let componentShowcaseJSON = """
                     "type": "vstack",
                     "spacing": 4,
                     "children": [
-                      { "type": "image", "image": { "system": "heart.fill" }, "styleId": "redIconStyle" },
+                      { "type": "image", "image": { "sfsymbol": "heart.fill" }, "styleId": "redIconStyle" },
                       { "type": "label", "text": "Red", "styleId": "captionText" }
                     ]
                   },
@@ -361,7 +361,7 @@ public let componentShowcaseJSON = """
                     "type": "vstack",
                     "spacing": 4,
                     "children": [
-                      { "type": "image", "image": { "system": "bolt.fill" }, "styleId": "orangeIconStyle" },
+                      { "type": "image", "image": { "sfsymbol": "bolt.fill" }, "styleId": "orangeIconStyle" },
                       { "type": "label", "text": "Orange", "styleId": "captionText" }
                     ]
                   },
@@ -369,7 +369,7 @@ public let componentShowcaseJSON = """
                     "type": "vstack",
                     "spacing": 4,
                     "children": [
-                      { "type": "image", "image": { "system": "globe" }, "styleId": "blueIconStyle" },
+                      { "type": "image", "image": { "sfsymbol": "globe" }, "styleId": "blueIconStyle" },
                       { "type": "label", "text": "Blue", "styleId": "captionText" }
                     ]
                   }

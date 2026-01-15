@@ -20,14 +20,16 @@ public struct ImageComponentResolver: ComponentResolving {
     public func resolve(_ component: Document.Component, context: ResolutionContext) throws -> ComponentResolutionResult {
         let style = context.styleResolver.resolve(component.styleId)
         let nodeId = component.id ?? UUID().uuidString
-        let source = resolveImageSource(component)
+        let source = resolveImageSource(component, context: context)
+        let placeholder = resolvePlaceholder(component)
+        let loading = resolveLoading(component)
 
         // Create view node if tracking
         let viewNode: ViewNode?
         if context.isTracking {
             viewNode = ViewNode(
                 id: nodeId,
-                nodeType: .image(ImageNodeData(source: source, style: style))
+                nodeType: .image(ImageNodeData(source: source, placeholder: placeholder, loading: loading, style: style))
             )
             viewNode?.parent = context.parentViewNode
         } else {
@@ -42,6 +44,8 @@ public struct ImageComponentResolver: ComponentResolving {
         let renderNode = RenderNode.image(ImageNode(
             id: component.id,
             source: source,
+            placeholder: placeholder,
+            loading: loading,
             style: style,
             onTap: component.actions?.onTap
         ))
@@ -51,14 +55,38 @@ public struct ImageComponentResolver: ComponentResolving {
 
     // MARK: - Private Helpers
 
-    private func resolveImageSource(_ component: Document.Component) -> ImageNode.Source {
+    @MainActor
+    private func resolveImageSource(_ component: Document.Component, context: ResolutionContext) -> ImageNode.Source {
         // Check for image property (preferred)
         if let image = component.image {
-            if let systemName = image.system {
-                return .system(name: systemName)
+            // SF Symbol
+            if let sfSymbolName = image.sfsymbol {
+                return .system(name: sfSymbolName)
             }
-            if let urlString = image.url, let url = URL(string: urlString) {
-                return .url(url)
+            
+            // Asset catalog
+            if let assetName = image.asset {
+                return .asset(name: assetName)
+            }
+            
+            // URL (may be static or dynamic template)
+            if let urlString = image.url {
+                // Check for template syntax ${...}
+                if containsTemplate(urlString) {
+                    // Track dependencies for reactivity
+                    let paths = extractTemplatePaths(urlString)
+                    for path in paths {
+                        if context.iterationVariables[path] == nil {
+                            context.tracker?.recordRead(path)
+                        }
+                    }
+                    return .statePath(urlString)
+                }
+                
+                // Static URL
+                if let url = URL(string: urlString) {
+                    return .url(url)
+                }
             }
         }
 
@@ -79,12 +107,72 @@ public struct ImageComponentResolver: ComponentResolving {
                     return .asset(name: value)
                 }
             case .binding:
-                break  // Dynamic images not supported yet
+                // Dynamic binding - track dependency and return statePath
+                if let path = data.path {
+                    context.tracker?.recordRead(path)
+                    return .statePath("${\(path)}")
+                }
             case .localBinding:
                 break  // Local binding images not supported yet
             }
         }
         return .system(name: "questionmark")
+    }
+    
+    /// Resolves the placeholder image source from the component
+    private func resolvePlaceholder(_ component: Document.Component) -> ImageNode.Source? {
+        guard let image = component.image, let placeholder = image.placeholder else {
+            return nil
+        }
+        return resolveImagePlaceholder(placeholder)
+    }
+    
+    /// Resolves the loading indicator source from the component
+    private func resolveLoading(_ component: Document.Component) -> ImageNode.Source? {
+        guard let image = component.image, let loading = image.loading else {
+            return nil
+        }
+        return resolveImagePlaceholder(loading)
+    }
+    
+    /// Resolves an ImagePlaceholder to an ImageNode.Source
+    private func resolveImagePlaceholder(_ placeholder: Document.ImagePlaceholder) -> ImageNode.Source? {
+        // SF Symbol
+        if let sfSymbolName = placeholder.sfsymbol {
+            return .system(name: sfSymbolName)
+        }
+        
+        // Asset
+        if let assetName = placeholder.asset {
+            return .asset(name: assetName)
+        }
+        
+        // URL (static only - no dynamic)
+        if let urlString = placeholder.url, let url = URL(string: urlString) {
+            return .url(url)
+        }
+        
+        return nil
+    }
+    
+    /// Checks if a string contains template syntax ${...}
+    private func containsTemplate(_ string: String) -> Bool {
+        return string.contains("${") && string.contains("}")
+    }
+    
+    /// Extracts state paths from a template string like "https://example.com/${artwork.primaryImage}"
+    private func extractTemplatePaths(_ template: String) -> [String] {
+        var paths: [String] = []
+        let pattern = #"\$\{([^}]+)\}"#
+        guard let regex = try? NSRegularExpression(pattern: pattern) else { return paths }
+        
+        let matches = regex.matches(in: template, range: NSRange(template.startIndex..., in: template))
+        for match in matches {
+            if let range = Range(match.range(at: 1), in: template) {
+                paths.append(String(template[range]))
+            }
+        }
+        return paths
     }
 
     private func initializeLocalState(on viewNode: ViewNode, from localState: Document.LocalStateDeclaration) {

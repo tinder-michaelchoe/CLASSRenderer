@@ -192,6 +192,8 @@
         { "$ref": "#/$defs/showAlertAction" },
         { "$ref": "#/$defs/navigateAction" },
         { "$ref": "#/$defs/sequenceAction" },
+        { "$ref": "#/$defs/requestAction" },
+        { "$ref": "#/$defs/cancelRequestAction" },
         { "$ref": "#/$defs/customAction" }
       ]
     },
@@ -319,12 +321,136 @@
         "type": {
           "type": "string",
           "not": {
-            "enum": ["dismiss", "setState", "toggleState", "showAlert", "navigate", "sequence"]
+            "enum": ["dismiss", "setState", "toggleState", "showAlert", "navigate", "sequence", "request", "cancelRequest"]
           },
           "description": "Custom action type identifier"
         }
       },
       "additionalProperties": { "$ref": "#/$defs/stateValue" }
+    },
+    "requestAction": {
+      "type": "object",
+      "description": "HTTP request action for REST API calls",
+      "required": ["type", "method", "url"],
+      "properties": {
+        "type": { "const": "request" },
+        "requestId": {
+          "type": "string",
+          "description": "Unique identifier for cancellation (auto-generated if not provided)"
+        },
+        "method": {
+          "type": "string",
+          "enum": ["GET", "POST", "PUT", "PATCH", "DELETE"],
+          "description": "HTTP method"
+        },
+        "url": {
+          "type": "string",
+          "description": "URL with optional ${path} interpolation"
+        },
+        "headers": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/headerParam" },
+          "description": "Custom HTTP headers"
+        },
+        "queryParams": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/requestParam" },
+          "description": "URL query string parameters"
+        },
+        "body": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/requestParam" },
+          "description": "Request body fields"
+        },
+        "contentType": {
+          "type": "string",
+          "enum": ["json", "formUrlEncoded"],
+          "default": "json",
+          "description": "Request body content type"
+        },
+        "timeout": {
+          "type": "number",
+          "default": 30,
+          "description": "Request timeout in seconds"
+        },
+        "debug": {
+          "type": "boolean",
+          "default": false,
+          "description": "Enable request/response logging"
+        },
+        "loadingPath": {
+          "type": "string",
+          "description": "State path to set true/false during request"
+        },
+        "responsePath": {
+          "type": "string",
+          "description": "State path to store successful response"
+        },
+        "errorPath": {
+          "type": "string",
+          "description": "State path to store error info"
+        },
+        "onSuccess": {
+          "type": "string",
+          "description": "Action ID to execute on success"
+        },
+        "onError": {
+          "type": "string",
+          "description": "Action ID to execute on error"
+        }
+      },
+      "additionalProperties": false
+    },
+    "cancelRequestAction": {
+      "type": "object",
+      "description": "Cancel an in-flight HTTP request",
+      "required": ["type"],
+      "properties": {
+        "type": { "const": "cancelRequest" },
+        "requestId": {
+          "type": "string",
+          "description": "Request ID to cancel (omit to cancel all requests for current document)"
+        }
+      },
+      "additionalProperties": false
+    },
+    "requestParam": {
+      "type": "object",
+      "description": "Request body or query parameter",
+      "properties": {
+        "path": {
+          "type": "string",
+          "description": "State keypath to read value from"
+        },
+        "as": {
+          "type": "string",
+          "description": "Override the key name in the request"
+        },
+        "literal": {
+          "description": "Static literal value instead of state binding"
+        }
+      },
+      "additionalProperties": false
+    },
+    "headerParam": {
+      "type": "object",
+      "description": "HTTP header parameter",
+      "required": ["name"],
+      "properties": {
+        "name": {
+          "type": "string",
+          "description": "Header name"
+        },
+        "value": {
+          "type": "string",
+          "description": "Static/template value with ${path} interpolation"
+        },
+        "path": {
+          "type": "string",
+          "description": "Alternative: read entire value from state path"
+        }
+      },
+      "additionalProperties": false
     },
     "setValue": {
       "description": "Value for setState - literal or expression",
@@ -774,20 +900,57 @@
     },
     "imageSource": {
       "type": "object",
-      "description": "Image source (SF Symbol or URL)",
+      "description": "Image source (SF Symbol, asset catalog, or URL). URL supports ${path} template syntax for dynamic images from state.",
       "properties": {
-        "system": {
+        "sfsymbol": {
           "type": "string",
-          "description": "SF Symbol name"
+          "description": "SF Symbol name (e.g., 'star.fill', 'photo', 'arrow.right')"
         },
         "url": {
           "type": "string",
-          "description": "Remote image URL"
+          "description": "Remote image URL. Supports ${path} template syntax for dynamic URLs from state (e.g., '${artwork.primaryImage}')"
+        },
+        "asset": {
+          "type": "string",
+          "description": "Asset catalog image name (bundled with the app)"
+        },
+        "placeholder": {
+          "$ref": "#/$defs/imageSourcePlaceholder",
+          "description": "Placeholder image shown when URL is empty/invalid or on error. Default: SF Symbol 'photo'"
+        },
+        "loading": {
+          "$ref": "#/$defs/imageSourcePlaceholder",
+          "description": "Loading indicator shown while image is being fetched. Default: ProgressView spinner"
         }
       },
       "oneOf": [
-        { "required": ["system"] },
-        { "required": ["url"] }
+        { "required": ["sfsymbol"] },
+        { "required": ["url"] },
+        { "required": ["asset"] }
+      ],
+      "additionalProperties": false
+    },
+    "imageSourcePlaceholder": {
+      "type": "object",
+      "description": "Placeholder image source (cannot be dynamic)",
+      "properties": {
+        "sfsymbol": {
+          "type": "string",
+          "description": "SF Symbol name (e.g., 'photo', 'photo.fill')"
+        },
+        "url": {
+          "type": "string",
+          "description": "Static remote image URL (no template syntax)"
+        },
+        "asset": {
+          "type": "string",
+          "description": "Asset catalog image name (bundled with the app)"
+        }
+      },
+      "oneOf": [
+        { "required": ["sfsymbol"] },
+        { "required": ["url"] },
+        { "required": ["asset"] }
       ],
       "additionalProperties": false
     },

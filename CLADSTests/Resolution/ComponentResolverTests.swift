@@ -358,6 +358,19 @@ struct ImageComponentResolutionTests {
         }
     }
     
+    @Test @MainActor func resolvesStatePathImageNode() throws {
+        let imageNode = ImageNode(
+            id: "dynamic",
+            source: .statePath("${artwork.primaryImage}")
+        )
+        
+        if case .statePath(let template) = imageNode.source {
+            #expect(template == "${artwork.primaryImage}")
+        } else {
+            Issue.record("Expected statePath image source")
+        }
+    }
+    
     @Test @MainActor func imageNodeWithTintColor() throws {
         var style = IR.Style()
         style.tintColor = Color.red
@@ -396,6 +409,59 @@ struct ImageComponentResolutionTests {
         )
         
         #expect(imageNode.onTap != nil)
+    }
+    
+    @Test @MainActor func imageNodeWithPlaceholder() throws {
+        let imageNode = ImageNode(
+            id: "withPlaceholder",
+            source: .statePath("${imageUrl}"),
+            placeholder: .system(name: "photo")
+        )
+        
+        #expect(imageNode.placeholder != nil)
+        if case .system(let name) = imageNode.placeholder {
+            #expect(name == "photo")
+        } else {
+            Issue.record("Expected system placeholder")
+        }
+    }
+    
+    @Test @MainActor func imageNodeWithAssetPlaceholder() throws {
+        let imageNode = ImageNode(
+            id: "assetPlaceholder",
+            source: .url(URL(string: "https://example.com/img.png")!),
+            placeholder: .asset(name: "placeholder_image")
+        )
+        
+        if case .asset(let name) = imageNode.placeholder {
+            #expect(name == "placeholder_image")
+        } else {
+            Issue.record("Expected asset placeholder")
+        }
+    }
+    
+    @Test @MainActor func imageNodeWithURLPlaceholder() throws {
+        let placeholderURL = URL(string: "https://example.com/placeholder.png")!
+        let imageNode = ImageNode(
+            id: "urlPlaceholder",
+            source: .statePath("${dynamicUrl}"),
+            placeholder: .url(placeholderURL)
+        )
+        
+        if case .url(let url) = imageNode.placeholder {
+            #expect(url == placeholderURL)
+        } else {
+            Issue.record("Expected URL placeholder")
+        }
+    }
+    
+    @Test @MainActor func imageNodeDefaultsToNilPlaceholder() throws {
+        let imageNode = ImageNode(
+            id: "noPlaceholder",
+            source: .system(name: "star")
+        )
+        
+        #expect(imageNode.placeholder == nil)
     }
 }
 

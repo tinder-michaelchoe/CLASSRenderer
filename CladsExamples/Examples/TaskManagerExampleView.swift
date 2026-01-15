@@ -98,7 +98,7 @@ public struct TaskManagerExampleView: View {
               "spacing": 12,
               "padding": { "vertical": 40 },
               "children": [
-                { "type": "image", "image": { "system": "checklist" }, "styleId": "emptyIcon" },
+                { "type": "image", "image": { "sfsymbol": "checklist" }, "styleId": "emptyIcon" },
                 { "type": "label", "text": "No tasks yet", "styleId": "emptyTitle" },
                 { "type": "label", "text": "Add a task above to get started", "styleId": "emptySubtitle" }
               ]
@@ -120,7 +120,7 @@ public struct TaskManagerExampleView: View {
                   "children": [
                     {
                       "type": "image",
-                      "image": { "system": "\(checkboxIcon)" },
+                      "image": { "sfsymbol": "\(checkboxIcon)" },
                       "styleId": "\(checkboxStyle)",
                       "actions": { "onTap": { "type": "toggleTask", "taskId": "\(task.id)" } }
                     },
@@ -135,7 +135,7 @@ public struct TaskManagerExampleView: View {
                     { "type": "spacer" },
                     {
                       "type": "image",
-                      "image": { "system": "trash" },
+                      "image": { "sfsymbol": "trash" },
                       "styleId": "deleteButton",
                       "actions": {
                         "onTap": {
@@ -224,7 +224,7 @@ public struct TaskManagerExampleView: View {
                         {
                           "type": "button",
                           "actions": { "onTap": "close" },
-                          "children": [{ "type": "image", "image": { "system": "xmark.circle.fill" }, "styleId": "closeButton" }]
+                          "children": [{ "type": "image", "image": { "sfsymbol": "xmark.circle.fill" }, "styleId": "closeButton" }]
                         }
                       ]
                     }
@@ -271,7 +271,7 @@ private func escapeJSON(_ string: String) -> String {
 
 // MARK: - Sample JSON for viewing
 
-let taskManagerJSON = """
+public let taskManagerJSON = """
 {
   "id": "task-manager",
   "version": "1.0",
@@ -331,7 +331,7 @@ let taskManagerJSON = """
                 {
                   "type": "button",
                   "actions": { "onTap": "close" },
-                  "children": [{ "type": "image", "image": { "system": "xmark.circle.fill" }, "styleId": "closeButton" }]
+                  "children": [{ "type": "image", "image": { "sfsymbol": "xmark.circle.fill" }, "styleId": "closeButton" }]
                 }
               ]
             }
@@ -362,7 +362,7 @@ let taskManagerJSON = """
               "spacing": 12,
               "padding": { "vertical": 40 },
               "children": [
-                { "type": "image", "image": { "system": "checklist" }, "styleId": "emptyIcon" },
+                { "type": "image", "image": { "sfsymbol": "checklist" }, "styleId": "emptyIcon" },
                 { "type": "label", "text": "No tasks yet", "styleId": "emptyTitle" },
                 { "type": "label", "text": "Add a task above to get started", "styleId": "emptySubtitle" }
               ]

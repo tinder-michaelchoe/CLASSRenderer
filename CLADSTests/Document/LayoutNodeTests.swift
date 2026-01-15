@@ -444,7 +444,7 @@ struct NestedLayoutTests {
                 { "type": "button", "text": "Button" },
                 { "type": "spacer" },
                 { "type": "hstack", "children": [] },
-                { "type": "image", "image": { "system": "star" } }
+                { "type": "image", "image": { "sfsymbol": "star" } }
             ]
         }
         """

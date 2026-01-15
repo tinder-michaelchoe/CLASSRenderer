@@ -254,6 +254,7 @@ public struct DebugRenderer: Renderer {
         case .system(let name): return "system(\(name))"
         case .asset(let name): return "asset(\(name))"
         case .url(let url): return "url(\(url.absoluteString))"
+        case .statePath(let template): return "statePath(\(template))"
         }
     }
 

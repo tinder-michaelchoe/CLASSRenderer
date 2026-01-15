@@ -38,6 +38,19 @@ struct RenderTreeView: View {
     let tree: RenderTree
     let actionContext: ActionContext
     let rendererRegistry: SwiftUINodeRendererRegistry
+    
+    // Observe the stateStore to trigger re-renders when state changes
+    @ObservedObject private var stateStore: StateStore
+    
+    init(tree: RenderTree, actionContext: ActionContext, rendererRegistry: SwiftUINodeRendererRegistry) {
+        self.tree = tree
+        self.actionContext = actionContext
+        self.rendererRegistry = rendererRegistry
+        // IMPORTANT: Use actionContext.stateStore, not tree.stateStore!
+        // ActionContext is a @StateObject that persists across view recreations,
+        // so its stateStore is the stable reference that actions update.
+        self.stateStore = actionContext.stateStore
+    }
 
     var body: some View {
         ZStack {
@@ -57,7 +70,7 @@ struct RenderTreeView: View {
             }
             .ignoresSafeArea(edges: absoluteEdges)
         }
-        .environmentObject(tree.stateStore)
+        .environmentObject(stateStore)
         .environmentObject(actionContext)
         .rootActions(tree.root.actions, context: actionContext)
     }

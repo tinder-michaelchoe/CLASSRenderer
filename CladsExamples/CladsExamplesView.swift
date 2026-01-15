@@ -300,6 +300,7 @@ enum Example: String, CaseIterable, Identifiable {
     case navigate
     case sequence
     case arrayActions
+    case httpRequest
 
     // Data (D)
     case staticData
@@ -317,6 +318,7 @@ enum Example: String, CaseIterable, Identifiable {
     case taskManager
     case shoppingCart
     case musicPlayer
+    case metMuseum
 
     // Tinder Examples
     case photoTouchUp
@@ -351,6 +353,7 @@ enum Example: String, CaseIterable, Identifiable {
         case .navigate: return "Navigate"
         case .sequence: return "Sequence Actions"
         case .arrayActions: return "Array Actions"
+        case .httpRequest: return "HTTP Request"
         // Data
         case .staticData: return "Static Data"
         case .bindingData: return "Binding Data"
@@ -365,6 +368,7 @@ enum Example: String, CaseIterable, Identifiable {
         case .taskManager: return "Task Manager"
         case .shoppingCart: return "Shopping Cart"
         case .musicPlayer: return "Music Player"
+        case .metMuseum: return "Met Museum"
         // Tinder
         case .photoTouchUp: return "Photo Touch Up"
         case .feedbackSurvey: return "Feedback Survey"
@@ -398,6 +402,7 @@ enum Example: String, CaseIterable, Identifiable {
         case .navigate: return "Push new screens"
         case .sequence: return "Chain multiple actions"
         case .arrayActions: return "Add/remove array items"
+        case .httpRequest: return "POST/PUT/PATCH/DELETE requests"
         // Data
         case .staticData: return "Fixed values"
         case .bindingData: return "Two-way state binding"
@@ -412,6 +417,7 @@ enum Example: String, CaseIterable, Identifiable {
         case .taskManager: return "Dynamic task list with state"
         case .shoppingCart: return "E-commerce cart with promo codes"
         case .musicPlayer: return "Player controls, queue & progress"
+        case .metMuseum: return "Explore artwork via GET API"
         // Tinder
         case .photoTouchUp: return "Before/after photo comparison with custom components"
         case .feedbackSurvey: return "Radio button survey with dismiss and alert"
@@ -445,6 +451,7 @@ enum Example: String, CaseIterable, Identifiable {
         case .navigate: return "arrow.right.square"
         case .sequence: return "list.number"
         case .arrayActions: return "plus.slash.minus"
+        case .httpRequest: return "network"
         // Data
         case .staticData: return "doc.text"
         case .bindingData: return "link"
@@ -459,6 +466,7 @@ enum Example: String, CaseIterable, Identifiable {
         case .taskManager: return "checklist"
         case .shoppingCart: return "cart.fill"
         case .musicPlayer: return "music.note.list"
+        case .metMuseum: return "building.columns"
         // Tinder
         case .photoTouchUp: return "wand.and.stars"
         case .feedbackSurvey: return "text.bubble"
@@ -492,6 +500,7 @@ enum Example: String, CaseIterable, Identifiable {
         case .navigate: return .orange
         case .sequence: return .orange
         case .arrayActions: return .orange
+        case .httpRequest: return .orange
         // Data - Green shades
         case .staticData: return .green
         case .bindingData: return .green
@@ -506,6 +515,7 @@ enum Example: String, CaseIterable, Identifiable {
         case .taskManager: return .indigo
         case .shoppingCart: return .teal
         case .musicPlayer: return .teal
+        case .metMuseum: return Color(red: 0.77, green: 0.12, blue: 0.23) // Met Museum red
         // Tinder - Red/Orange (flame colors)
         case .photoTouchUp: return Color(red: 0.99, green: 0.35, blue: 0.37)
         case .feedbackSurvey: return Color(red: 0.99, green: 0.35, blue: 0.37)
@@ -539,6 +549,7 @@ enum Example: String, CaseIterable, Identifiable {
         case .navigate: return navigateJSON
         case .sequence: return sequenceJSON
         case .arrayActions: return arrayActionsJSON
+        case .httpRequest: return httpRequestJSON
         // Data
         case .staticData: return staticDataJSON
         case .bindingData: return bindingDataJSON
@@ -553,6 +564,7 @@ enum Example: String, CaseIterable, Identifiable {
         case .taskManager: return taskManagerJSON
         case .shoppingCart: return shoppingCartJSON
         case .musicPlayer: return musicPlayerJSON
+        case .metMuseum: return metMuseumJSON
         // Tinder
         case .photoTouchUp: return PhotoTouchUpJSON.bottomSheet
         case .feedbackSurvey: return FeedbackSurveyJSON.bottomSheet
@@ -578,6 +590,8 @@ enum Example: String, CaseIterable, Identifiable {
             return .detent(.medium)
         case .setState, .toggleState, .showAlert, .dismiss, .navigate, .sequence, .arrayActions:
             return .detent(.medium)
+        case .httpRequest:
+            return .fullSize
         case .staticData, .bindingData, .expressionData, .stateInterpolation:
             return .detent(.medium)
         case .basicStyles, .styleInheritance, .conditionalStyles:
@@ -587,6 +601,7 @@ enum Example: String, CaseIterable, Identifiable {
         case .taskManager: return .fullSize
         case .shoppingCart: return .fullSize
         case .musicPlayer: return .fullSize
+        case .metMuseum: return .fullSize
         // Tinder - fixed height sheets
         case .photoTouchUp: return .fixed(height: 600)
         case .feedbackSurvey: return .detent(.large)
@@ -604,7 +619,7 @@ enum Example: String, CaseIterable, Identifiable {
     }
 
     static var actionExamples: [Example] {
-        [.setState, .toggleState, .showAlert, .dismiss, .navigate, .sequence, .arrayActions]
+        [.setState, .toggleState, .showAlert, .dismiss, .navigate, .sequence, .arrayActions, .httpRequest]
     }
 
     static var dataExamples: [Example] {
@@ -616,7 +631,7 @@ enum Example: String, CaseIterable, Identifiable {
     }
 
     static var complexExamples: [Example] {
-        [.dadJokes, .taskManager, .shoppingCart, .musicPlayer]
+        [.dadJokes, .taskManager, .shoppingCart, .musicPlayer, .metMuseum]
     }
 
     static var tinderExamples: [Example] {

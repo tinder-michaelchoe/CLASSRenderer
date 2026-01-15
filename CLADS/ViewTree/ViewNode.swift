@@ -260,10 +260,14 @@ public struct SliderNodeData {
 
 public struct ImageNodeData {
     public var source: ImageNode.Source
+    public var placeholder: ImageNode.Source?
+    public var loading: ImageNode.Source?
     public var style: IR.Style
 
-    public init(source: ImageNode.Source = .system(name: "questionmark"), style: IR.Style = IR.Style()) {
+    public init(source: ImageNode.Source = .system(name: "questionmark"), placeholder: ImageNode.Source? = nil, loading: ImageNode.Source? = nil, style: IR.Style = IR.Style()) {
         self.source = source
+        self.placeholder = placeholder
+        self.loading = loading
         self.style = style
     }
 }

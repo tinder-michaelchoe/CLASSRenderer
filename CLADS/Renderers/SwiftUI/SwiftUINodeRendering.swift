@@ -26,6 +26,13 @@ public struct SwiftUIRenderContext {
         self.actionContext = actionContext
         self.rendererRegistry = rendererRegistry
     }
+    
+    /// The canonical StateStore that should be used for all state operations.
+    /// This is the ActionContext's stateStore, which persists across view recreations.
+    @MainActor
+    public var stateStore: StateStore {
+        actionContext.stateStore
+    }
 
     /// Render a child node using the registry
     @MainActor

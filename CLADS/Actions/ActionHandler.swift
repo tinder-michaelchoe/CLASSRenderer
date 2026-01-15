@@ -80,6 +80,20 @@ public protocol ActionHandler {
     func execute(parameters: ActionParameters, context: ActionExecutionContext) async
 }
 
+// MARK: - Cancellable Action Handler Protocol
+
+/// Extended protocol for handlers that support cancellation.
+/// Cancellation is scoped to a document ID to allow per-document cleanup.
+public protocol CancellableActionHandler: ActionHandler {
+    /// Cancel any in-flight operations for the given request ID within a document
+    @MainActor
+    func cancel(requestId: String, documentId: String)
+
+    /// Cancel all in-flight operations for a specific document
+    @MainActor
+    func cancelAll(documentId: String)
+}
+
 /// Parameters passed to an action handler
 public struct ActionParameters {
     /// Raw dictionary of parameters from JSON
@@ -120,6 +134,12 @@ public struct ActionParameters {
 public protocol ActionExecutionContext: AnyObject {
     /// The state store for reading/writing state
     var stateStore: StateStore { get }
+
+    /// Unique identifier for the current document (used for scoped cancellation)
+    var documentId: String { get }
+
+    /// The action registry for looking up handlers
+    var actionRegistry: ActionRegistry { get }
 
     /// Execute another action by its ID
     func executeAction(id: String) async

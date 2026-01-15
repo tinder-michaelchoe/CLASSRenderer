@@ -544,6 +544,10 @@ public final class CladsUIKitView: UIView {
             imageView.image = UIImage(named: name)
         case .url(let url):
             loadImageAsync(from: url, into: imageView)
+        case .statePath:
+            // statePath should be resolved to a URL by the resolver before reaching here
+            // If it reaches here, show placeholder
+            imageView.image = UIImage(systemName: "photo")
         }
 
         if let width = image.style.width {

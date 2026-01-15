@@ -21,8 +21,7 @@ public struct TextNodeSwiftUIRenderer: SwiftUINodeRendering {
             return AnyView(EmptyView())
         }
         return AnyView(
-            TextNodeView(node: textNode)
-                .environmentObject(context.tree.stateStore)
+            TextNodeView(node: textNode, stateStore: context.stateStore)
         )
     }
 }
@@ -31,7 +30,7 @@ public struct TextNodeSwiftUIRenderer: SwiftUINodeRendering {
 
 struct TextNodeView: View {
     let node: TextNode
-    @EnvironmentObject var stateStore: StateStore
+    @ObservedObject var stateStore: StateStore
 
     var body: some View {
         Text(displayContent)

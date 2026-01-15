@@ -62,7 +62,23 @@ public struct ContentResolver {
             return resolveFromDataReference(data, context: context, viewNode: viewNode)
         }
 
-        return .static(component.text ?? "")
+        // Handle direct text property - check for template syntax
+        if let text = component.text {
+            // Check if the text contains ${...} template patterns
+            if text.contains("${") {
+                let paths = extractTemplatePaths(text)
+                for path in paths {
+                    if context.iterationVariables[path] == nil {
+                        context.tracker?.recordRead(path)
+                    }
+                }
+                let content = context.interpolate(text)
+                return ContentResolutionResult(content: content, bindingTemplate: text)
+            }
+            return .static(text)
+        }
+
+        return .static("")
     }
 
     // MARK: - Private Helpers

@@ -43,7 +43,7 @@ public struct CustomComponentSwiftUIRenderer: SwiftUINodeRendering {
         // Create the context for the custom component
         let customContext = CustomComponentContext(
             style: componentNode.style,
-            stateStore: context.tree.stateStore,
+            stateStore: context.stateStore,
             actionContext: context.actionContext,
             tree: context.tree,
             component: componentNode.component

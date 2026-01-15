@@ -54,6 +54,16 @@ public protocol StateStoring: AnyObject, ObservableObject {
     func removeStateChangeCallback(_ id: UUID)
     func removeAllCallbacks()
 
+    // MARK: - Typed Observers
+
+    /// Observe state changes at a keypath with type-safe decoding.
+    @discardableResult
+    func observe<T: Decodable>(_ keypath: String, as type: T.Type, callback: @escaping (T?) -> Void) -> UUID
+
+    /// Observe with both old and new values for diffing.
+    @discardableResult
+    func observe<T: Decodable>(_ keypath: String, as type: T.Type, onChange: @escaping (_ old: T?, _ new: T?) -> Void) -> UUID
+
     // MARK: - Snapshot
 
     func snapshot() -> [String: Any]
@@ -159,6 +169,8 @@ public final class StateStore: ObservableObject, StateStoring {
     /// Set a value at the given keypath.
     public func set(_ keypath: String, value: Any?) {
         let oldValue = get(keypath)
+        // Notify SwiftUI that we're about to change (triggers view updates)
+        objectWillChange.send()
         keypathAccessor.set(keypath, value: value, in: &values)
         markDirty(keypath)
         notifyCallbacks(path: keypath, oldValue: oldValue, newValue: value)
@@ -257,6 +269,72 @@ public final class StateStore: ObservableObject, StateStoring {
     private func notifyCallbacks(path: String, oldValue: Any?, newValue: Any?) {
         for callback in changeCallbacks.values {
             callback(path, oldValue, newValue)
+        }
+    }
+
+    // MARK: - Typed Observers
+
+    /// Observe state changes at a keypath with type-safe decoding.
+    ///
+    /// Example:
+    /// ```swift
+    /// struct UserResponse: Codable {
+    ///     let id: Int
+    ///     let name: String
+    /// }
+    ///
+    /// stateStore.observe("api.response", as: UserResponse.self) { response in
+    ///     guard let user = response else { return }
+    ///     print("User: \(user.name)")  // Compiler-safe!
+    /// }
+    /// ```
+    @discardableResult
+    public func observe<T: Decodable>(
+        _ keypath: String,
+        as type: T.Type,
+        callback: @escaping (T?) -> Void
+    ) -> UUID {
+        return onStateChange { [weak self] path, _, _ in
+            // Check if changed path is the target or a child of target
+            guard path == keypath || path.hasPrefix(keypath + ".") else { return }
+
+            let decoded: T? = self?.getTyped(keypath, as: type)
+            callback(decoded)
+        }
+    }
+
+    /// Observe with both old and new values for diffing.
+    @discardableResult
+    public func observe<T: Decodable>(
+        _ keypath: String,
+        as type: T.Type,
+        onChange: @escaping (_ old: T?, _ new: T?) -> Void
+    ) -> UUID {
+        return onStateChange { [weak self] path, oldValue, newValue in
+            // Check if changed path is the target or a child of target
+            guard path == keypath || path.hasPrefix(keypath + ".") else { return }
+
+            // Try to decode old value
+            let oldDecoded: T?
+            if let oldValue = oldValue {
+                oldDecoded = self?.decodeValue(oldValue, as: type)
+            } else {
+                oldDecoded = nil
+            }
+
+            // Get current decoded value at keypath
+            let newDecoded: T? = self?.getTyped(keypath, as: type)
+            onChange(oldDecoded, newDecoded)
+        }
+    }
+
+    /// Helper to decode an Any value to a typed object.
+    private func decodeValue<T: Decodable>(_ value: Any, as type: T.Type) -> T? {
+        do {
+            let data = try JSONSerialization.data(withJSONObject: value, options: [])
+            return try JSONDecoder().decode(T.self, from: data)
+        } catch {
+            return nil
         }
     }
 

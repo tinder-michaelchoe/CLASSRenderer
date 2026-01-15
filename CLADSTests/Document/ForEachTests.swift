@@ -404,7 +404,7 @@ struct ForEachComplexTemplateTests {
                 "alignment": "center",
                 "spacing": 16,
                 "children": [
-                    { "type": "image", "image": { "system": "tray" } },
+                    { "type": "image", "image": { "sfsymbol": "tray" } },
                     { "type": "label", "text": "No items" },
                     { "type": "button", "text": "Add Item" }
                 ]
