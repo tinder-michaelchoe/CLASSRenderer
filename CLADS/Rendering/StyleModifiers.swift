@@ -12,9 +12,9 @@ import SwiftUI
 public extension View {
     func applyTextStyle(_ style: IR.Style) -> some View {
         self
-            .font(style.font)
-            .foregroundColor(style.textColor)
-            .multilineTextAlignment(style.textAlignment ?? .leading)
+            .font(style.swiftUIFont)
+            .foregroundColor(style.textColor?.swiftUI)
+            .multilineTextAlignment(style.textAlignment?.swiftUI ?? .leading)
             .lineLimit(nil)
             .fixedSize(horizontal: false, vertical: true)
     }
@@ -28,11 +28,11 @@ public extension View {
             .frame(width: style.width, height: style.height)
             .frame(minWidth: style.minWidth, minHeight: style.minHeight)
             .frame(maxWidth: style.maxWidth, maxHeight: style.maxHeight)
-            .background(style.backgroundColor ?? Color.clear)
+            .background(style.backgroundColor?.swiftUI ?? Color.clear)
             .cornerRadius(style.cornerRadius ?? 0)
             .overlay(
                 RoundedRectangle(cornerRadius: style.cornerRadius ?? 0)
-                    .stroke(style.borderColor ?? Color.clear, lineWidth: style.borderWidth ?? 0)
+                    .stroke(style.borderColor?.swiftUI ?? Color.clear, lineWidth: style.borderWidth ?? 0)
             )
     }
 }

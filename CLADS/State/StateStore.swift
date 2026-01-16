@@ -2,13 +2,15 @@
 //  StateStore.swift
 //  CladsRendererFramework
 //
-//  Observable state store for CLADS documents.
+//  Platform-agnostic state store for CLADS documents.
 //  Provides key-value storage with dirty tracking and change notifications.
+//
+//  **Important**: This file should remain platform-agnostic. Do NOT import
+//  SwiftUI or UIKit here. Platform-specific wrappers (like ObservableStateStore)
+//  belong in the renderer layer.
 //
 
 import Foundation
-import Combine
-import SwiftUI
 
 // MARK: - State Change Callback
 
@@ -18,8 +20,7 @@ public typealias StateChangeCallback = (_ path: String, _ oldValue: Any?, _ newV
 // MARK: - State Storing Protocol
 
 /// Protocol for state storage, enabling dependency injection and testing.
-@MainActor
-public protocol StateStoring: AnyObject, ObservableObject {
+public protocol StateStoring: AnyObject {
     // MARK: - Reading State
 
     func get(_ keypath: String) -> Any?
@@ -73,21 +74,21 @@ public protocol StateStoring: AnyObject, ObservableObject {
 
     func evaluate(expression: String) -> Any
     func interpolate(_ template: String) -> String
-
-    // MARK: - Bindings
-
-    func binding(for keypath: String) -> Binding<String>
 }
 
 // MARK: - State Store
 
-/// Observable state store for documents with dirty tracking.
+/// Platform-agnostic state store for documents with dirty tracking.
 ///
 /// Provides:
 /// - Key-value storage with nested keypath access
 /// - Dirty path tracking for efficient updates
 /// - Change callbacks for reactive updates
 /// - Expression evaluation and template interpolation
+/// - Thread-safe access using NSLock
+///
+/// For SwiftUI integration, use `ObservableStateStore` from the renderer layer,
+/// which wraps this class and provides `ObservableObject` conformance.
 ///
 /// Example:
 /// ```swift
@@ -99,9 +100,12 @@ public protocol StateStoring: AnyObject, ObservableObject {
 ///     print("\(path) changed from \(old) to \(new)")
 /// }
 /// ```
-@MainActor
-public final class StateStore: ObservableObject, StateStoring {
-    @Published private var values: [String: Any] = [:]
+public final class StateStore: StateStoring {
+    private var values: [String: Any] = [:]
+
+    // MARK: - Thread Safety
+
+    private let lock = NSLock()
 
     // MARK: - Dependencies
 
@@ -112,7 +116,11 @@ public final class StateStore: ObservableObject, StateStoring {
 
     private var dirtyPaths: Set<String> = []
 
-    public var hasDirtyPaths: Bool { !dirtyPaths.isEmpty }
+    public var hasDirtyPaths: Bool {
+        lock.lock()
+        defer { lock.unlock() }
+        return !dirtyPaths.isEmpty
+    }
 
     // MARK: - Callbacks
 
@@ -125,6 +133,8 @@ public final class StateStore: ObservableObject, StateStoring {
     /// Initialize with state from a document.
     public func initialize(from state: [String: Document.StateValue]?) {
         guard let state = state else { return }
+        lock.lock()
+        defer { lock.unlock() }
         for (key, value) in state {
             values[key] = unwrap(value)
         }
@@ -140,7 +150,9 @@ public final class StateStore: ObservableObject, StateStoring {
     /// - Array indices: `"items[0]"` or `"items.0"`
     /// - Mixed: `"users[0].name"`
     public func get(_ keypath: String) -> Any? {
-        keypathAccessor.get(keypath, from: values)
+        lock.lock()
+        defer { lock.unlock() }
+        return keypathAccessor.get(keypath, from: values)
     }
 
     /// Get a value as a specific type.
@@ -168,12 +180,15 @@ public final class StateStore: ObservableObject, StateStoring {
 
     /// Set a value at the given keypath.
     public func set(_ keypath: String, value: Any?) {
-        let oldValue = get(keypath)
-        // Notify SwiftUI that we're about to change (triggers view updates)
-        objectWillChange.send()
+        lock.lock()
+        let oldValue = keypathAccessor.get(keypath, from: values)
         keypathAccessor.set(keypath, value: value, in: &values)
-        markDirty(keypath)
-        notifyCallbacks(path: keypath, oldValue: oldValue, newValue: value)
+        markDirtyUnsafe(keypath)
+        let callbacks = changeCallbacks
+        lock.unlock()
+        
+        // Notify callbacks outside the lock to avoid deadlocks
+        notifyCallbacks(callbacks: callbacks, path: keypath, oldValue: oldValue, newValue: value)
     }
 
     // MARK: - Array Operations
@@ -212,8 +227,8 @@ public final class StateStore: ObservableObject, StateStoring {
 
     // MARK: - Dirty Tracking
 
-    /// Mark a path as dirty (modified).
-    private func markDirty(_ path: String) {
+    /// Mark a path as dirty (modified). Must be called with lock held.
+    private func markDirtyUnsafe(_ path: String) {
         dirtyPaths.insert(path)
 
         // Also mark parent paths as dirty
@@ -224,6 +239,8 @@ public final class StateStore: ObservableObject, StateStoring {
 
     /// Consume and return all dirty paths, clearing the dirty set.
     public func consumeDirtyPaths() -> Set<String> {
+        lock.lock()
+        defer { lock.unlock() }
         let paths = dirtyPaths
         dirtyPaths = []
         return paths
@@ -231,6 +248,9 @@ public final class StateStore: ObservableObject, StateStoring {
 
     /// Check if a specific path is dirty.
     public func isDirty(_ path: String) -> Bool {
+        lock.lock()
+        defer { lock.unlock() }
+        
         if dirtyPaths.contains(path) { return true }
 
         // Check if any child path is dirty
@@ -243,6 +263,8 @@ public final class StateStore: ObservableObject, StateStoring {
 
     /// Clear all dirty paths without consuming.
     public func clearDirtyPaths() {
+        lock.lock()
+        defer { lock.unlock() }
         dirtyPaths = []
     }
 
@@ -251,6 +273,8 @@ public final class StateStore: ObservableObject, StateStoring {
     /// Register a callback for state changes.
     @discardableResult
     public func onStateChange(_ callback: @escaping StateChangeCallback) -> UUID {
+        lock.lock()
+        defer { lock.unlock() }
         let id = UUID()
         changeCallbacks[id] = callback
         return id
@@ -258,16 +282,20 @@ public final class StateStore: ObservableObject, StateStoring {
 
     /// Unregister a callback.
     public func removeStateChangeCallback(_ id: UUID) {
+        lock.lock()
+        defer { lock.unlock() }
         changeCallbacks.removeValue(forKey: id)
     }
 
     /// Remove all callbacks.
     public func removeAllCallbacks() {
+        lock.lock()
+        defer { lock.unlock() }
         changeCallbacks.removeAll()
     }
 
-    private func notifyCallbacks(path: String, oldValue: Any?, newValue: Any?) {
-        for callback in changeCallbacks.values {
+    private func notifyCallbacks(callbacks: [UUID: StateChangeCallback], path: String, oldValue: Any?, newValue: Any?) {
+        for callback in callbacks.values {
             callback(path, oldValue, newValue)
         }
     }
@@ -342,15 +370,19 @@ public final class StateStore: ObservableObject, StateStoring {
 
     /// Get a snapshot of the current state.
     public func snapshot() -> [String: Any] {
-        values
+        lock.lock()
+        defer { lock.unlock() }
+        return values
     }
 
     /// Restore state from a snapshot.
     public func restore(from snapshot: [String: Any]) {
+        lock.lock()
         values = snapshot
         for key in snapshot.keys {
-            markDirty(key)
+            markDirtyUnsafe(key)
         }
+        lock.unlock()
     }
 
     // MARK: - Expression Evaluation
@@ -365,26 +397,16 @@ public final class StateStore: ObservableObject, StateStoring {
         expressionEvaluator.interpolate(template, using: self)
     }
 
-    // MARK: - Bindings
-
-    /// Get a binding for two-way data binding.
-    public func binding(for keypath: String) -> Binding<String> {
-        Binding(
-            get: { [weak self] in
-                self?.get(keypath) as? String ?? ""
-            },
-            set: { [weak self] newValue in
-                self?.set(keypath, value: newValue)
-            }
-        )
-    }
-
     // MARK: - Typed State Support
 
     /// Get state as a typed Codable object.
     public func getTyped<T: Decodable>(_ type: T.Type = T.self) -> T? {
+        lock.lock()
+        let currentValues = values
+        lock.unlock()
+        
         do {
-            let data = try JSONSerialization.data(withJSONObject: values, options: [])
+            let data = try JSONSerialization.data(withJSONObject: currentValues, options: [])
             return try JSONDecoder().decode(T.self, from: data)
         } catch {
             return nil

@@ -45,7 +45,11 @@ struct RenderTreeView: View {
     let designSystemProvider: (any DesignSystemProvider)?
     
     // Observe the stateStore to trigger re-renders when state changes
-    @ObservedObject private var stateStore: StateStore
+    // We use ObservableStateStore which wraps the platform-agnostic StateStore
+    @ObservedObject private var observableStateStore: ObservableStateStore
+    
+    // Wrap ActionContext for SwiftUI environment injection
+    private let observableActionContext: ObservableActionContext
     
     init(
         tree: RenderTree,
@@ -60,14 +64,15 @@ struct RenderTreeView: View {
         // IMPORTANT: Use actionContext.stateStore, not tree.stateStore!
         // ActionContext is a @StateObject that persists across view recreations,
         // so its stateStore is the stable reference that actions update.
-        self.stateStore = actionContext.stateStore
+        self.observableStateStore = ObservableStateStore(wrapping: actionContext.stateStore)
+        self.observableActionContext = ObservableActionContext(wrapping: actionContext)
     }
 
     var body: some View {
         ZStack {
-            // Background
+            // Background - convert IR.Color to SwiftUI.Color
             if let bg = tree.root.backgroundColor {
-                bg.ignoresSafeArea()
+                bg.swiftUI.ignoresSafeArea()
             }
 
             // Content with edge insets using custom RootLayout
@@ -81,8 +86,8 @@ struct RenderTreeView: View {
             }
             .ignoresSafeArea(edges: absoluteEdges)
         }
-        .environmentObject(stateStore)
-        .environmentObject(actionContext)
+        .environmentObject(observableStateStore)
+        .environmentObject(observableActionContext)
         .rootActions(tree.root.actions, context: actionContext)
     }
 
@@ -110,7 +115,7 @@ struct RenderTreeView: View {
 
 /// A custom Layout that positions content based on edge insets
 struct RootLayout: Layout {
-    let edgeInsets: IR.EdgeInsets?
+    let edgeInsets: IR.PositionedEdgeInsets?
 
     func sizeThatFits(proposal: ProposedViewSize, subviews: Subviews, cache: inout ()) -> CGSize {
         // Return the proposed size (fill available space)

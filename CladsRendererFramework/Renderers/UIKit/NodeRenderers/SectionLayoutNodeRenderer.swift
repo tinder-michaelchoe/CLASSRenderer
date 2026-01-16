@@ -205,7 +205,7 @@ public struct SectionLayoutNodeRenderer: UIKitNodeRendering {
             let section = NSCollectionLayoutSection(group: group)
             section.interGroupSpacing = config.itemSpacing
             section.orthogonalScrollingBehavior = self.orthogonalBehavior(for: config.snapBehavior)
-            section.contentInsets = NSDirectionalEdgeInsets(
+            section.contentInsets = NSEdgeInsets(
                 top: 0,
                 leading: config.contentInsets.leading,
                 bottom: 0,
@@ -315,7 +315,7 @@ public struct SectionLayoutNodeRenderer: UIKitNodeRendering {
 
     // MARK: - Helpers
 
-    private func wrapWithInsets(_ view: UIView, insets: NSDirectionalEdgeInsets) -> UIView {
+    private func wrapWithInsets(_ view: UIView, insets: NSEdgeInsets) -> UIView {
         let wrapper = UIView()
         wrapper.translatesAutoresizingMaskIntoConstraints = false
         wrapper.addSubview(view)

@@ -316,7 +316,7 @@ public struct SectionLayoutNodeRenderer: UIKitNodeRendering {
 
     // MARK: - Helpers
 
-    private func wrapWithInsets(_ view: UIView, insets: NSDirectionalEdgeInsets) -> UIView {
+    private func wrapWithInsets(_ view: UIView, insets: IR.EdgeInsets) -> UIView {
         let wrapper = UIView()
         wrapper.translatesAutoresizingMaskIntoConstraints = false
         wrapper.addSubview(view)

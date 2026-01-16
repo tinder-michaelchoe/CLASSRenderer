@@ -14,6 +14,8 @@ import SwiftUI
 /// Implements both style token resolution AND full component rendering.
 /// Design system components handle dark mode internally.
 ///
+/// Conforms to `SwiftUIDesignSystemRenderer` to provide native SwiftUI component rendering.
+///
 /// Usage:
 /// ```swift
 /// let provider = LightspeedProvider()
@@ -27,7 +29,7 @@ import SwiftUI
 ///     designSystemProvider: provider
 /// )
 /// ```
-public struct LightspeedProvider: DesignSystemProvider {
+public struct LightspeedProvider: SwiftUIDesignSystemRenderer {
     
     public static let identifier = "lightspeed"
     
@@ -67,8 +69,8 @@ public struct LightspeedProvider: DesignSystemProvider {
         
         switch parts[1] {
         case "primary":
-            style.backgroundColor = Color(hex: "#6366F1")
-            style.textColor = .white
+            style.backgroundColor = IR.Color(hex: "#6366F1")
+            style.textColor = IR.Color(hex: "#FFFFFF")
             style.cornerRadius = 12
             style.paddingTop = 14
             style.paddingBottom = 14
@@ -76,19 +78,19 @@ public struct LightspeedProvider: DesignSystemProvider {
             style.paddingTrailing = 24
             
         case "secondary":
-            style.backgroundColor = Color(hex: "#F3F4F6")
-            style.textColor = Color(hex: "#374151")
+            style.backgroundColor = IR.Color(hex: "#F3F4F6")
+            style.textColor = IR.Color(hex: "#374151")
             style.cornerRadius = 12
             style.borderWidth = 1
-            style.borderColor = Color(hex: "#D1D5DB")
+            style.borderColor = IR.Color(hex: "#D1D5DB")
             style.paddingTop = 14
             style.paddingBottom = 14
             style.paddingLeading = 24
             style.paddingTrailing = 24
             
         case "destructive":
-            style.backgroundColor = Color(hex: "#EF4444")
-            style.textColor = .white
+            style.backgroundColor = IR.Color(hex: "#EF4444")
+            style.textColor = IR.Color(hex: "#FFFFFF")
             style.cornerRadius = 12
             style.paddingTop = 14
             style.paddingBottom = 14
@@ -111,49 +113,49 @@ public struct LightspeedProvider: DesignSystemProvider {
             // Large display heading - Merriweather Bold
             style.fontFamily = "Merriweather120pt-Bold"
             style.fontSize = 32
-            style.textColor = Color(hex: "#111827")
+            style.textColor = IR.Color(hex: "#111827")
             
         case "heading2":
             // Section heading - Merriweather SemiBold
             style.fontFamily = "Merriweather120pt-SemiBold"
             style.fontSize = 24
-            style.textColor = Color(hex: "#111827")
+            style.textColor = IR.Color(hex: "#111827")
             
         case "heading3":
             // Subsection heading - Merriweather Medium
             style.fontFamily = "Merriweather120pt-Medium"
             style.fontSize = 20
-            style.textColor = Color(hex: "#1F2937")
+            style.textColor = IR.Color(hex: "#1F2937")
             
         case "body":
             // Body text - Merriweather Regular
             style.fontFamily = "Merriweather120pt-Regular"
             style.fontSize = 16
-            style.textColor = Color(hex: "#374151")
+            style.textColor = IR.Color(hex: "#374151")
             
         case "bodyItalic":
             // Emphasized body text - Merriweather Italic
             style.fontFamily = "Merriweather120pt-Italic"
             style.fontSize = 16
-            style.textColor = Color(hex: "#374151")
+            style.textColor = IR.Color(hex: "#374151")
             
         case "caption":
             // Small labels - Merriweather Light
             style.fontFamily = "Merriweather120pt-Light"
             style.fontSize = 12
-            style.textColor = Color(hex: "#6B7280")
+            style.textColor = IR.Color(hex: "#6B7280")
             
         case "quote":
             // Pull quotes - Merriweather Light Italic
             style.fontFamily = "Merriweather120pt-LightItalic"
             style.fontSize = 18
-            style.textColor = Color(hex: "#4B5563")
+            style.textColor = IR.Color(hex: "#4B5563")
             
         case "label":
             // Form labels - Merriweather Medium
             style.fontFamily = "Merriweather120pt-Medium"
             style.fontSize = 14
-            style.textColor = Color(hex: "#374151")
+            style.textColor = IR.Color(hex: "#374151")
             
         default:
             return nil
@@ -164,12 +166,12 @@ public struct LightspeedProvider: DesignSystemProvider {
     
     private func resolveTextFieldStyle(_ parts: [String]) -> IR.Style? {
         var style = IR.Style()
-        style.backgroundColor = Color(hex: "#F9FAFB")
+        style.backgroundColor = IR.Color(hex: "#F9FAFB")
         style.cornerRadius = 8
         style.borderWidth = 1
-        style.borderColor = Color(hex: "#D1D5DB")
+        style.borderColor = IR.Color(hex: "#D1D5DB")
         style.fontSize = 16
-        style.textColor = Color(hex: "#111827")
+        style.textColor = IR.Color(hex: "#111827")
         style.paddingTop = 12
         style.paddingBottom = 12
         style.paddingLeading = 16

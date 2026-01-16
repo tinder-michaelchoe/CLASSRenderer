@@ -4,9 +4,12 @@
 //
 //  Shared context passed to all resolvers during document resolution.
 //
+//  **Important**: This file should remain platform-agnostic. Do NOT import
+//  SwiftUI or UIKit here. Platform-specific conversions belong in the
+//  renderer layer (see `Renderers/SwiftUI/IRTypeConversions.swift`).
+//
 
 import Foundation
-import SwiftUI
 
 /// Context shared across all resolvers during document resolution.
 /// Encapsulates all dependencies needed for resolution, eliminating parameter threading.

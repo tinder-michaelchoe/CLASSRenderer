@@ -4,17 +4,20 @@
 //
 //  Value converters for transforming schema types to IR types.
 //
+//  **Important**: This file should remain platform-agnostic. Do NOT import
+//  SwiftUI or UIKit here. Platform-specific conversions belong in the
+//  renderer layer (see `Renderers/SwiftUI/IRTypeConversions.swift`).
+//
 
 import Foundation
-import SwiftUI
 
 // MARK: - Alignment Converter
 
-/// Converts schema alignment types to SwiftUI.Alignment
+/// Converts schema alignment types to IR.Alignment
 public enum AlignmentConverter {
 
     /// Converts horizontal alignment for VStack
-    public static func forVStack(_ alignment: Document.HorizontalAlignment?) -> SwiftUI.Alignment {
+    public static func forVStack(_ alignment: Document.HorizontalAlignment?) -> IR.Alignment {
         switch alignment {
         case .leading: return .leading
         case .trailing: return .trailing
@@ -23,7 +26,7 @@ public enum AlignmentConverter {
     }
 
     /// Converts vertical alignment for HStack
-    public static func forHStack(_ alignment: Document.VerticalAlignment?) -> SwiftUI.Alignment {
+    public static func forHStack(_ alignment: Document.VerticalAlignment?) -> IR.Alignment {
         switch alignment {
         case .top: return .top
         case .bottom: return .bottom
@@ -32,11 +35,11 @@ public enum AlignmentConverter {
     }
 
     /// Converts 2D alignment for ZStack
-    public static func forZStack(_ alignment: Document.Alignment?) -> SwiftUI.Alignment {
+    public static func forZStack(_ alignment: Document.Alignment?) -> IR.Alignment {
         guard let alignment = alignment else { return .center }
 
-        let h: SwiftUI.HorizontalAlignment
-        let v: SwiftUI.VerticalAlignment
+        let h: IR.HorizontalAlignment
+        let v: IR.VerticalAlignment
 
         switch alignment.horizontal {
         case .leading: h = .leading
@@ -50,19 +53,19 @@ public enum AlignmentConverter {
         case .center, .none: v = .center
         }
 
-        return SwiftUI.Alignment(horizontal: h, vertical: v)
+        return IR.Alignment(horizontal: h, vertical: v)
     }
 }
 
 // MARK: - Gradient Point Converter
 
-/// Converts gradient point strings to UnitPoint
+/// Converts gradient point strings to IR.UnitPoint
 public enum GradientPointConverter {
 
-    /// Converts a named point string to UnitPoint
+    /// Converts a named point string to IR.UnitPoint
     /// - Parameter point: Named point like "top", "bottomLeading", etc.
-    /// - Returns: Corresponding UnitPoint, defaults to .bottom
-    public static func convert(_ point: String?) -> UnitPoint {
+    /// - Returns: Corresponding IR.UnitPoint, defaults to .bottom
+    public static func convert(_ point: String?) -> IR.UnitPoint {
         switch point?.lowercased() {
         case "top": return .top
         case "bottom": return .bottom
@@ -80,13 +83,13 @@ public enum GradientPointConverter {
 
 // MARK: - Padding Converter
 
-/// Converts schema Padding to NSDirectionalEdgeInsets
+/// Converts schema Padding to IR.EdgeInsets
 public enum PaddingConverter {
 
-    /// Converts optional Padding to NSDirectionalEdgeInsets
-    public static func convert(_ padding: Document.Padding?) -> NSDirectionalEdgeInsets {
+    /// Converts optional Padding to IR.EdgeInsets
+    public static func convert(_ padding: Document.Padding?) -> IR.EdgeInsets {
         guard let padding = padding else { return .zero }
-        return NSDirectionalEdgeInsets(
+        return IR.EdgeInsets(
             top: padding.resolvedTop,
             leading: padding.resolvedLeading,
             bottom: padding.resolvedBottom,
@@ -97,11 +100,11 @@ public enum PaddingConverter {
 
 // MARK: - Color Scheme Converter
 
-/// Converts color scheme strings to RenderColorScheme
+/// Converts color scheme strings to IR.ColorScheme
 public enum ColorSchemeConverter {
 
-    /// Converts a color scheme string to RenderColorScheme
-    public static func convert(_ scheme: String?) -> RenderColorScheme {
+    /// Converts a color scheme string to IR.ColorScheme
+    public static func convert(_ scheme: String?) -> IR.ColorScheme {
         switch scheme?.lowercased() {
         case "light": return .light
         case "dark": return .dark

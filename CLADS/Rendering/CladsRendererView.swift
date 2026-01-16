@@ -12,7 +12,7 @@ import Combine
 /// Main entry point for rendering a document
 public struct CladsRendererView: View {
     private let renderTree: RenderTree
-    @StateObject private var actionContext: ActionContext
+    @StateObject private var observableActionContext: ObservableActionContext
 
     @Environment(\.dismiss) private var dismiss
 
@@ -77,13 +77,14 @@ public struct CladsRendererView: View {
             registry: actionRegistry,
             actionDelegate: actionDelegate
         )
-        _actionContext = StateObject(wrappedValue: ctx)
+        // Wrap in ObservableActionContext for SwiftUI integration
+        _observableActionContext = StateObject(wrappedValue: ObservableActionContext(wrapping: ctx))
     }
 
     public var body: some View {
         // Use SwiftUIRenderer to render the RenderTree
         let renderer = SwiftUIRenderer(
-            actionContext: actionContext,
+            actionContext: observableActionContext.context,
             rendererRegistry: swiftuiRendererRegistry,
             designSystemProvider: designSystemProvider
         )
@@ -94,11 +95,11 @@ public struct CladsRendererView: View {
     }
 
     private func setupContext() {
-        actionContext.dismissHandler = { [dismiss] in
+        observableActionContext.context.dismissHandler = { [dismiss] in
             dismiss()
         }
 
-        actionContext.alertHandler = { config in
+        observableActionContext.context.alertHandler = { config in
             AlertPresenter.present(config)
         }
     }
@@ -190,7 +191,8 @@ extension CladsRendererView {
             registry: actionRegistry,
             actionDelegate: actionDelegate
         )
-        _actionContext = StateObject(wrappedValue: ctx)
+        // Wrap in ObservableActionContext for SwiftUI integration
+        _observableActionContext = StateObject(wrappedValue: ObservableActionContext(wrapping: ctx))
     }
 }
 

@@ -22,8 +22,8 @@ public struct ContainerNodeSwiftUIRenderer: SwiftUINodeRendering {
         }
         return AnyView(
             ContainerNodeView(node: containerNode, context: context)
-                .environmentObject(context.stateStore)
-                .environmentObject(context.actionContext)
+                .environmentObject(context.observableStateStore)
+                .environmentObject(context.observableActionContext)
         )
     }
 }
@@ -69,15 +69,18 @@ struct ContainerNodeView: View {
         context.render(child)
     }
 
+    // Convert IR.HorizontalAlignment to SwiftUI.HorizontalAlignment
     private var horizontalAlignment: SwiftUI.HorizontalAlignment {
-        node.alignment.horizontal
+        node.alignment.horizontal.swiftUI
     }
 
+    // Convert IR.VerticalAlignment to SwiftUI.VerticalAlignment
     private var verticalAlignment: SwiftUI.VerticalAlignment {
-        node.alignment.vertical
+        node.alignment.vertical.swiftUI
     }
 
+    // Convert IR.Alignment to SwiftUI.Alignment
     private var zstackAlignment: SwiftUI.Alignment {
-        node.alignment
+        node.alignment.swiftUI
     }
 }

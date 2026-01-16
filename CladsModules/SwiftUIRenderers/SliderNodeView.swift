@@ -22,7 +22,7 @@ public struct SliderNodeSwiftUIRenderer: SwiftUINodeRendering {
         }
         return AnyView(
             SliderNodeView(node: sliderNode)
-                .environmentObject(context.stateStore)
+                .environmentObject(context.observableStateStore)
         )
     }
 }
@@ -31,12 +31,13 @@ public struct SliderNodeSwiftUIRenderer: SwiftUINodeRendering {
 
 struct SliderNodeView: View {
     let node: SliderNode
-    @EnvironmentObject var stateStore: StateStore
+    @EnvironmentObject var stateStore: ObservableStateStore
     @State private var value: Double = 0.0
 
     var body: some View {
         Slider(value: $value, in: node.minValue...node.maxValue)
-            .tint(node.style.tintColor)
+            // Convert IR.Color to SwiftUI.Color
+            .tint(node.style.tintColor?.swiftUI)
             .onAppear {
                 if let path = node.bindingPath {
                     value = stateStore.get(path) as? Double ?? node.minValue

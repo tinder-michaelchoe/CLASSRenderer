@@ -130,10 +130,9 @@ public struct ActionParameters {
 }
 
 /// Context provided to action handlers during execution
-@MainActor
 public protocol ActionExecutionContext: AnyObject {
     /// The state store for reading/writing state
-    var stateStore: StateStore { get }
+    var stateStore: StateStoring { get }
 
     /// Unique identifier for the current document (used for scoped cancellation)
     var documentId: String { get }

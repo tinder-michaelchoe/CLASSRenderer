@@ -5,10 +5,12 @@
 //  Intermediate Representation (IR) for rendering.
 //  This is the resolved, ready-to-render tree structure.
 //
+//  **Important**: This file should remain platform-agnostic. Do NOT import
+//  SwiftUI or UIKit here. Platform-specific conversions belong in the
+//  renderer layer (see `Renderers/SwiftUI/IRTypeConversions.swift`).
+//
 
 import Foundation
-import SwiftUI
-import UIKit
 
 // MARK: - Render Tree
 
@@ -33,28 +35,25 @@ public struct RenderTree {
 
 // MARK: - Color Scheme
 
-/// The color scheme for rendering (light/dark mode)
-public enum RenderColorScheme {
-    case light
-    case dark
-    case system  // Use system setting
-}
+/// Type alias for backward compatibility
+/// - Note: Use `IR.ColorScheme` directly in new code
+public typealias RenderColorScheme = IR.ColorScheme
 
 // MARK: - Root Node
 
 /// The resolved root container
 public struct RootNode {
-    public let backgroundColor: Color?
-    public let edgeInsets: IR.EdgeInsets?
-    public let colorScheme: RenderColorScheme
+    public let backgroundColor: IR.Color?
+    public let edgeInsets: IR.PositionedEdgeInsets?
+    public let colorScheme: IR.ColorScheme
     public let style: IR.Style
     public let actions: RootActions
     public let children: [RenderNode]
 
     public init(
-        backgroundColor: Color? = nil,
-        edgeInsets: IR.EdgeInsets? = nil,
-        colorScheme: RenderColorScheme = .system,
+        backgroundColor: IR.Color? = nil,
+        edgeInsets: IR.PositionedEdgeInsets? = nil,
+        colorScheme: IR.ColorScheme = .system,
         style: IR.Style = IR.Style(),
         actions: RootActions = RootActions(),
         children: [RenderNode] = []
@@ -183,18 +182,18 @@ public struct ContainerNode {
 
     public let id: String?
     public let layoutType: LayoutType
-    public let alignment: SwiftUI.Alignment
+    public let alignment: IR.Alignment
     public let spacing: CGFloat
-    public let padding: NSDirectionalEdgeInsets
+    public let padding: IR.EdgeInsets
     public let style: IR.Style
     public let children: [RenderNode]
 
     public init(
         id: String? = nil,
         layoutType: LayoutType = .vstack,
-        alignment: SwiftUI.Alignment = .center,
+        alignment: IR.Alignment = .center,
         spacing: CGFloat = 0,
-        padding: NSDirectionalEdgeInsets = .zero,
+        padding: IR.EdgeInsets = .zero,
         style: IR.Style = IR.Style(),
         children: [RenderNode] = []
     ) {
@@ -228,14 +227,6 @@ public struct SectionLayoutNode {
     }
 }
 
-// MARK: - NSDirectionalEdgeInsets Extension
-
-extension NSDirectionalEdgeInsets {
-    public var isEmpty: Bool {
-        top == 0 && bottom == 0 && leading == 0 && trailing == 0
-    }
-}
-
 // MARK: - Text Node
 
 /// A text/label component
@@ -244,7 +235,7 @@ public struct TextNode {
     public let content: String
     public let styleId: String?
     public let style: IR.Style
-    public let padding: NSDirectionalEdgeInsets
+    public let padding: IR.EdgeInsets
     /// If set, the content should be read dynamically from StateStore at this path
     public let bindingPath: String?
     /// If set, this template should be interpolated with StateStore values (e.g., "Hello ${name}")
@@ -260,7 +251,7 @@ public struct TextNode {
         content: String,
         styleId: String? = nil,
         style: IR.Style = IR.Style(),
-        padding: NSDirectionalEdgeInsets = .zero,
+        padding: IR.EdgeInsets = .zero,
         bindingPath: String? = nil,
         bindingTemplate: String? = nil
     ) {
@@ -466,16 +457,16 @@ public struct GradientNode {
     public let id: String?
     public let gradientType: GradientType
     public let colors: [ColorStop]
-    public let startPoint: UnitPoint
-    public let endPoint: UnitPoint
+    public let startPoint: IR.UnitPoint
+    public let endPoint: IR.UnitPoint
     public let style: IR.Style
 
     public init(
         id: String? = nil,
         gradientType: GradientType = .linear,
         colors: [ColorStop],
-        startPoint: UnitPoint = .bottom,
-        endPoint: UnitPoint = .top,
+        startPoint: IR.UnitPoint = .bottom,
+        endPoint: IR.UnitPoint = .top,
         style: IR.Style = IR.Style()
     ) {
         self.id = id
@@ -502,21 +493,26 @@ extension GradientNode {
 
 /// Color for gradient - can be static or adapt to color scheme
 public enum GradientColor {
-    case fixed(Color)
-    case adaptive(light: Color, dark: Color)
+    case fixed(IR.Color)
+    case adaptive(light: IR.Color, dark: IR.Color)
 
-    public func resolved(for scheme: RenderColorScheme, systemScheme: ColorScheme) -> Color {
+    /// Resolve to the appropriate color based on color scheme
+    /// - Parameters:
+    ///   - scheme: The IR color scheme setting
+    ///   - isSystemDark: Whether the system is currently in dark mode (for .system scheme)
+    /// - Returns: The resolved IR.Color
+    public func resolved(for scheme: IR.ColorScheme, isSystemDark: Bool) -> IR.Color {
         switch self {
         case .fixed(let color):
             return color
         case .adaptive(let light, let dark):
-            let effectiveScheme: ColorScheme
+            let isDark: Bool
             switch scheme {
-            case .light: effectiveScheme = .light
-            case .dark: effectiveScheme = .dark
-            case .system: effectiveScheme = systemScheme
+            case .light: isDark = false
+            case .dark: isDark = true
+            case .system: isDark = isSystemDark
             }
-            return effectiveScheme == .dark ? dark : light
+            return isDark ? dark : light
         }
     }
 }

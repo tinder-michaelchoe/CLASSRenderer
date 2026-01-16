@@ -4,9 +4,12 @@
 //
 //  Resolves layout containers (VStack, HStack, ZStack).
 //
+//  **Important**: This file should remain platform-agnostic. Do NOT import
+//  SwiftUI or UIKit here. Platform-specific conversions belong in the
+//  renderer layer (see `Renderers/SwiftUI/IRTypeConversions.swift`).
+//
 
 import Foundation
-import SwiftUI
 
 /// Resolves Layout nodes into ContainerNode
 public struct LayoutResolver: LayoutResolving {
@@ -72,7 +75,7 @@ public struct LayoutResolver: LayoutResolving {
 
     // MARK: - Private Helpers
 
-    private func resolveLayoutTypeAndAlignment(_ layout: Document.Layout) -> (ContainerNode.LayoutType, SwiftUI.Alignment) {
+    private func resolveLayoutTypeAndAlignment(_ layout: Document.Layout) -> (ContainerNode.LayoutType, IR.Alignment) {
         switch layout.type {
         case .vstack:
             return (.vstack, AlignmentConverter.forVStack(layout.horizontalAlignment))
@@ -219,7 +222,7 @@ public struct LayoutResolver: LayoutResolving {
         )
     }
 
-    private func resolveForEachLayoutType(_ forEach: Document.ForEach) -> (ContainerNode.LayoutType, SwiftUI.Alignment) {
+    private func resolveForEachLayoutType(_ forEach: Document.ForEach) -> (ContainerNode.LayoutType, IR.Alignment) {
         switch forEach.layout {
         case .vstack:
             return (.vstack, AlignmentConverter.forVStack(forEach.alignment))

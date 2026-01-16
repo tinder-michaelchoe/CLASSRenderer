@@ -227,7 +227,7 @@ public final class CladsUIKitView: UIView {
     private func setupView() {
         // Background color
         if let bg = renderTree.root.backgroundColor {
-            backgroundColor = UIColor(bg)
+            backgroundColor = bg.toUIKit
         } else {
             backgroundColor = .systemBackground
         }
@@ -445,22 +445,24 @@ public final class CladsUIKitView: UIView {
         return contentView
     }
 
-    private func applyZStackAlignment(_ child: UIView, in parent: UIView, alignment: SwiftUI.Alignment) {
+    private func applyZStackAlignment(_ child: UIView, in parent: UIView, alignment: IR.Alignment) {
         // Horizontal
-        if alignment.horizontal == .leading {
+        switch alignment.horizontal {
+        case .leading:
             child.leadingAnchor.constraint(equalTo: parent.leadingAnchor).isActive = true
-        } else if alignment.horizontal == .trailing {
+        case .trailing:
             child.trailingAnchor.constraint(equalTo: parent.trailingAnchor).isActive = true
-        } else {
+        case .center:
             child.centerXAnchor.constraint(equalTo: parent.centerXAnchor).isActive = true
         }
 
         // Vertical
-        if alignment.vertical == .top {
+        switch alignment.vertical {
+        case .top:
             child.topAnchor.constraint(equalTo: parent.topAnchor).isActive = true
-        } else if alignment.vertical == .bottom {
+        case .bottom:
             child.bottomAnchor.constraint(equalTo: parent.bottomAnchor).isActive = true
-        } else {
+        case .center:
             child.centerYAnchor.constraint(equalTo: parent.centerYAnchor).isActive = true
         }
     }
@@ -513,7 +515,7 @@ public final class CladsUIKitView: UIView {
         )
         uiSwitch.translatesAutoresizingMaskIntoConstraints = false
         if let tintColor = toggle.style.tintColor {
-            uiSwitch.onTintColor = UIColor(tintColor)
+            uiSwitch.onTintColor = tintColor.toUIKit
         }
         return uiSwitch
     }
@@ -527,7 +529,7 @@ public final class CladsUIKitView: UIView {
         )
         uiSlider.translatesAutoresizingMaskIntoConstraints = false
         if let tintColor = slider.style.tintColor {
-            uiSlider.minimumTrackTintColor = UIColor(tintColor)
+            uiSlider.minimumTrackTintColor = tintColor.toUIKit
         }
         return uiSlider
     }
@@ -591,7 +593,7 @@ public final class CladsUIKitView: UIView {
 
         // Set background color
         if let color = divider.style.backgroundColor {
-            dividerView.backgroundColor = UIColor(color)
+            dividerView.backgroundColor = color.toUIKit
         } else {
             dividerView.backgroundColor = .separator
         }
@@ -791,7 +793,7 @@ public final class CladsUIKitView: UIView {
 
     // MARK: - Helpers
 
-    private func resolveEdgeInsets(_ insets: IR.EdgeInsets?) -> (top: CGFloat, bottom: CGFloat, leading: CGFloat, trailing: CGFloat) {
+    private func resolveEdgeInsets(_ insets: IR.PositionedEdgeInsets?) -> (top: CGFloat, bottom: CGFloat, leading: CGFloat, trailing: CGFloat) {
         guard let insets = insets else {
             return (0, 0, 0, 0)
         }

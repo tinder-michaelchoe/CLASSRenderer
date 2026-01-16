@@ -170,8 +170,8 @@ public final class GradientView: UIView {
 
     private func setupGradient() {
         updateColors()
-        gradientLayer.startPoint = node.startPoint.cgPoint
-        gradientLayer.endPoint = node.endPoint.cgPoint
+        gradientLayer.startPoint = CGPoint(x: node.startPoint.x, y: node.startPoint.y)
+        gradientLayer.endPoint = CGPoint(x: node.endPoint.x, y: node.endPoint.y)
         gradientLayer.locations = node.colors.map { NSNumber(value: Double($0.location)) }
     }
 
@@ -180,9 +180,9 @@ public final class GradientView: UIView {
         gradientLayer.colors = node.colors.map { stop -> CGColor in
             switch stop.color {
             case .fixed(let color):
-                return UIColor(color).cgColor
+                return color.toUIKit.cgColor
             case .adaptive(let light, let dark):
-                return UIColor(isDark ? dark : light).cgColor
+                return (isDark ? dark : light).toUIKit.cgColor
             }
         }
     }

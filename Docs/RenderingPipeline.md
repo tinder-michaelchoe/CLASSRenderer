@@ -14,6 +14,21 @@ CladsRenderer uses an LLVM-inspired multi-stage pipeline to transform JSON into 
                     (Decoding)         (Style/Data/Action)    (SwiftUI/UIKit)
 ```
 
+## Layer Type Boundaries
+
+**Important**: Each layer has strict type boundaries to ensure platform-agnostic core layers:
+
+| Layer | Allowed Types | Forbidden Types |
+|-------|---------------|-----------------|
+| **Document** | Foundation types (`String`, `CGFloat`, `Int`, `Bool`), `Document.*` types | SwiftUI, UIKit, Combine |
+| **IR** | Foundation types, `IR.*` types, `Document.*` (for references) | SwiftUI, UIKit, Combine |
+| **Renderer** | Platform types (`SwiftUI.*`, `UIKit.*`), IR types via conversions | Direct Document types |
+
+This separation enables:
+- **Platform-agnostic core**: Document and IR layers can be compiled for any platform (iOS, macOS, WebAssembly)
+- **Multiple renderers**: SwiftUI, UIKit, and future renderers (HTML/DOM) share the same IR
+- **Clear conversion boundaries**: Platform types are created only in the renderer layer via explicit conversions
+
 ## Stage 1: JSON Input
 
 The pipeline begins with a JSON document that describes the UI declaratively. This JSON can come from:
@@ -134,10 +149,28 @@ The **RenderTree** is the Intermediate Representation - a fully resolved, render
 
 ### IR Design Principles
 
-1. **Renderer-Agnostic**: No SwiftUI or UIKit types in the IR
+1. **Renderer-Agnostic**: No SwiftUI or UIKit types in the IR - use `IR.*` types instead
 2. **Fully Resolved**: No unresolved references or lazy evaluation
 3. **Immutable**: The tree doesn't change after resolution
 4. **Self-Contained**: All information needed for rendering is present
+
+### Platform-Agnostic IR Types
+
+The IR layer defines its own types that are converted to platform types in renderers:
+
+| IR Type | SwiftUI Conversion | UIKit Conversion |
+|---------|-------------------|------------------|
+| `IR.Color` | `.toSwiftUI` → `SwiftUI.Color` | `.toUIKit` → `UIColor` |
+| `IR.EdgeInsets` | `.toSwiftUI` → `SwiftUI.EdgeInsets` | `.toUIKit` → `NSDirectionalEdgeInsets` |
+| `IR.Alignment` | `.toSwiftUI` → `SwiftUI.Alignment` | N/A (layout-specific) |
+| `IR.UnitPoint` | `.toSwiftUI` → `SwiftUI.UnitPoint` | N/A (use CGPoint) |
+| `IR.FontWeight` | `.toSwiftUI` → `Font.Weight` | `.toUIKit` → `UIFont.Weight` |
+| `IR.TextAlignment` | `.toSwiftUI` → `SwiftUI.TextAlignment` | `.toUIKit` → `NSTextAlignment` |
+| `IR.ColorScheme` | `.toSwiftUI` → `SwiftUI.ColorScheme?` | N/A (use UITraitCollection) |
+
+These conversions are defined in:
+- `Renderers/SwiftUI/IRTypeConversions.swift`
+- `Renderers/UIKit/IRTypeConversions.swift`
 
 ## Stage 5: Renderer
 
@@ -182,10 +215,16 @@ case .text(let text):
 
 ```
 CladsRendererFramework/Renderers/
-├── Renderer.swift          // Protocol definition
-├── SwiftUIRenderer.swift   // SwiftUI implementation
-├── UIKitRenderer.swift     // UIKit implementation
-└── DebugRenderer.swift     // Debug string output
+├── Renderer.swift                    // Protocol definition
+├── SwiftUIRenderer.swift             // SwiftUI implementation
+├── UIKitRenderer.swift               // UIKit implementation
+├── DebugRenderer.swift               // Debug string output
+├── SwiftUI/
+│   ├── IRTypeConversions.swift       // IR → SwiftUI type conversions
+│   ├── ObservableStateStore.swift    // SwiftUI-specific StateStore wrapper
+│   └── SwiftUIDesignSystemRenderer.swift // SwiftUI design system rendering
+└── UIKit/
+    └── IRTypeConversions.swift       // IR → UIKit type conversions
 ```
 
 ## Data Flow Diagram
@@ -228,8 +267,10 @@ User Tap → ButtonNode.onTap → ActionContext.executeAction → ActionHandler
 ### State Updates
 State changes flow back through the system:
 ```
-Action (setState) → StateStore.set → @Published update → SwiftUI re-render
+Action (setState) → StateStore.set → Change callback → ObservableStateStore.objectWillChange → SwiftUI re-render
 ```
+
+Note: The core `StateStore` is platform-agnostic and uses callbacks for change notification. The `ObservableStateStore` wrapper (in the SwiftUI renderer layer) bridges these callbacks to SwiftUI's `ObservableObject` protocol.
 
 ### Data Binding
 Two-way binding for text fields:

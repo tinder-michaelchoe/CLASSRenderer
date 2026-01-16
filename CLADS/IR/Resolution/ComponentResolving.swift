@@ -4,9 +4,12 @@
 //
 //  Protocol for component-specific resolvers.
 //
+//  **Important**: This file should remain platform-agnostic. Do NOT import
+//  SwiftUI or UIKit here. Platform-specific conversions belong in the
+//  renderer layer (see `Renderers/SwiftUI/IRTypeConversions.swift`).
+//
 
 import Foundation
-import SwiftUI
 
 // MARK: - Resolution Result
 

@@ -20,8 +20,10 @@ public struct ImageNodeSwiftUIRenderer: SwiftUINodeRendering {
         guard case .image(let imageNode) = node else {
             return AnyView(EmptyView())
         }
+        // Wrap the StateStore in ObservableStateStore for SwiftUI observation
+        let observableStore = ObservableStateStore(wrapping: context.stateStore)
         return AnyView(
-            ImageNodeView(node: imageNode, actionContext: context.actionContext, stateStore: context.stateStore)
+            ImageNodeView(node: imageNode, actionContext: context.actionContext, stateStore: observableStore)
         )
     }
 }
@@ -31,7 +33,7 @@ public struct ImageNodeSwiftUIRenderer: SwiftUINodeRendering {
 struct ImageNodeView: View {
     let node: ImageNode
     let actionContext: ActionContext
-    @ObservedObject var stateStore: StateStore
+    @ObservedObject var stateStore: ObservableStateStore
     
     /// Default placeholder when none specified (shown on error or no URL)
     private var defaultPlaceholder: ImageNode.Source {
@@ -177,11 +179,12 @@ struct ImageNodeView: View {
 
 /// Applies tint color to an image if specified
 struct TintModifier: ViewModifier {
-    let tintColor: Color?
+    let tintColor: IR.Color?
 
     func body(content: Content) -> some View {
         if let tintColor {
-            content.foregroundStyle(tintColor)
+            // Convert IR.Color to SwiftUI.Color
+            content.foregroundStyle(tintColor.swiftUI)
         } else {
             content
         }

@@ -45,7 +45,7 @@ public enum RenderColorScheme {
 /// The resolved root container
 public struct RootNode {
     public let backgroundColor: Color?
-    public let edgeInsets: IR.EdgeInsets?
+    public let edgeInsets: IR.PositionedEdgeInsets?
     public let colorScheme: RenderColorScheme
     public let style: IR.Style
     public let actions: RootActions
@@ -53,7 +53,7 @@ public struct RootNode {
 
     public init(
         backgroundColor: Color? = nil,
-        edgeInsets: IR.EdgeInsets? = nil,
+        edgeInsets: IR.PositionedEdgeInsets? = nil,
         colorScheme: RenderColorScheme = .system,
         style: IR.Style = IR.Style(),
         actions: RootActions = RootActions(),
@@ -129,7 +129,7 @@ public struct ContainerNode {
     public let layoutType: LayoutType
     public let alignment: SwiftUI.Alignment
     public let spacing: CGFloat
-    public let padding: NSDirectionalEdgeInsets
+    public let padding: NSEdgeInsets
     public let style: IR.Style
     public let children: [RenderNode]
 
@@ -138,7 +138,7 @@ public struct ContainerNode {
         layoutType: LayoutType = .vstack,
         alignment: SwiftUI.Alignment = .center,
         spacing: CGFloat = 0,
-        padding: NSDirectionalEdgeInsets = .zero,
+        padding: NSEdgeInsets = .zero,
         style: IR.Style = IR.Style(),
         children: [RenderNode] = []
     ) {
@@ -172,9 +172,9 @@ public struct SectionLayoutNode {
     }
 }
 
-// MARK: - NSDirectionalEdgeInsets Extension
+// MARK: - NSEdgeInsets Extension
 
-extension NSDirectionalEdgeInsets {
+extension NSEdgeInsets {
     public var isEmpty: Bool {
         top == 0 && bottom == 0 && leading == 0 && trailing == 0
     }
@@ -187,7 +187,7 @@ public struct TextNode {
     public let id: String?
     public let content: String
     public let style: IR.Style
-    public let padding: NSDirectionalEdgeInsets
+    public let padding: NSEdgeInsets
     /// If set, the content should be read dynamically from StateStore at this path
     public let bindingPath: String?
     /// If set, this template should be interpolated with StateStore values (e.g., "Hello ${name}")
@@ -202,7 +202,7 @@ public struct TextNode {
         id: String? = nil,
         content: String,
         style: IR.Style = IR.Style(),
-        padding: NSDirectionalEdgeInsets = .zero,
+        padding: NSEdgeInsets = .zero,
         bindingPath: String? = nil,
         bindingTemplate: String? = nil
     ) {

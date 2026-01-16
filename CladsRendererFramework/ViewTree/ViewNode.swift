@@ -138,14 +138,14 @@ public struct ContainerNodeData {
     public var layoutType: ContainerNode.LayoutType
     public var alignment: SwiftUI.Alignment
     public var spacing: CGFloat
-    public var padding: NSDirectionalEdgeInsets
+    public var padding: NSEdgeInsets
     public var style: IR.Style
 
     public init(
         layoutType: ContainerNode.LayoutType = .vstack,
         alignment: SwiftUI.Alignment = .center,
         spacing: CGFloat = 0,
-        padding: NSDirectionalEdgeInsets = .zero,
+        padding: NSEdgeInsets = .zero,
         style: IR.Style = IR.Style()
     ) {
         self.layoutType = layoutType

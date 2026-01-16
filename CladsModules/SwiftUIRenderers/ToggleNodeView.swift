@@ -22,7 +22,7 @@ public struct ToggleNodeSwiftUIRenderer: SwiftUINodeRendering {
         }
         return AnyView(
             ToggleNodeView(node: toggleNode)
-                .environmentObject(context.stateStore)
+                .environmentObject(context.observableStateStore)
         )
     }
 }
@@ -31,13 +31,14 @@ public struct ToggleNodeSwiftUIRenderer: SwiftUINodeRendering {
 
 struct ToggleNodeView: View {
     let node: ToggleNode
-    @EnvironmentObject var stateStore: StateStore
+    @EnvironmentObject var stateStore: ObservableStateStore
     @State private var isOn: Bool = false
 
     var body: some View {
         Toggle("", isOn: $isOn)
             .labelsHidden()
-            .tint(node.style.tintColor)
+            // Convert IR.Color to SwiftUI.Color
+            .tint(node.style.tintColor?.swiftUI)
             .onAppear {
                 if let path = node.bindingPath {
                     isOn = stateStore.get(path) as? Bool ?? false

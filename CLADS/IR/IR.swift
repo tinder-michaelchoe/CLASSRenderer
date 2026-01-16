@@ -6,8 +6,6 @@
 //
 
 import Foundation
-import SwiftUI
-import UIKit
 
 // MARK: - IR Namespace
 
@@ -16,6 +14,10 @@ import UIKit
 /// Types in this namespace represent the resolved, render-ready structures
 /// after processing from `Document.*` types. These are consumed by renderers.
 ///
+/// **Important**: This file should remain platform-agnostic. Do NOT import
+/// SwiftUI or UIKit here. Platform-specific conversions belong in the
+/// renderer layer (see `Renderers/SwiftUI/IRTypeConversions.swift`).
+///
 /// Usage:
 /// ```swift
 /// let style: IR.Style = resolver.resolve(styleId)
@@ -23,28 +25,205 @@ import UIKit
 /// ```
 public enum IR {}
 
+// MARK: - Platform-Agnostic Types
+
+extension IR {
+    /// Platform-agnostic color representation using RGBA values.
+    ///
+    /// This type replaces SwiftUI.Color in the IR layer. Convert to platform-specific
+    /// colors in the renderer layer using the `.swiftUI` or `.uiColor` extensions.
+    public struct Color: Codable, Equatable, Sendable {
+        public let red: Double
+        public let green: Double
+        public let blue: Double
+        public let alpha: Double
+        
+        public init(red: Double, green: Double, blue: Double, alpha: Double = 1.0) {
+            self.red = red
+            self.green = green
+            self.blue = blue
+            self.alpha = alpha
+        }
+        
+        /// Parse a hex color string (e.g., "#FF0000", "FF0000", "#F00")
+        public init(hex: String) {
+            var hexSanitized = hex.trimmingCharacters(in: .whitespacesAndNewlines)
+            hexSanitized = hexSanitized.replacingOccurrences(of: "#", with: "")
+            
+            var rgb: UInt64 = 0
+            Scanner(string: hexSanitized).scanHexInt64(&rgb)
+            
+            let r, g, b, a: Double
+            
+            switch hexSanitized.count {
+            case 3: // RGB (12-bit)
+                r = Double((rgb & 0xF00) >> 8) / 15.0
+                g = Double((rgb & 0x0F0) >> 4) / 15.0
+                b = Double(rgb & 0x00F) / 15.0
+                a = 1.0
+            case 6: // RGB (24-bit)
+                r = Double((rgb & 0xFF0000) >> 16) / 255.0
+                g = Double((rgb & 0x00FF00) >> 8) / 255.0
+                b = Double(rgb & 0x0000FF) / 255.0
+                a = 1.0
+            case 8: // RGBA (32-bit)
+                r = Double((rgb & 0xFF000000) >> 24) / 255.0
+                g = Double((rgb & 0x00FF0000) >> 16) / 255.0
+                b = Double((rgb & 0x0000FF00) >> 8) / 255.0
+                a = Double(rgb & 0x000000FF) / 255.0
+            default:
+                r = 0; g = 0; b = 0; a = 1.0
+            }
+            
+            self.red = r
+            self.green = g
+            self.blue = b
+            self.alpha = a
+        }
+        
+        // MARK: - Common Colors
+        
+        public static let clear = Color(red: 0, green: 0, blue: 0, alpha: 0)
+        public static let black = Color(red: 0, green: 0, blue: 0, alpha: 1)
+        public static let white = Color(red: 1, green: 1, blue: 1, alpha: 1)
+        public static let red = Color(red: 1, green: 0, blue: 0, alpha: 1)
+        public static let green = Color(red: 0, green: 1, blue: 0, alpha: 1)
+        public static let blue = Color(red: 0, green: 0, blue: 1, alpha: 1)
+    }
+    
+    /// Platform-agnostic edge insets.
+    ///
+    /// Replaces `NSEdgeInsets` from UIKit. Uses leading/trailing
+    /// instead of left/right for proper RTL support.
+    public struct EdgeInsets: Equatable, Sendable {
+        public let top: CGFloat
+        public let leading: CGFloat
+        public let bottom: CGFloat
+        public let trailing: CGFloat
+        
+        public init(top: CGFloat = 0, leading: CGFloat = 0, bottom: CGFloat = 0, trailing: CGFloat = 0) {
+            self.top = top
+            self.leading = leading
+            self.bottom = bottom
+            self.trailing = trailing
+        }
+        
+        public static let zero = EdgeInsets(top: 0, leading: 0, bottom: 0, trailing: 0)
+        
+        public var isEmpty: Bool {
+            top == 0 && bottom == 0 && leading == 0 && trailing == 0
+        }
+    }
+    
+    /// Platform-agnostic 2D alignment.
+    ///
+    /// Replaces `SwiftUI.Alignment` in the IR layer.
+    public struct Alignment: Equatable, Sendable {
+        public let horizontal: HorizontalAlignment
+        public let vertical: VerticalAlignment
+        
+        public init(horizontal: HorizontalAlignment, vertical: VerticalAlignment) {
+            self.horizontal = horizontal
+            self.vertical = vertical
+        }
+        
+        // MARK: - Standard Alignments
+        
+        public static let center = Alignment(horizontal: .center, vertical: .center)
+        public static let leading = Alignment(horizontal: .leading, vertical: .center)
+        public static let trailing = Alignment(horizontal: .trailing, vertical: .center)
+        public static let top = Alignment(horizontal: .center, vertical: .top)
+        public static let bottom = Alignment(horizontal: .center, vertical: .bottom)
+        public static let topLeading = Alignment(horizontal: .leading, vertical: .top)
+        public static let topTrailing = Alignment(horizontal: .trailing, vertical: .top)
+        public static let bottomLeading = Alignment(horizontal: .leading, vertical: .bottom)
+        public static let bottomTrailing = Alignment(horizontal: .trailing, vertical: .bottom)
+    }
+    
+    /// Platform-agnostic horizontal alignment.
+    public enum HorizontalAlignment: String, Codable, Sendable {
+        case leading
+        case center
+        case trailing
+    }
+    
+    /// Platform-agnostic vertical alignment.
+    public enum VerticalAlignment: String, Codable, Sendable {
+        case top
+        case center
+        case bottom
+    }
+    
+    /// Platform-agnostic unit point for gradients and anchors.
+    ///
+    /// Replaces `SwiftUI.UnitPoint` in the IR layer.
+    /// Values range from 0.0 to 1.0, where (0, 0) is top-leading and (1, 1) is bottom-trailing.
+    public struct UnitPoint: Equatable, Sendable {
+        public let x: Double
+        public let y: Double
+        
+        public init(x: Double, y: Double) {
+            self.x = x
+            self.y = y
+        }
+        
+        // MARK: - Standard Points
+        
+        public static let zero = UnitPoint(x: 0, y: 0)
+        public static let center = UnitPoint(x: 0.5, y: 0.5)
+        public static let leading = UnitPoint(x: 0, y: 0.5)
+        public static let trailing = UnitPoint(x: 1, y: 0.5)
+        public static let top = UnitPoint(x: 0.5, y: 0)
+        public static let bottom = UnitPoint(x: 0.5, y: 1)
+        public static let topLeading = UnitPoint(x: 0, y: 0)
+        public static let topTrailing = UnitPoint(x: 1, y: 0)
+        public static let bottomLeading = UnitPoint(x: 0, y: 1)
+        public static let bottomTrailing = UnitPoint(x: 1, y: 1)
+    }
+    
+    /// Platform-agnostic color scheme (light/dark mode).
+    ///
+    /// Replaces `SwiftUI.ColorScheme` in the IR layer.
+    public enum ColorScheme: String, Codable, Sendable {
+        case light
+        case dark
+        case system  // Use system setting
+    }
+    
+    /// Platform-agnostic font weight.
+    ///
+    /// Reuses Document.FontWeight since it's already platform-agnostic.
+    public typealias FontWeight = Document.FontWeight
+    
+    /// Platform-agnostic text alignment.
+    ///
+    /// Reuses Document.TextAlignment since it's already platform-agnostic.
+    public typealias TextAlignment = Document.TextAlignment
+}
+
 // MARK: - IR.Style
 
 extension IR {
     /// A fully resolved style with all inherited values merged.
     ///
     /// This is the IR representation of a style, ready for rendering.
+    /// Uses platform-agnostic types - convert to SwiftUI/UIKit types in the renderer layer.
     public struct Style: Sendable {
         // Typography
         public var fontFamily: String?
         public var fontSize: CGFloat?
-        public var fontWeight: Font.Weight?
-        public var textColor: Color?
-        public var textAlignment: SwiftUI.TextAlignment?
+        public var fontWeight: IR.FontWeight?
+        public var textColor: IR.Color?
+        public var textAlignment: IR.TextAlignment?
 
         // Background & Border
-        public var backgroundColor: Color?
+        public var backgroundColor: IR.Color?
         public var cornerRadius: CGFloat?
         public var borderWidth: CGFloat?
-        public var borderColor: Color?
+        public var borderColor: IR.Color?
 
         // Image
-        public var tintColor: Color?
+        public var tintColor: IR.Color?
 
         // Sizing
         public var width: CGFloat?
@@ -65,14 +244,14 @@ extension IR {
         mutating func merge(from style: Document.Style) {
             if let v = style.fontFamily { fontFamily = v }
             if let v = style.fontSize { fontSize = v }
-            if let v = style.fontWeight { fontWeight = v.toSwiftUI() }
-            if let v = style.textColor { textColor = Color(hex: v) }
-            if let v = style.textAlignment { textAlignment = v.toSwiftUI() }
-            if let v = style.backgroundColor { backgroundColor = Color(hex: v) }
+            if let v = style.fontWeight { fontWeight = v }
+            if let v = style.textColor { textColor = IR.Color(hex: v) }
+            if let v = style.textAlignment { textAlignment = v }
+            if let v = style.backgroundColor { backgroundColor = IR.Color(hex: v) }
             if let v = style.cornerRadius { cornerRadius = v }
             if let v = style.borderWidth { borderWidth = v }
-            if let v = style.borderColor { borderColor = Color(hex: v) }
-            if let v = style.tintColor { tintColor = Color(hex: v) }
+            if let v = style.borderColor { borderColor = IR.Color(hex: v) }
+            if let v = style.tintColor { tintColor = IR.Color(hex: v) }
             if let v = style.width { width = v }
             if let v = style.height { height = v }
             if let v = style.minWidth { minWidth = v }
@@ -95,25 +274,6 @@ extension IR {
                     paddingTrailing = padding.resolvedTrailing
                 }
             }
-        }
-
-        /// Get the font with size, weight, and family applied
-        public var font: Font? {
-            guard fontSize != nil || fontWeight != nil || fontFamily != nil else { return nil }
-            let size = fontSize ?? 17
-            
-            // If custom font family is specified, use it
-            if let family = fontFamily {
-                print("🔤 IR.Style.font: Using custom font '\(family)' at size \(size)")
-                return Font.custom(family, size: size)
-            }
-            
-            // Otherwise use system font with weight
-            var font = Font.system(size: size)
-            if let weight = fontWeight {
-                font = font.weight(weight)
-            }
-            return font
         }
     }
 }
@@ -178,10 +338,10 @@ extension IR {
 extension IR {
     /// Resolved configuration for a section
     public struct SectionConfig {
-        public let alignment: SwiftUI.HorizontalAlignment
+        public let alignment: IR.HorizontalAlignment
         public let itemSpacing: CGFloat
         public let lineSpacing: CGFloat
-        public let contentInsets: NSDirectionalEdgeInsets
+        public let contentInsets: IR.EdgeInsets
 
         // Item dimensions (for horizontal/grid sections)
         public let itemDimensions: ItemDimensions?
@@ -195,10 +355,10 @@ extension IR {
         public let showsDividers: Bool
 
         public init(
-            alignment: SwiftUI.HorizontalAlignment = .leading,
+            alignment: IR.HorizontalAlignment = .leading,
             itemSpacing: CGFloat = 8,
             lineSpacing: CGFloat = 8,
-            contentInsets: NSDirectionalEdgeInsets = .zero,
+            contentInsets: IR.EdgeInsets = .zero,
             itemDimensions: ItemDimensions? = nil,
             showsIndicators: Bool = false,
             isPagingEnabled: Bool = false,
@@ -271,27 +431,6 @@ extension IR {
     }
 }
 
-// MARK: - UIKit Extensions for IR.Style
-
-extension IR.Style {
-    /// Get the UIFont with size, weight, and family applied
-    public var uiFont: UIFont? {
-        guard fontSize != nil || fontWeight != nil || fontFamily != nil else { return nil }
-        let size = fontSize ?? 17
-        
-        // If custom font family is specified, use it
-        if let family = fontFamily, let customFont = UIFont(name: family, size: size) {
-            return customFont
-        }
-        
-        // Otherwise use system font with weight
-        if let weight = fontWeight {
-            return UIFont.systemFont(ofSize: size, weight: weight.toUIKit())
-        }
-        return UIFont.systemFont(ofSize: size)
-    }
-}
-
 // MARK: - IR.Positioning
 
 extension IR {
@@ -304,11 +443,11 @@ extension IR {
     }
 }
 
-// MARK: - IR.EdgeInset
+// MARK: - IR.PositionedEdgeInset
 
 extension IR {
     /// A resolved edge inset with positioning and value
-    public struct EdgeInset {
+    public struct PositionedEdgeInset {
         public let positioning: Positioning
         public let value: CGFloat
 
@@ -319,21 +458,24 @@ extension IR {
     }
 }
 
-// MARK: - IR.EdgeInsets
+// MARK: - IR.PositionedEdgeInsets
 
 extension IR {
-    /// Resolved edge insets for the root container
-    public struct EdgeInsets {
-        public let top: EdgeInset?
-        public let bottom: EdgeInset?
-        public let leading: EdgeInset?
-        public let trailing: EdgeInset?
+    /// Positioned edge insets for the root container.
+    ///
+    /// Unlike `IR.EdgeInsets`, this type supports positioning modes (safeArea vs absolute)
+    /// for each edge, used specifically for root container layout.
+    public struct PositionedEdgeInsets {
+        public let top: PositionedEdgeInset?
+        public let bottom: PositionedEdgeInset?
+        public let leading: PositionedEdgeInset?
+        public let trailing: PositionedEdgeInset?
 
         public init(
-            top: EdgeInset? = nil,
-            bottom: EdgeInset? = nil,
-            leading: EdgeInset? = nil,
-            trailing: EdgeInset? = nil
+            top: PositionedEdgeInset? = nil,
+            bottom: PositionedEdgeInset? = nil,
+            leading: PositionedEdgeInset? = nil,
+            trailing: PositionedEdgeInset? = nil
         ) {
             self.top = top
             self.bottom = bottom

@@ -42,7 +42,7 @@ struct DividerNodeView: View {
 
     private var backgroundColor: Color {
         if let color = node.style.backgroundColor {
-            return color
+            return color.swiftUI
         }
         return Color(UIColor.separator)
     }

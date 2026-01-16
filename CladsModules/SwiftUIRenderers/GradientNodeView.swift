@@ -30,19 +30,21 @@ public struct GradientNodeSwiftUIRenderer: SwiftUINodeRendering {
 
 struct GradientNodeView: View {
     let node: GradientNode
-    let colorScheme: RenderColorScheme
+    let colorScheme: IR.ColorScheme
     @Environment(\.colorScheme) private var systemColorScheme
 
     var body: some View {
         LinearGradient(
             stops: node.colors.map { stop in
                 Gradient.Stop(
-                    color: stop.color.resolved(for: colorScheme, systemScheme: systemColorScheme),
+                    // Convert IR.Color to SwiftUI.Color
+                    color: stop.color.resolved(for: colorScheme, isSystemDark: systemColorScheme == .dark).swiftUI,
                     location: stop.location
                 )
             },
-            startPoint: node.startPoint,
-            endPoint: node.endPoint
+            // Convert IR.UnitPoint to SwiftUI.UnitPoint
+            startPoint: node.startPoint.swiftUI,
+            endPoint: node.endPoint.swiftUI
         )
         .frame(width: node.style.width, height: node.style.height)
     }

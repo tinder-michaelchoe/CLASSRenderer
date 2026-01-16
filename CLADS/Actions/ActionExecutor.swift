@@ -2,22 +2,25 @@
 //  ActionExecutor.swift
 //  CladsRendererFramework
 //
+//  Platform-agnostic action execution context.
+//  UIKit-specific alert presentation is handled via the AlertPresenting protocol.
+//
 
 import Foundation
-import Combine
-import SwiftUI
-import UIKit
 
-/// Context for action execution, providing access to state and navigation
-@MainActor
-public final class ActionContext: ObservableObject, ActionExecutionContext {
-    public let stateStore: StateStore
+/// Context for action execution, providing access to state and navigation.
+///
+/// **Platform-Agnostic**: This class does not depend on SwiftUI, UIKit, or Combine.
+/// Alert presentation is delegated to an `AlertPresenting` implementation.
+/// For SwiftUI integration, use `ObservableActionContext` wrapper.
+public final class ActionContext: ActionExecutionContext {
+    public let stateStore: StateStoring
     public let documentId: String
     public let actionRegistry: ActionRegistry
     private let actionDefinitions: [String: Document.Action]
 
     /// Alert presenter for showing alerts (injectable for testing)
-    private let alertPresenter: AlertPresenting
+    private let alertPresenter: AlertPresenting?
 
     /// Delegate for handling custom actions
     public weak var actionDelegate: CladsActionDelegate?
@@ -32,12 +35,12 @@ public final class ActionContext: ObservableObject, ActionExecutionContext {
     public var navigationHandler: ((String, Document.NavigationPresentation?) -> Void)?
 
     public init(
-        stateStore: StateStore,
+        stateStore: StateStoring,
         actionDefinitions: [String: Document.Action],
         registry: ActionRegistry,
         documentId: String = UUID().uuidString,
         actionDelegate: CladsActionDelegate? = nil,
-        alertPresenter: AlertPresenting = UIKitAlertPresenter()
+        alertPresenter: AlertPresenting? = nil
     ) {
         self.stateStore = stateStore
         self.actionDefinitions = actionDefinitions
@@ -221,7 +224,7 @@ public final class ActionContext: ObservableObject, ActionExecutionContext {
         if let handler = alertHandler {
             handler(config)
         } else {
-            alertPresenter.present(config)
+            alertPresenter?.present(config)
         }
     }
 
@@ -288,6 +291,9 @@ public struct AlertConfiguration {
 
 /// Protocol for presenting alerts, enabling dependency injection for testing.
 ///
+/// **Platform-Agnostic**: This protocol does not depend on UIKit or SwiftUI.
+/// Platform-specific implementations (like `UIKitAlertPresenter`) are in the renderer layer.
+///
 /// Example test usage:
 /// ```swift
 /// class MockAlertPresenter: AlertPresenting {
@@ -302,63 +308,6 @@ public struct AlertConfiguration {
 /// // ... trigger action ...
 /// XCTAssertEqual(mockPresenter.presentedAlerts.count, 1)
 /// ```
-public protocol AlertPresenting: Sendable {
-    @MainActor
+public protocol AlertPresenting: AnyObject {
     func present(_ config: AlertConfiguration)
-}
-
-// MARK: - UIKit Alert Presenter
-
-/// Default UIKit implementation of AlertPresenting.
-/// Uses UIAlertController to present alerts.
-public struct UIKitAlertPresenter: AlertPresenting {
-
-    public init() {}
-
-    @MainActor
-    public func present(_ config: AlertConfiguration) {
-        guard let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
-              let rootViewController = windowScene.windows.first?.rootViewController else {
-            return
-        }
-
-        // Find the topmost presented view controller
-        var topController = rootViewController
-        while let presented = topController.presentedViewController {
-            topController = presented
-        }
-
-        let alert = UIAlertController(
-            title: config.title,
-            message: config.message,
-            preferredStyle: .alert
-        )
-
-        for button in config.buttons {
-            let style: UIAlertAction.Style
-            switch button.style {
-            case .default: style = .default
-            case .cancel: style = .cancel
-            case .destructive: style = .destructive
-            }
-
-            let action = UIAlertAction(title: button.label, style: style) { _ in
-                config.onButtonTap?(button.action)
-            }
-            alert.addAction(action)
-        }
-
-        topController.present(alert, animated: true)
-    }
-}
-
-// MARK: - Legacy Support
-
-/// Legacy static interface for backward compatibility.
-/// Prefer using UIKitAlertPresenter instance for new code.
-public enum AlertPresenter {
-    @MainActor
-    public static func present(_ config: AlertConfiguration) {
-        UIKitAlertPresenter().present(config)
-    }
 }

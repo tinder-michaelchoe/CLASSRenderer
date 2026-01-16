@@ -56,25 +56,48 @@ State is initialized in the `state` section of the document:
 
 ## StateStore
 
-The `StateStore` is an observable object that holds the document's state:
+The `StateStore` is a platform-agnostic class that holds the document's state. It uses `NSLock` for thread safety and provides callbacks for change notification:
 
 ```swift
-@MainActor
-public class StateStore: ObservableObject {
-    @Published private var state: [String: Any] = [:]
+public final class StateStore: StateStoring {
+    private var values: [String: Any] = [:]
+    private let lock = NSLock()
 
     public func get(_ path: String) -> Any?
-    public func set(_ path: String, value: Any)
+    public func set(_ path: String, value: Any?)
     public func interpolate(_ template: String) -> String
+    
+    @discardableResult
+    public func onStateChange(_ callback: @escaping StateChangeCallback) -> UUID
 }
 ```
 
 ### Key Features
 
-- **Observable**: Uses `@Published` for SwiftUI reactivity
+- **Platform-Agnostic**: No SwiftUI or Combine dependencies
+- **Thread-Safe**: Uses `NSLock` for safe concurrent access
 - **Path-based Access**: Dot notation for nested values
 - **Template Interpolation**: `${path}` syntax for dynamic strings
-- **Main Actor Isolation**: Thread-safe state updates
+- **Callback-based Reactivity**: Register callbacks for state changes
+
+### SwiftUI Integration
+
+For SwiftUI, use the `ObservableStateStore` wrapper which bridges the core `StateStore` to SwiftUI's observation system:
+
+```swift
+@MainActor
+public final class ObservableStateStore: ObservableObject, StateStoring {
+    private let coreStore: StateStoring
+    
+    // Bridges StateStore callbacks to SwiftUI's objectWillChange
+    public init(coreStore: StateStoring) { ... }
+    
+    // SwiftUI-specific binding support
+    public func binding(for keypath: String) -> Binding<String>
+}
+```
+
+This separation allows the core `StateStore` to be used on any platform (including WebAssembly), while `ObservableStateStore` provides the SwiftUI-specific reactivity.
 
 ---
 
@@ -296,11 +319,11 @@ Access nested state using dot notation:
 
 ### SwiftUI Integration
 
-The `StateStore` is injected as an `@EnvironmentObject`:
+The `ObservableStateStore` is injected as an `@EnvironmentObject`:
 
 ```swift
 struct TextFieldNodeView: View {
-    @EnvironmentObject var stateStore: StateStore
+    @EnvironmentObject var stateStore: ObservableStateStore
     @State private var text: String = ""
 
     var body: some View {
@@ -308,12 +331,18 @@ struct TextFieldNodeView: View {
             .onAppear {
                 text = stateStore.get(bindingPath) as? String ?? ""
             }
-            .onChange(of: text) { newValue in
+            .onChange(of: text) { _, newValue in
                 stateStore.set(bindingPath, value: newValue)
+            }
+            .onReceive(stateStore.objectWillChange) { _ in
+                // Sync from external state changes
+                text = stateStore.get(bindingPath) as? String ?? ""
             }
     }
 }
 ```
+
+Note: The `ObservableStateStore` wrapper bridges the platform-agnostic `StateStore` to SwiftUI's `ObservableObject` protocol.
 
 ### UIKit Integration
 

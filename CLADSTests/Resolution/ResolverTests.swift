@@ -7,7 +7,6 @@
 
 import Foundation
 import Testing
-import SwiftUI
 @testable import CLADS
 
 // MARK: - Basic Resolution Tests
@@ -179,7 +178,7 @@ struct ResolverRootNodeTests {
         #expect(renderTree.root.colorScheme == .system)
     }
     
-    @Test @MainActor func resolvesRootEdgeInsets() throws {
+    @Test @MainActor func resolvesPositionedEdgeInsets() throws {
         let document = Document.Definition(
             id: "test-doc",
             root: Document.RootComponent(

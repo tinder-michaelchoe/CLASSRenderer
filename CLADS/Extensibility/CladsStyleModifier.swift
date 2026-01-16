@@ -52,7 +52,7 @@ private extension View {
     @ViewBuilder
     func applyFont(_ style: IR.Style) -> some View {
         if let fontSize = style.fontSize {
-            let weight = style.fontWeight ?? .regular
+            let weight = style.fontWeight?.swiftUI ?? .regular
             self.font(.system(size: fontSize, weight: weight))
         } else {
             self
@@ -62,7 +62,7 @@ private extension View {
     @ViewBuilder
     func applyForegroundColor(_ style: IR.Style) -> some View {
         if let textColor = style.textColor {
-            self.foregroundColor(textColor)
+            self.foregroundColor(textColor.swiftUI)
         } else {
             self
         }
@@ -71,7 +71,7 @@ private extension View {
     @ViewBuilder
     func applyBackground(_ style: IR.Style) -> some View {
         if let backgroundColor = style.backgroundColor {
-            self.background(backgroundColor)
+            self.background(backgroundColor.swiftUI)
         } else {
             self
         }
@@ -92,10 +92,10 @@ private extension View {
             if let cornerRadius = style.cornerRadius {
                 self.overlay(
                     RoundedRectangle(cornerRadius: cornerRadius)
-                        .stroke(borderColor, lineWidth: borderWidth)
+                        .stroke(borderColor.swiftUI, lineWidth: borderWidth)
                 )
             } else {
-                self.border(borderColor, width: borderWidth)
+                self.border(borderColor.swiftUI, width: borderWidth)
             }
         } else {
             self

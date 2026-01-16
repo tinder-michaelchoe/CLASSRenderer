@@ -40,6 +40,10 @@ The `StyleResolver` automatically detects the prefix and delegates to the approp
 
 ### Protocol Definition
 
+The design system integration is split into two protocols for platform-agnostic architecture:
+
+**Platform-Agnostic Core Protocol** (`DesignSystemProvider`):
+
 ```swift
 public protocol DesignSystemProvider {
     /// Unique identifier (e.g., "lightspeed", "obsidian")
@@ -50,22 +54,34 @@ public protocol DesignSystemProvider {
     
     /// Check if provider can render this node natively
     func canRender(_ node: RenderNode, styleId: String?) -> Bool
-    
+}
+```
+
+**SwiftUI-Specific Rendering Protocol** (`SwiftUIDesignSystemRenderer`):
+
+```swift
+public protocol SwiftUIDesignSystemRenderer: DesignSystemProvider {
     /// Render using native design system component
     @MainActor
     func render(_ node: RenderNode, styleId: String?, context: SwiftUIRenderContext) -> AnyView?
 }
 ```
 
+This separation allows:
+- The core `DesignSystemProvider` to be used on any platform (including WebAssembly)
+- SwiftUI-specific rendering to be added only when needed
+- Future UIKit or HTML renderers to define their own rendering protocols
+
 ### Implementation Example
 
 ```swift
-public struct MyDesignSystemProvider: DesignSystemProvider {
+// Conform to SwiftUIDesignSystemRenderer for SwiftUI rendering support
+public struct MyDesignSystemProvider: SwiftUIDesignSystemRenderer {
     public static let identifier = "myDesignSystem"
     
     public init() {}
     
-    // MARK: - Style Token Resolution
+    // MARK: - Style Token Resolution (Platform-Agnostic)
     
     public func resolveStyle(_ reference: String) -> IR.Style? {
         // Parse reference like "button.primary" or "text.heading1"
@@ -85,14 +101,15 @@ public struct MyDesignSystemProvider: DesignSystemProvider {
         
         switch parts[1] {
         case "primary":
-            style.backgroundColor = Color(hex: "#6366F1")
-            style.textColor = .white
+            // Use IR.Color for platform-agnostic color representation
+            style.backgroundColor = IR.Color(hex: "#6366F1")
+            style.textColor = IR.Color(hex: "#FFFFFF")
             style.cornerRadius = 12
             style.paddingTop = 14
             style.paddingBottom = 14
         case "secondary":
-            style.backgroundColor = Color(hex: "#F3F4F6")
-            style.textColor = Color(hex: "#374151")
+            style.backgroundColor = IR.Color(hex: "#F3F4F6")
+            style.textColor = IR.Color(hex: "#374151")
             style.cornerRadius = 12
         default:
             return nil
@@ -100,7 +117,7 @@ public struct MyDesignSystemProvider: DesignSystemProvider {
         return style
     }
     
-    // MARK: - Full Component Rendering
+    // MARK: - Component Rendering Support (Platform-Agnostic)
     
     public func canRender(_ node: RenderNode, styleId: String?) -> Bool {
         guard let styleId, styleId.hasPrefix("@") else { return false }
@@ -111,6 +128,8 @@ public struct MyDesignSystemProvider: DesignSystemProvider {
         default: return false
         }
     }
+    
+    // MARK: - SwiftUI Rendering (SwiftUIDesignSystemRenderer)
     
     @MainActor
     public func render(_ node: RenderNode, styleId: String?, context: SwiftUIRenderContext) -> AnyView? {
@@ -378,10 +397,29 @@ MyApp/
 
 Adding a new design system requires:
 
-1. Create `NewDesignSystemProvider: DesignSystemProvider`
-2. Implement `resolveStyle(_:)` for fallback style tokens
-3. Implement `canRender(_:styleId:)` and `render(_:styleId:context:)` for native components
-4. Create pure SwiftUI components with dark mode support via `@Environment(\.colorScheme)`
-5. Inject provider: `CladsRendererView(..., designSystemProvider: NewDesignSystemProvider())`
+1. Create `NewDesignSystemProvider: DesignSystemProvider` (platform-agnostic)
+2. Implement `resolveStyle(_:)` for fallback style tokens using `IR.Color`, `IR.FontWeight`, etc.
+3. Implement `canRender(_:styleId:)` to indicate which nodes can be rendered natively
+4. For SwiftUI: Conform to `SwiftUIDesignSystemRenderer` and implement `render(_:styleId:context:)`
+5. Create pure SwiftUI components with dark mode support via `@Environment(\.colorScheme)`
+6. Inject provider: `CladsRendererView(..., designSystemProvider: NewDesignSystemProvider())`
 
 **No changes to CLADS core or JSON schema required.**
+
+### Platform-Specific Rendering
+
+For other platforms, define similar protocols:
+
+```swift
+// Future UIKit renderer protocol
+public protocol UIKitDesignSystemRenderer: DesignSystemProvider {
+    func render(_ node: RenderNode, styleId: String?, context: UIKitRenderContext) -> UIView?
+}
+
+// Future HTML/DOM renderer protocol (for WebAssembly)
+public protocol HTMLDesignSystemRenderer: DesignSystemProvider {
+    func render(_ node: RenderNode, styleId: String?, context: HTMLRenderContext) -> HTMLElement?
+}
+```
+
+This architecture ensures the core `DesignSystemProvider` remains platform-agnostic while allowing platform-specific rendering extensions.

@@ -6,7 +6,6 @@
 //
 
 import UIKit
-import SwiftUI
 
 // MARK: - UIKit Renderer
 
@@ -58,9 +57,9 @@ final class RenderTreeUIView: UIView {
     }
 
     private func setupView() {
-        // Background color
+        // Background color - convert IR.Color to UIColor
         if let bg = tree.root.backgroundColor {
-            backgroundColor = UIColor(bg)
+            backgroundColor = bg.uiColor
         } else {
             backgroundColor = .systemBackground
         }
@@ -106,7 +105,7 @@ final class RenderTreeUIView: UIView {
     }
 
     /// Returns the appropriate layout guide based on the edge inset's positioning mode
-    private func anchorGuide(for inset: IR.EdgeInset?) -> UILayoutGuide {
+    private func anchorGuide(for inset: IR.PositionedEdgeInset?) -> UILayoutGuide {
         switch inset?.positioning ?? .safeArea {
         case .safeArea:
             return safeAreaLayoutGuide
@@ -138,24 +137,27 @@ final class RenderTreeUIView: UIView {
 
 public extension UILabel {
     func applyStyle(_ style: IR.Style) {
+        // Convert IR.Color to UIColor
         if let textColor = style.textColor {
-            self.textColor = UIColor(textColor)
+            self.textColor = textColor.uiColor
         }
         font = style.uiFont
+        // Convert IR.TextAlignment to NSTextAlignment
         if let alignment = style.textAlignment {
-            textAlignment = alignment.toUIKit()
+            textAlignment = alignment.uiKit
         }
     }
 }
 
 public extension UIButton {
     func applyStyle(_ style: IR.Style) {
+        // Convert IR.Color to UIColor
         if let textColor = style.textColor {
-            setTitleColor(UIColor(textColor), for: .normal)
+            setTitleColor(textColor.uiColor, for: .normal)
         }
         titleLabel?.font = style.uiFont
         if let bgColor = style.backgroundColor {
-            self.backgroundColor = UIColor(bgColor)
+            self.backgroundColor = bgColor.uiColor
         }
         if let cornerRadius = style.cornerRadius {
             layer.cornerRadius = cornerRadius
@@ -166,45 +168,17 @@ public extension UIButton {
 
 public extension UITextField {
     func applyStyle(_ style: IR.Style) {
+        // Convert IR.Color to UIColor
         if let textColor = style.textColor {
-            self.textColor = UIColor(textColor)
+            self.textColor = textColor.uiColor
         }
         font = style.uiFont
         if let bgColor = style.backgroundColor {
-            self.backgroundColor = UIColor(bgColor)
+            self.backgroundColor = bgColor.uiColor
         }
         if let cornerRadius = style.cornerRadius {
             layer.cornerRadius = cornerRadius
             clipsToBounds = true
-        }
-    }
-}
-
-// MARK: - Type Conversions
-
-extension Font.Weight {
-    func toUIKit() -> UIFont.Weight {
-        switch self {
-        case .ultraLight: return .ultraLight
-        case .thin: return .thin
-        case .light: return .light
-        case .regular: return .regular
-        case .medium: return .medium
-        case .semibold: return .semibold
-        case .bold: return .bold
-        case .heavy: return .heavy
-        case .black: return .black
-        default: return .regular
-        }
-    }
-}
-
-public extension SwiftUI.TextAlignment {
-    func toUIKit() -> NSTextAlignment {
-        switch self {
-        case .leading: return .natural
-        case .center: return .center
-        case .trailing: return .right
         }
     }
 }

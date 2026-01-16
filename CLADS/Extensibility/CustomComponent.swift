@@ -76,7 +76,7 @@ public struct CustomComponentContext {
     public let style: IR.Style
 
     /// State store for reading/writing state
-    public let stateStore: StateStore
+    public let stateStore: StateStoring
 
     /// Action context for executing actions
     public let actionContext: ActionContext
@@ -91,7 +91,7 @@ public struct CustomComponentContext {
 
     public init(
         style: IR.Style,
-        stateStore: StateStore,
+        stateStore: StateStoring,
         actionContext: ActionContext,
         tree: RenderTree,
         component: Document.Component
@@ -224,53 +224,48 @@ public struct CustomComponentContext {
 /// Registry for custom components.
 ///
 /// Maps component type names to their implementations for resolution.
+/// Thread-safe using NSLock for consistency with StateStore.
 public final class CustomComponentRegistry: @unchecked Sendable {
     private var components: [String: any CustomComponent.Type] = [:]
-    private let queue = DispatchQueue(label: "com.clads.customComponentRegistry", attributes: .concurrent)
+    private let lock = NSLock()
 
     public init() {}
 
     /// Register a custom component type
     public func register<T: CustomComponent>(_ componentType: T.Type) {
-        queue.sync(flags: .barrier) {
-            self.components[T.typeName] = componentType
-        }
+        lock.lock()
+        defer { lock.unlock() }
+        components[T.typeName] = componentType
     }
 
     /// Register multiple custom component types
     public func register(_ componentTypes: [any CustomComponent.Type]) {
-        queue.sync(flags: .barrier) {
-            for type in componentTypes {
-                self.components[type.typeName] = type
-            }
+        lock.lock()
+        defer { lock.unlock() }
+        for type in componentTypes {
+            components[type.typeName] = type
         }
     }
 
     /// Check if a component type is registered
     public func isRegistered(_ typeName: String) -> Bool {
-        var result = false
-        queue.sync {
-            result = components[typeName] != nil
-        }
-        return result
+        lock.lock()
+        defer { lock.unlock() }
+        return components[typeName] != nil
     }
 
     /// Get a registered component type
     public func componentType(for typeName: String) -> (any CustomComponent.Type)? {
-        var result: (any CustomComponent.Type)?
-        queue.sync {
-            result = components[typeName]
-        }
-        return result
+        lock.lock()
+        defer { lock.unlock() }
+        return components[typeName]
     }
 
     /// Get all registered type names
     public var registeredTypeNames: [String] {
-        var result: [String] = []
-        queue.sync {
-            result = Array(components.keys)
-        }
-        return result
+        lock.lock()
+        defer { lock.unlock() }
+        return Array(components.keys)
     }
 }
 

@@ -7,7 +7,6 @@
 
 import Foundation
 import Testing
-import SwiftUI
 @testable import CLADS
 
 // MARK: - Alignment Converter Tests
@@ -63,30 +62,30 @@ struct AlignmentConverterTests {
     @Test func convertsTopLeadingForZStack() {
         let alignment = Document.Alignment(horizontal: .leading, vertical: .top)
         let result = AlignmentConverter.forZStack(alignment)
-        #expect(result == SwiftUI.Alignment(horizontal: .leading, vertical: .top))
+        #expect(result == IR.Alignment(horizontal: .leading, vertical: .top))
     }
     
     @Test func convertsBottomTrailingForZStack() {
         let alignment = Document.Alignment(horizontal: .trailing, vertical: .bottom)
         let result = AlignmentConverter.forZStack(alignment)
-        #expect(result == SwiftUI.Alignment(horizontal: .trailing, vertical: .bottom))
+        #expect(result == IR.Alignment(horizontal: .trailing, vertical: .bottom))
     }
     
     @Test func convertsCenterCenterForZStack() {
         let alignment = Document.Alignment(horizontal: .center, vertical: .center)
         let result = AlignmentConverter.forZStack(alignment)
-        #expect(result == .center)
+        #expect(result == IR.Alignment.center)
     }
     
     @Test func convertsPartialAlignmentForZStack() {
         let alignment = Document.Alignment(horizontal: .trailing, vertical: nil)
         let result = AlignmentConverter.forZStack(alignment)
-        #expect(result == SwiftUI.Alignment(horizontal: .trailing, vertical: .center))
+        #expect(result == IR.Alignment(horizontal: .trailing, vertical: .center))
     }
     
     @Test func convertsNilToCenterForZStack() {
         let result = AlignmentConverter.forZStack(nil)
-        #expect(result == .center)
+        #expect(result == IR.Alignment.center)
     }
 }
 
@@ -96,63 +95,63 @@ struct GradientPointConverterTests {
     
     @Test func convertsTopPoint() {
         let result = GradientPointConverter.convert("top")
-        #expect(result == .top)
+        #expect(result == IR.UnitPoint.top)
     }
     
     @Test func convertsBottomPoint() {
         let result = GradientPointConverter.convert("bottom")
-        #expect(result == .bottom)
+        #expect(result == IR.UnitPoint.bottom)
     }
     
     @Test func convertsLeadingPoint() {
         let result = GradientPointConverter.convert("leading")
-        #expect(result == .leading)
+        #expect(result == IR.UnitPoint.leading)
     }
     
     @Test func convertsTrailingPoint() {
         let result = GradientPointConverter.convert("trailing")
-        #expect(result == .trailing)
+        #expect(result == IR.UnitPoint.trailing)
     }
     
     @Test func convertsTopLeadingPoint() {
         let result = GradientPointConverter.convert("topLeading")
-        #expect(result == .topLeading)
+        #expect(result == IR.UnitPoint.topLeading)
     }
     
     @Test func convertsTopTrailingPoint() {
         let result = GradientPointConverter.convert("topTrailing")
-        #expect(result == .topTrailing)
+        #expect(result == IR.UnitPoint.topTrailing)
     }
     
     @Test func convertsBottomLeadingPoint() {
         let result = GradientPointConverter.convert("bottomLeading")
-        #expect(result == .bottomLeading)
+        #expect(result == IR.UnitPoint.bottomLeading)
     }
     
     @Test func convertsBottomTrailingPoint() {
         let result = GradientPointConverter.convert("bottomTrailing")
-        #expect(result == .bottomTrailing)
+        #expect(result == IR.UnitPoint.bottomTrailing)
     }
     
     @Test func convertsCenterPoint() {
         let result = GradientPointConverter.convert("center")
-        #expect(result == .center)
+        #expect(result == IR.UnitPoint.center)
     }
     
     @Test func convertsNilToDefaultBottom() {
         let result = GradientPointConverter.convert(nil)
-        #expect(result == .bottom)
+        #expect(result == IR.UnitPoint.bottom)
     }
     
     @Test func convertsUnknownToDefaultBottom() {
         let result = GradientPointConverter.convert("unknown")
-        #expect(result == .bottom)
+        #expect(result == IR.UnitPoint.bottom)
     }
     
     @Test func isCaseInsensitive() {
-        #expect(GradientPointConverter.convert("TOP") == .top)
-        #expect(GradientPointConverter.convert("Bottom") == .bottom)
-        #expect(GradientPointConverter.convert("TOPLEADING") == .topLeading)
+        #expect(GradientPointConverter.convert("TOP") == IR.UnitPoint.top)
+        #expect(GradientPointConverter.convert("Bottom") == IR.UnitPoint.bottom)
+        #expect(GradientPointConverter.convert("TOPLEADING") == IR.UnitPoint.topLeading)
     }
 }
 
@@ -162,7 +161,7 @@ struct PaddingConverterTests {
     
     @Test func convertsNilToZero() {
         let result = PaddingConverter.convert(nil)
-        #expect(result == .zero)
+        #expect(result == IR.EdgeInsets.zero)
     }
     
     @Test func convertsAllEdges() {
@@ -215,28 +214,28 @@ struct ColorSchemeConverterTests {
     
     @Test func convertsLightScheme() {
         let result = ColorSchemeConverter.convert("light")
-        #expect(result == .light)
+        #expect(result == IR.ColorScheme.light)
     }
     
     @Test func convertsDarkScheme() {
         let result = ColorSchemeConverter.convert("dark")
-        #expect(result == .dark)
+        #expect(result == IR.ColorScheme.dark)
     }
     
     @Test func convertsNilToSystem() {
         let result = ColorSchemeConverter.convert(nil)
-        #expect(result == .system)
+        #expect(result == IR.ColorScheme.system)
     }
     
     @Test func convertsUnknownToSystem() {
         let result = ColorSchemeConverter.convert("unknown")
-        #expect(result == .system)
+        #expect(result == IR.ColorScheme.system)
     }
     
     @Test func isCaseInsensitive() {
-        #expect(ColorSchemeConverter.convert("LIGHT") == .light)
-        #expect(ColorSchemeConverter.convert("Dark") == .dark)
-        #expect(ColorSchemeConverter.convert("DARK") == .dark)
+        #expect(ColorSchemeConverter.convert("LIGHT") == IR.ColorScheme.light)
+        #expect(ColorSchemeConverter.convert("Dark") == IR.ColorScheme.dark)
+        #expect(ColorSchemeConverter.convert("DARK") == IR.ColorScheme.dark)
     }
 }
 

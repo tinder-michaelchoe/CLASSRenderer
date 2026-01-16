@@ -17,23 +17,35 @@ public struct SwiftUIRenderContext {
     public let actionContext: ActionContext
     public let rendererRegistry: SwiftUINodeRendererRegistry
     public let designSystemProvider: (any DesignSystemProvider)?
+    
+    /// Observable wrapper for the state store (for SwiftUI @EnvironmentObject)
+    public let observableStateStore: ObservableStateStore
+    
+    /// Observable wrapper for the action context (for SwiftUI @EnvironmentObject)
+    public let observableActionContext: ObservableActionContext
 
+    @MainActor
     public init(
         tree: RenderTree,
         actionContext: ActionContext,
         rendererRegistry: SwiftUINodeRendererRegistry,
-        designSystemProvider: (any DesignSystemProvider)? = nil
+        designSystemProvider: (any DesignSystemProvider)? = nil,
+        observableStateStore: ObservableStateStore? = nil,
+        observableActionContext: ObservableActionContext? = nil
     ) {
         self.tree = tree
         self.actionContext = actionContext
         self.rendererRegistry = rendererRegistry
         self.designSystemProvider = designSystemProvider
+        // Use provided observable wrappers or create new ones
+        self.observableStateStore = observableStateStore ?? ObservableStateStore(wrapping: actionContext.stateStore)
+        self.observableActionContext = observableActionContext ?? ObservableActionContext(wrapping: actionContext)
     }
     
     /// The canonical StateStore that should be used for all state operations.
     /// This is the ActionContext's stateStore, which persists across view recreations.
     @MainActor
-    public var stateStore: StateStore {
+    public var stateStore: StateStoring {
         actionContext.stateStore
     }
 
@@ -44,11 +56,15 @@ public struct SwiftUIRenderContext {
     @MainActor
     public func render(_ node: RenderNode) -> AnyView {
         // Check if design system provider can render this node
+        // Use SwiftUIDesignSystemRenderer for SwiftUI-specific rendering
         if let provider = designSystemProvider,
            let styleId = node.styleId,
-           provider.canRender(node, styleId: styleId),
-           let dsView = provider.render(node, styleId: styleId, context: self) {
-            return dsView
+           provider.canRender(node, styleId: styleId) {
+            // Check if provider conforms to SwiftUIDesignSystemRenderer
+            if let swiftUIRenderer = provider as? SwiftUIDesignSystemRenderer,
+               let dsView = swiftUIRenderer.render(node, styleId: styleId, context: self) {
+                return dsView
+            }
         }
         
         // Fall back to standard rendering

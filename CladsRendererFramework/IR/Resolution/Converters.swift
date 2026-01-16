@@ -80,13 +80,13 @@ public enum GradientPointConverter {
 
 // MARK: - Padding Converter
 
-/// Converts schema Padding to NSDirectionalEdgeInsets
+/// Converts schema Padding to NSEdgeInsets
 public enum PaddingConverter {
 
-    /// Converts optional Padding to NSDirectionalEdgeInsets
-    public static func convert(_ padding: Document.Padding?) -> NSDirectionalEdgeInsets {
+    /// Converts optional Padding to NSEdgeInsets
+    public static func convert(_ padding: Document.Padding?) -> NSEdgeInsets {
         guard let padding = padding else { return .zero }
-        return NSDirectionalEdgeInsets(
+        return NSEdgeInsets(
             top: padding.resolvedTop,
             leading: padding.resolvedLeading,
             bottom: padding.resolvedBottom,

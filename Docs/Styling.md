@@ -300,25 +300,37 @@ The `StyleResolver` handles style resolution during the Document → RenderTree 
 ### IR.Style Structure
 
 ```swift
-public struct IR.Style {
+public struct IR.Style: Sendable {
     // Text
     public var fontSize: CGFloat?
-    public var fontWeight: Font.Weight?
+    public var fontWeight: IR.FontWeight?  // Platform-agnostic
     public var fontFamily: String?
-    public var textColor: Color?
-    public var textAlignment: TextAlignment?
+    public var textColor: IR.Color?        // Platform-agnostic
+    public var textAlignment: IR.TextAlignment?  // Platform-agnostic
 
     // Layout
     public var width: CGFloat?
     public var height: CGFloat?
 
     // Appearance
-    public var backgroundColor: Color?
+    public var backgroundColor: IR.Color?  // Platform-agnostic
     public var cornerRadius: CGFloat?
 }
 ```
 
 The `IR.Style` struct lives in the `IR` namespace and represents the fully resolved style after inheritance has been applied.
+
+**Important**: `IR.Style` uses platform-agnostic types (`IR.Color`, `IR.FontWeight`, `IR.TextAlignment`) instead of SwiftUI or UIKit types. These are converted to platform-specific types in the renderer layer:
+
+```swift
+// SwiftUI Renderer
+let swiftUIColor = style.textColor?.toSwiftUI  // IR.Color → SwiftUI.Color
+let swiftUIFont = style.swiftUIFont            // Creates Font with size/weight/family
+
+// UIKit Renderer
+let uiColor = style.textColor?.toUIKit         // IR.Color → UIColor
+let uiFont = style.uiFont                      // Creates UIFont with size/weight/family
+```
 
 ---
 

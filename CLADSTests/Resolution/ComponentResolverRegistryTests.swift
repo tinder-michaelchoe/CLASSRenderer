@@ -7,7 +7,7 @@
 
 import Foundation
 import Testing
-import SwiftUI
+
 @testable import CLADS
 
 // MARK: - Test Component Kinds

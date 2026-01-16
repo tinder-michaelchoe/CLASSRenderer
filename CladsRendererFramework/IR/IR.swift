@@ -172,7 +172,7 @@ extension IR {
         public let alignment: SwiftUI.HorizontalAlignment
         public let itemSpacing: CGFloat
         public let lineSpacing: CGFloat
-        public let contentInsets: NSDirectionalEdgeInsets
+        public let contentInsets: NSEdgeInsets
 
         // Item dimensions (for horizontal/grid sections)
         public let itemDimensions: ItemDimensions?
@@ -189,7 +189,7 @@ extension IR {
             alignment: SwiftUI.HorizontalAlignment = .leading,
             itemSpacing: CGFloat = 8,
             lineSpacing: CGFloat = 8,
-            contentInsets: NSDirectionalEdgeInsets = .zero,
+            contentInsets: NSEdgeInsets = .zero,
             itemDimensions: ItemDimensions? = nil,
             showsIndicators: Bool = false,
             isPagingEnabled: Bool = false,
@@ -287,11 +287,35 @@ extension IR {
     }
 }
 
-// MARK: - IR.EdgeInset
+// MARK: - IR.EdgeInsets (Simple)
+
+extension IR {
+    /// Platform-agnostic edge insets for padding.
+    ///
+    /// Replaces `NSDirectionalEdgeInsets` from UIKit. Uses leading/trailing
+    /// instead of left/right for proper RTL support.
+    public struct EdgeInsets: Equatable, Sendable {
+        public let top: CGFloat
+        public let leading: CGFloat
+        public let bottom: CGFloat
+        public let trailing: CGFloat
+
+        public static let zero = EdgeInsets(top: 0, leading: 0, bottom: 0, trailing: 0)
+
+        public init(top: CGFloat, leading: CGFloat, bottom: CGFloat, trailing: CGFloat) {
+            self.top = top
+            self.leading = leading
+            self.bottom = bottom
+            self.trailing = trailing
+        }
+    }
+}
+
+// MARK: - IR.PositionedEdgeInset
 
 extension IR {
     /// A resolved edge inset with positioning and value
-    public struct EdgeInset {
+    public struct PositionedEdgeInset {
         public let positioning: Positioning
         public let value: CGFloat
 
@@ -302,21 +326,24 @@ extension IR {
     }
 }
 
-// MARK: - IR.EdgeInsets
+// MARK: - IR.PositionedEdgeInsets
 
 extension IR {
-    /// Resolved edge insets for the root container
-    public struct EdgeInsets {
-        public let top: EdgeInset?
-        public let bottom: EdgeInset?
-        public let leading: EdgeInset?
-        public let trailing: EdgeInset?
+    /// Positioned edge insets for the root container.
+    ///
+    /// Unlike `IR.EdgeInsets`, this type supports positioning modes (safeArea vs absolute)
+    /// for each edge, used specifically for root container layout.
+    public struct PositionedEdgeInsets {
+        public let top: PositionedEdgeInset?
+        public let bottom: PositionedEdgeInset?
+        public let leading: PositionedEdgeInset?
+        public let trailing: PositionedEdgeInset?
 
         public init(
-            top: EdgeInset? = nil,
-            bottom: EdgeInset? = nil,
-            leading: EdgeInset? = nil,
-            trailing: EdgeInset? = nil
+            top: PositionedEdgeInset? = nil,
+            bottom: PositionedEdgeInset? = nil,
+            leading: PositionedEdgeInset? = nil,
+            trailing: PositionedEdgeInset? = nil
         ) {
             self.top = top
             self.bottom = bottom

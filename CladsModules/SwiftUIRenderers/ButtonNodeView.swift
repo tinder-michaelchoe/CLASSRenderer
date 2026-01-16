@@ -22,7 +22,7 @@ public struct ButtonNodeSwiftUIRenderer: SwiftUINodeRendering {
         }
         return AnyView(
             ButtonNodeView(node: buttonNode, actionContext: context.actionContext)
-                .environmentObject(context.stateStore)
+                .environmentObject(context.observableStateStore)
         )
     }
 }
@@ -32,7 +32,7 @@ public struct ButtonNodeSwiftUIRenderer: SwiftUINodeRendering {
 struct ButtonNodeView: View {
     let node: ButtonNode
     let actionContext: ActionContext
-    @EnvironmentObject var stateStore: StateStore
+    @EnvironmentObject var stateStore: ObservableStateStore
 
     /// Check if button is selected based on state binding
     private var isSelected: Bool {
@@ -55,7 +55,8 @@ struct ButtonNodeView: View {
                 .padding(.trailing, currentStyle.paddingTrailing ?? 0)
                 .frame(maxWidth: node.fillWidth ? .infinity : nil)
                 .frame(height: currentStyle.height)
-                .background(currentStyle.backgroundColor ?? .clear)
+                // Convert IR.Color to SwiftUI.Color
+                .background(currentStyle.backgroundColor?.swiftUI ?? .clear)
                 .cornerRadius(currentStyle.cornerRadius ?? 0)
         }
         .buttonStyle(.plain)

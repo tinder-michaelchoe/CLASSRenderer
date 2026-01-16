@@ -72,29 +72,31 @@ public struct ContainerNodeRenderer: UIKitNodeRendering {
         return zstackView
     }
 
-    private func applyZStackAlignment(_ child: UIView, in parent: UIView, alignment: SwiftUI.Alignment) {
+    private func applyZStackAlignment(_ child: UIView, in parent: UIView, alignment: IR.Alignment) {
         // Horizontal alignment
-        if alignment.horizontal == .leading {
+        switch alignment.horizontal {
+        case .leading:
             child.leadingAnchor.constraint(equalTo: parent.leadingAnchor).isActive = true
-        } else if alignment.horizontal == .trailing {
+        case .trailing:
             child.trailingAnchor.constraint(equalTo: parent.trailingAnchor).isActive = true
-        } else {
+        case .center:
             child.centerXAnchor.constraint(equalTo: parent.centerXAnchor).isActive = true
         }
 
         // Vertical alignment
-        if alignment.vertical == .top {
+        switch alignment.vertical {
+        case .top:
             child.topAnchor.constraint(equalTo: parent.topAnchor).isActive = true
-        } else if alignment.vertical == .bottom {
+        case .bottom:
             child.bottomAnchor.constraint(equalTo: parent.bottomAnchor).isActive = true
-        } else {
+        case .center:
             child.centerYAnchor.constraint(equalTo: parent.centerYAnchor).isActive = true
         }
     }
 
     // MARK: - Padding Wrapper
 
-    private func wrapWithPadding(_ view: UIView, padding: NSDirectionalEdgeInsets) -> UIView {
+    private func wrapWithPadding(_ view: UIView, padding: IR.EdgeInsets) -> UIView {
         let wrapper = UIView()
         wrapper.translatesAutoresizingMaskIntoConstraints = false
         wrapper.addSubview(view)
@@ -105,24 +107,5 @@ public struct ContainerNodeRenderer: UIKitNodeRendering {
             view.trailingAnchor.constraint(equalTo: wrapper.trailingAnchor, constant: -padding.trailing)
         ])
         return wrapper
-    }
-}
-
-// MARK: - Alignment Conversion
-
-extension SwiftUI.Alignment {
-    func toUIKit(for layoutType: ContainerNode.LayoutType) -> UIStackView.Alignment {
-        switch layoutType {
-        case .vstack:
-            if horizontal == .leading { return .leading }
-            if horizontal == .trailing { return .trailing }
-            return .center
-        case .hstack:
-            if vertical == .top { return .top }
-            if vertical == .bottom { return .bottom }
-            return .center
-        case .zstack:
-            return .center  // ZStack doesn't use UIStackView
-        }
     }
 }

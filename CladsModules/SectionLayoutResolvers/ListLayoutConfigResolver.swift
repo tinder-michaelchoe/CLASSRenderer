@@ -43,7 +43,7 @@ public struct ListLayoutConfigResolver: SectionLayoutConfigResolving {
 /// These are used by multiple layout resolvers.
 public enum SectionLayoutConfigHelpers {
     
-    public static func resolveAlignment(_ alignment: Document.SectionAlignment?) -> SwiftUI.HorizontalAlignment {
+    public static func resolveAlignment(_ alignment: Document.SectionAlignment?) -> IR.HorizontalAlignment {
         switch alignment {
         case .leading, .none:
             return .leading
@@ -103,7 +103,7 @@ public enum SectionLayoutConfigHelpers {
 
 private extension ListLayoutConfigResolver {
     
-    func resolveAlignment(_ alignment: Document.SectionAlignment?) -> SwiftUI.HorizontalAlignment {
+    func resolveAlignment(_ alignment: Document.SectionAlignment?) -> IR.HorizontalAlignment {
         SectionLayoutConfigHelpers.resolveAlignment(alignment)
     }
     

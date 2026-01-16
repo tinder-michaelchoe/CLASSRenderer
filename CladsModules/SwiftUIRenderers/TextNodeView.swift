@@ -20,8 +20,10 @@ public struct TextNodeSwiftUIRenderer: SwiftUINodeRendering {
         guard case .text(let textNode) = node else {
             return AnyView(EmptyView())
         }
+        // Wrap the StateStore in ObservableStateStore for SwiftUI observation
+        let observableStore = ObservableStateStore(wrapping: context.stateStore)
         return AnyView(
-            TextNodeView(node: textNode, stateStore: context.stateStore)
+            TextNodeView(node: textNode, stateStore: observableStore)
         )
     }
 }
@@ -30,7 +32,7 @@ public struct TextNodeSwiftUIRenderer: SwiftUINodeRendering {
 
 struct TextNodeView: View {
     let node: TextNode
-    @ObservedObject var stateStore: StateStore
+    @ObservedObject var stateStore: ObservableStateStore
 
     var body: some View {
         Text(displayContent)

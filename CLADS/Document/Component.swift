@@ -55,6 +55,7 @@ extension Document {
         /// { "type": "dismiss" }                  // Inline dismiss action
         /// { "type": "setState", "path": "x" }    // Inline setState action
         /// ```
+        @frozen
         public enum ActionBinding: Codable, Sendable {
             case reference(String)
             case inline(Action)

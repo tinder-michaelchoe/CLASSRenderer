@@ -106,7 +106,7 @@ final class RenderTreeUIView: UIView {
     }
 
     /// Returns the appropriate layout guide based on the edge inset's positioning mode
-    private func anchorGuide(for inset: IR.EdgeInset?) -> UILayoutGuide {
+    private func anchorGuide(for inset: IR.PositionedEdgeInset?) -> UILayoutGuide {
         switch inset?.positioning ?? .safeArea {
         case .safeArea:
             return safeAreaLayoutGuide

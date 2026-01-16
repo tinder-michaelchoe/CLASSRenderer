@@ -8,7 +8,7 @@
 
 import Foundation
 import Testing
-import SwiftUI
+
 @testable import CLADS
 
 // MARK: - Text Component Resolution Tests
@@ -51,7 +51,7 @@ struct TextComponentResolutionTests {
     }
     
     @Test @MainActor func textNodeWithPadding() throws {
-        let padding = NSDirectionalEdgeInsets(top: 10, leading: 20, bottom: 10, trailing: 20)
+        let padding = NSEdgeInsets(top: 10, leading: 20, bottom: 10, trailing: 20)
         
         let textNode = TextNode(
             id: "padded",

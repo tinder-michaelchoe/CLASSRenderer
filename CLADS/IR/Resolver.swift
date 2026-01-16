@@ -5,9 +5,12 @@
 //  Resolves a Document (AST) into a RenderTree (IR).
 //  Orchestrates resolution by delegating to specialized resolvers.
 //
+//  **Important**: This file should remain platform-agnostic. Do NOT import
+//  SwiftUI or UIKit here. Platform-specific conversions belong in the
+//  renderer layer (see `Renderers/SwiftUI/IRTypeConversions.swift`).
+//
 
 import Foundation
-import SwiftUI
 
 // MARK: - Resolution Result
 
@@ -181,7 +184,7 @@ public struct Resolver {
 
     @MainActor
     private func resolveRoot(_ root: Document.RootComponent, context: ResolutionContext) throws -> RootNode {
-        let backgroundColor: Color? = root.backgroundColor.map { Color(hex: $0) }
+        let backgroundColor: IR.Color? = root.backgroundColor.map { IR.Color(hex: $0) }
         let colorScheme = ColorSchemeConverter.convert(root.colorScheme)
         let style = context.styleResolver.resolve(root.styleId)
 
@@ -205,7 +208,7 @@ public struct Resolver {
         _ root: Document.RootComponent,
         context: ResolutionContext
     ) throws -> (RootNode, ViewNode) {
-        let backgroundColor: Color? = root.backgroundColor.map { Color(hex: $0) }
+        let backgroundColor: IR.Color? = root.backgroundColor.map { IR.Color(hex: $0) }
         let colorScheme = ColorSchemeConverter.convert(root.colorScheme)
         let style = context.styleResolver.resolve(root.styleId)
 
@@ -309,9 +312,9 @@ public enum ResolutionError: Error, LocalizedError {
 
 // MARK: - Edge Insets Converter
 
-/// Converts Document.EdgeInsets to IR.EdgeInsets
+/// Converts Document.EdgeInsets to IR.PositionedEdgeInsets
 enum EdgeInsetsConverter {
-    static func convert(_ documentInsets: Document.EdgeInsets?) -> IR.EdgeInsets? {
+    static func convert(_ documentInsets: Document.EdgeInsets?) -> IR.PositionedEdgeInsets? {
         guard let insets = documentInsets else { return nil }
 
         let top = insets.top.map { convert($0) }
@@ -324,15 +327,15 @@ enum EdgeInsetsConverter {
             return nil
         }
 
-        return IR.EdgeInsets(top: top, bottom: bottom, leading: leading, trailing: trailing)
+        return IR.PositionedEdgeInsets(top: top, bottom: bottom, leading: leading, trailing: trailing)
     }
 
-    private static func convert(_ inset: Document.EdgeInset) -> IR.EdgeInset {
+    private static func convert(_ inset: Document.EdgeInset) -> IR.PositionedEdgeInset {
         let positioning: IR.Positioning = switch inset.positioning {
         case .safeArea: .safeArea
         case .absolute: .absolute
         }
-        return IR.EdgeInset(positioning: positioning, value: inset.value)
+        return IR.PositionedEdgeInset(positioning: positioning, value: inset.value)
     }
 }
 

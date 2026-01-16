@@ -4,10 +4,12 @@
 //
 //  Represents a node in the view tree with dependency tracking.
 //
+//  **Important**: This file should remain platform-agnostic. Do NOT import
+//  SwiftUI or UIKit here. Platform-specific conversions belong in the
+//  renderer layer (see `Renderers/SwiftUI/IRTypeConversions.swift`).
+//
 
 import Foundation
-import UIKit
-import SwiftUI
 
 // MARK: - View Node
 
@@ -125,10 +127,10 @@ public enum ViewNodeType {
 
 public struct RootNodeData {
     public var backgroundColor: String?
-    public var colorScheme: RenderColorScheme
+    public var colorScheme: IR.ColorScheme
     public var style: IR.Style
 
-    public init(backgroundColor: String? = nil, colorScheme: RenderColorScheme = .system, style: IR.Style = IR.Style()) {
+    public init(backgroundColor: String? = nil, colorScheme: IR.ColorScheme = .system, style: IR.Style = IR.Style()) {
         self.backgroundColor = backgroundColor
         self.colorScheme = colorScheme
         self.style = style
@@ -137,16 +139,16 @@ public struct RootNodeData {
 
 public struct ContainerNodeData {
     public var layoutType: ContainerNode.LayoutType
-    public var alignment: SwiftUI.Alignment
+    public var alignment: IR.Alignment
     public var spacing: CGFloat
-    public var padding: NSDirectionalEdgeInsets
+    public var padding: IR.EdgeInsets
     public var style: IR.Style
 
     public init(
         layoutType: ContainerNode.LayoutType = .vstack,
-        alignment: SwiftUI.Alignment = .center,
+        alignment: IR.Alignment = .center,
         spacing: CGFloat = 0,
-        padding: NSDirectionalEdgeInsets = .zero,
+        padding: IR.EdgeInsets = .zero,
         style: IR.Style = IR.Style()
     ) {
         self.layoutType = layoutType
@@ -275,15 +277,15 @@ public struct ImageNodeData {
 public struct GradientNodeData {
     public var gradientType: GradientNode.GradientType
     public var colors: [GradientNode.ColorStop]
-    public var startPoint: UnitPoint
-    public var endPoint: UnitPoint
+    public var startPoint: IR.UnitPoint
+    public var endPoint: IR.UnitPoint
     public var style: IR.Style
 
     public init(
         gradientType: GradientNode.GradientType = .linear,
         colors: [GradientNode.ColorStop] = [],
-        startPoint: UnitPoint = .top,
-        endPoint: UnitPoint = .bottom,
+        startPoint: IR.UnitPoint = .top,
+        endPoint: IR.UnitPoint = .bottom,
         style: IR.Style = IR.Style()
     ) {
         self.gradientType = gradientType

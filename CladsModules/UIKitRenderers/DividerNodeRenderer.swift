@@ -26,7 +26,7 @@ public struct DividerNodeRenderer: UIKitNodeRendering {
 
         // Set background color
         if let color = dividerNode.style.backgroundColor {
-            divider.backgroundColor = UIColor(color)
+            divider.backgroundColor = color.toUIKit
         } else {
             divider.backgroundColor = .separator
         }

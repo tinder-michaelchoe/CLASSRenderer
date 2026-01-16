@@ -49,7 +49,7 @@ public struct DebugRenderer: Renderer {
 
         var props: [String] = []
         if let bg = root.backgroundColor {
-            props.append("bg: \(bg.description)")
+            props.append("bg: rgba(\(bg.red), \(bg.green), \(bg.blue), \(bg.alpha))")
         }
         if root.edgeInsets != nil {
             props.append("edgeInsets")
@@ -234,17 +234,18 @@ public struct DebugRenderer: Renderer {
         return lines.joined(separator: "\n")
     }
 
-    private func alignmentDescription(_ alignment: SwiftUI.Alignment) -> String {
-        if alignment == .center { return "center" }
-        if alignment == .leading { return "leading" }
-        if alignment == .trailing { return "trailing" }
-        if alignment == .top { return "top" }
-        if alignment == .bottom { return "bottom" }
-        if alignment == .topLeading { return "topLeading" }
-        if alignment == .topTrailing { return "topTrailing" }
-        if alignment == .bottomLeading { return "bottomLeading" }
-        if alignment == .bottomTrailing { return "bottomTrailing" }
-        return "custom"
+    private func alignmentDescription(_ alignment: IR.Alignment) -> String {
+        switch (alignment.horizontal, alignment.vertical) {
+        case (.center, .center): return "center"
+        case (.leading, .center): return "leading"
+        case (.trailing, .center): return "trailing"
+        case (.center, .top): return "top"
+        case (.center, .bottom): return "bottom"
+        case (.leading, .top): return "topLeading"
+        case (.trailing, .top): return "topTrailing"
+        case (.leading, .bottom): return "bottomLeading"
+        case (.trailing, .bottom): return "bottomTrailing"
+        }
     }
 
     // MARK: - Helpers

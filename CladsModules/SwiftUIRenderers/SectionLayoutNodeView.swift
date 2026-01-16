@@ -32,8 +32,8 @@ public struct SectionLayoutNodeSwiftUIRenderer: SwiftUINodeRendering {
         }
         return AnyView(
             SectionLayoutView(node: sectionLayoutNode, context: context, sectionLayoutRegistry: sectionLayoutRegistry)
-                .environmentObject(context.stateStore)
-                .environmentObject(context.actionContext)
+                .environmentObject(context.observableStateStore)
+                .environmentObject(context.observableActionContext)
         )
     }
 }
@@ -70,13 +70,18 @@ struct SectionView: View {
     let section: IR.Section
     let context: SwiftUIRenderContext
     let sectionLayoutRegistry: SwiftUISectionLayoutRendererRegistry?
+    
+    /// Convert IR.HorizontalAlignment to SwiftUI.HorizontalAlignment
+    private var swiftUIAlignment: SwiftUI.HorizontalAlignment {
+        section.config.alignment.swiftUI
+    }
 
     var body: some View {
-        VStack(alignment: section.config.alignment, spacing: 0) {
+        VStack(alignment: swiftUIAlignment, spacing: 0) {
             // Header
             if let header = section.header {
                 renderNode(header)
-                    .frame(maxWidth: .infinity, alignment: Alignment(horizontal: section.config.alignment, vertical: .center))
+                    .frame(maxWidth: .infinity, alignment: Alignment(horizontal: swiftUIAlignment, vertical: .center))
                     .padding(.leading, section.config.contentInsets.leading)
                     .padding(.trailing, section.config.contentInsets.trailing)
             }
@@ -91,7 +96,7 @@ struct SectionView: View {
             // Footer
             if let footer = section.footer {
                 renderNode(footer)
-                    .frame(maxWidth: .infinity, alignment: Alignment(horizontal: section.config.alignment, vertical: .center))
+                    .frame(maxWidth: .infinity, alignment: Alignment(horizontal: swiftUIAlignment, vertical: .center))
                     .padding(.leading, section.config.contentInsets.leading)
                     .padding(.trailing, section.config.contentInsets.trailing)
             }
@@ -153,11 +158,11 @@ struct SectionView: View {
 
     @ViewBuilder
     private var listSection: some View {
-        LazyVStack(alignment: section.config.alignment, spacing: section.config.itemSpacing) {
+        LazyVStack(alignment: swiftUIAlignment, spacing: section.config.itemSpacing) {
             ForEach(Array(section.children.enumerated()), id: \.offset) { index, child in
                 VStack(spacing: 0) {
                     renderNode(child)
-                        .frame(maxWidth: .infinity, alignment: Alignment(horizontal: section.config.alignment, vertical: .center))
+                        .frame(maxWidth: .infinity, alignment: Alignment(horizontal: swiftUIAlignment, vertical: .center))
                     if section.config.showsDividers && index < section.children.count - 1 {
                         Divider()
                     }

@@ -401,7 +401,7 @@ struct SwiftUIRenderContextRenderingTests {
 struct RenderColorSchemeTests {
     
     @Test func lightColorScheme() {
-        let scheme: RenderColorScheme = .light
+        let scheme: IR.ColorScheme = .light
         
         switch scheme {
         case .light:
@@ -412,7 +412,7 @@ struct RenderColorSchemeTests {
     }
     
     @Test func darkColorScheme() {
-        let scheme: RenderColorScheme = .dark
+        let scheme: IR.ColorScheme = .dark
         
         switch scheme {
         case .dark:
@@ -423,7 +423,7 @@ struct RenderColorSchemeTests {
     }
     
     @Test func systemColorScheme() {
-        let scheme: RenderColorScheme = .system
+        let scheme: IR.ColorScheme = .system
         
         switch scheme {
         case .system:

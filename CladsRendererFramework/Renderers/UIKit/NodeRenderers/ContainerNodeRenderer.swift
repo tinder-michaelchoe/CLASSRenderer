@@ -93,7 +93,7 @@ public struct ContainerNodeRenderer: UIKitNodeRendering {
 
     // MARK: - Padding Wrapper
 
-    private func wrapWithPadding(_ view: UIView, padding: NSDirectionalEdgeInsets) -> UIView {
+    private func wrapWithPadding(_ view: UIView, padding: NSEdgeInsets) -> UIView {
         let wrapper = UIView()
         wrapper.translatesAutoresizingMaskIntoConstraints = false
         wrapper.addSubview(view)

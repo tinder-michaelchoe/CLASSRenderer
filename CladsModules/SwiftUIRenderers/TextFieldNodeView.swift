@@ -21,8 +21,10 @@ public struct TextFieldNodeSwiftUIRenderer: SwiftUINodeRendering {
         guard case .textField(let textFieldNode) = node else {
             return AnyView(EmptyView())
         }
+        // Wrap the StateStore in ObservableStateStore for SwiftUI observation
+        let observableStore = ObservableStateStore(wrapping: context.stateStore)
         return AnyView(
-            TextFieldNodeView(node: textFieldNode, stateStore: context.stateStore)
+            TextFieldNodeView(node: textFieldNode, stateStore: observableStore)
         )
     }
 }
@@ -31,7 +33,7 @@ public struct TextFieldNodeSwiftUIRenderer: SwiftUINodeRendering {
 
 struct TextFieldNodeView: View {
     let node: TextFieldNode
-    @ObservedObject var stateStore: StateStore
+    @ObservedObject var stateStore: ObservableStateStore
     @State private var text: String = ""
     @State private var isUpdatingFromState: Bool = false
 

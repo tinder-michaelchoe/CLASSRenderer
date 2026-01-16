@@ -32,11 +32,11 @@ private struct ListSectionContentView: View {
     let context: SwiftUISectionRenderContext
     
     var body: some View {
-        LazyVStack(alignment: section.config.alignment, spacing: section.config.itemSpacing) {
+        LazyVStack(alignment: section.config.alignment.swiftUI, spacing: section.config.itemSpacing) {
             ForEach(Array(section.children.enumerated()), id: \.offset) { index, child in
                 VStack(spacing: 0) {
                     context.renderChild(child)
-                        .frame(maxWidth: .infinity, alignment: Alignment(horizontal: section.config.alignment, vertical: .center))
+                        .frame(maxWidth: .infinity, alignment: Alignment(horizontal: section.config.alignment.swiftUI, vertical: .center))
                     if section.config.showsDividers && index < section.children.count - 1 {
                         Divider()
                     }

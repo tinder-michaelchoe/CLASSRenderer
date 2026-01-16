@@ -353,7 +353,7 @@ public final class RequestActionHandler: CancellableActionHandler {
     }
 
     @MainActor
-    private func resolveParamValue(_ param: [String: Any], stateStore: StateStore) -> Any? {
+    private func resolveParamValue(_ param: [String: Any], stateStore: StateStoring) -> Any? {
         // Check for literal value first
         if let literal = param["literal"] {
             return literal

@@ -11,9 +11,25 @@ import SwiftUI
 
 // MARK: - Mock Design System Provider
 
-/// A minimal mock provider for testing
+/// A minimal mock provider for testing (platform-agnostic)
 struct MockDesignSystemProvider: DesignSystemProvider {
     static let identifier = "mock"
+    
+    var styleMapping: [String: IR.Style] = [:]
+    var canRenderCallback: ((RenderNode, String?) -> Bool)?
+    
+    func resolveStyle(_ reference: String) -> IR.Style? {
+        return styleMapping[reference]
+    }
+    
+    func canRender(_ node: RenderNode, styleId: String?) -> Bool {
+        return canRenderCallback?(node, styleId) ?? false
+    }
+}
+
+/// A mock provider that also supports SwiftUI rendering
+struct MockSwiftUIDesignSystemRenderer: SwiftUIDesignSystemRenderer {
+    static let identifier = "mockSwiftUI"
     
     var styleMapping: [String: IR.Style] = [:]
     var canRenderCallback: ((RenderNode, String?) -> Bool)?
@@ -42,7 +58,7 @@ struct MockDesignSystemProvider: DesignSystemProvider {
         var mockProvider = MockDesignSystemProvider()
         var expectedStyle = IR.Style()
         expectedStyle.cornerRadius = 12
-        expectedStyle.backgroundColor = Color(hex: "#6366F1")
+        expectedStyle.backgroundColor = IR.Color(hex: "#6366F1")
         mockProvider.styleMapping["button.primary"] = expectedStyle
         
         let resolver = StyleResolver(styles: nil, designSystemProvider: mockProvider)
@@ -52,7 +68,7 @@ struct MockDesignSystemProvider: DesignSystemProvider {
         
         // Then
         #expect(resolved.cornerRadius == 12)
-        #expect(resolved.backgroundColor == Color(hex: "#6366F1"))
+        #expect(resolved.backgroundColor == IR.Color(hex: "#6366F1"))
     }
     
     @Test func resolveAtPrefixedStyleReturnsEmptyWhenNotFound() {
@@ -92,7 +108,7 @@ struct MockDesignSystemProvider: DesignSystemProvider {
         var mockProvider = MockDesignSystemProvider()
         var dsStyle = IR.Style()
         dsStyle.cornerRadius = 12
-        dsStyle.backgroundColor = Color(hex: "#6366F1")
+        dsStyle.backgroundColor = IR.Color(hex: "#6366F1")
         mockProvider.styleMapping["button.primary"] = dsStyle
         
         let resolver = StyleResolver(styles: nil, designSystemProvider: mockProvider)
@@ -103,7 +119,7 @@ struct MockDesignSystemProvider: DesignSystemProvider {
         
         // Then - inline wins for backgroundColor, DS style kept for cornerRadius
         #expect(resolved.cornerRadius == 12)
-        #expect(resolved.backgroundColor == Color(hex: "#FF0000"))
+        #expect(resolved.backgroundColor == IR.Color(hex: "#FF0000"))
     }
     
     @Test func resolveWithNoProvider() {
@@ -177,9 +193,23 @@ struct MockDesignSystemProvider: DesignSystemProvider {
 
 @Suite struct DesignSystemProviderDefaultTests {
     
-    /// Provider that only implements resolveStyle (uses defaults for render)
+    /// Provider that only implements resolveStyle (uses defaults for canRender)
     struct TokenOnlyProvider: DesignSystemProvider {
         static let identifier = "tokenOnly"
+        
+        func resolveStyle(_ reference: String) -> IR.Style? {
+            if reference == "test" {
+                var style = IR.Style()
+                style.cornerRadius = 42
+                return style
+            }
+            return nil
+        }
+    }
+    
+    /// Provider that conforms to SwiftUIDesignSystemRenderer (uses defaults for render)
+    struct SwiftUITokenOnlyProvider: SwiftUIDesignSystemRenderer {
+        static let identifier = "swiftUITokenOnly"
         
         func resolveStyle(_ reference: String) -> IR.Style? {
             if reference == "test" {
@@ -200,7 +230,7 @@ struct MockDesignSystemProvider: DesignSystemProvider {
     }
     
     @Test @MainActor func defaultRenderReturnsNil() {
-        let provider = TokenOnlyProvider()
+        let provider = SwiftUITokenOnlyProvider()
         let node = RenderNode.button(ButtonNode(label: "Test", styles: ButtonStyles()))
         
         let stateStore = StateStore()

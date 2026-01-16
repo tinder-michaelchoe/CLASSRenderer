@@ -83,9 +83,9 @@ public final class GradientView: UIView {
         gradientLayer.colors = node.colors.map { stop -> CGColor in
             switch stop.color {
             case .fixed(let color):
-                return UIColor(color).cgColor
+                return color.toUIKit.cgColor
             case .adaptive(let light, let dark):
-                return UIColor(isDark ? dark : light).cgColor
+                return (isDark ? dark : light).toUIKit.cgColor
             }
         }
     }

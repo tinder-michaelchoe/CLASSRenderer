@@ -12,7 +12,7 @@
 
 import Foundation
 import Testing
-import SwiftUI
+
 @testable import CLADS
 
 // MARK: - RenderTree Schema Compliance Tests
@@ -250,7 +250,7 @@ struct RenderNodeSchemaTests {
             id: "label",
             content: "Hello",
             style: IR.Style(),
-            padding: NSDirectionalEdgeInsets(top: 0, leading: 0, bottom: 0, trailing: 0)
+            padding: NSEdgeInsets(top: 0, leading: 0, bottom: 0, trailing: 0)
         )
         
         // Schema: nodeType = "text"

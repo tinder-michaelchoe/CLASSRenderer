@@ -2,9 +2,11 @@
 //  RootComponent.swift
 //  CladsRendererFramework
 //
+//  **Important**: This file should remain platform-agnostic. Do NOT import
+//  SwiftUI or UIKit here. CGFloat is available via Foundation on Apple platforms.
+//
 
 import Foundation
-import UIKit
 
 // MARK: - Root Component
 

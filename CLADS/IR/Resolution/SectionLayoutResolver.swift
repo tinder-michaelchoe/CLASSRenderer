@@ -4,9 +4,12 @@
 //
 //  Resolves section layouts (horizontal, list, grid, flow sections).
 //
+//  **Important**: This file should remain platform-agnostic. Do NOT import
+//  SwiftUI or UIKit here. Platform-specific conversions belong in the
+//  renderer layer (see `Renderers/SwiftUI/IRTypeConversions.swift`).
+//
 
 import Foundation
-import SwiftUI
 
 /// Resolves SectionLayout nodes into SectionLayoutNode
 public struct SectionLayoutResolver: SectionLayoutResolving {
@@ -190,7 +193,7 @@ public struct SectionLayoutResolver: SectionLayoutResolving {
         }
     }
 
-    private func resolveAlignment(_ alignment: Document.SectionAlignment?) -> SwiftUI.HorizontalAlignment {
+    private func resolveAlignment(_ alignment: Document.SectionAlignment?) -> IR.HorizontalAlignment {
         switch alignment {
         case .leading, .none:
             return .leading

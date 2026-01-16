@@ -57,11 +57,11 @@ public struct GradientComponentResolver: ComponentResolving {
         let colors = (component.gradientColors ?? []).map { (config: Document.GradientColorConfig) -> GradientNode.ColorStop in
             let color: GradientColor
             if let lightHex = config.lightColor, let darkHex = config.darkColor {
-                color = .adaptive(light: Color(hex: lightHex), dark: Color(hex: darkHex))
+                color = .adaptive(light: IR.Color(hex: lightHex), dark: IR.Color(hex: darkHex))
             } else if let hex = config.color {
-                color = .fixed(Color(hex: hex))
+                color = .fixed(IR.Color(hex: hex))
             } else {
-                color = .fixed(.clear)
+                color = .fixed(IR.Color(red: 0, green: 0, blue: 0, alpha: 0)) // clear
             }
             return GradientNode.ColorStop(color: color, location: config.location)
         }
