@@ -430,7 +430,7 @@
     "buttonNode": {
       "type": "object",
       "description": "A button component",
-      "required": ["nodeType", "label", "styles", "fillWidth"],
+      "required": ["nodeType", "label", "styles", "fillWidth", "imagePlacement", "imageSpacing"],
       "properties": {
         "nodeType": {
           "const": "button"
@@ -456,6 +456,24 @@
         "fillWidth": {
           "type": "boolean",
           "description": "Whether button should fill available width"
+        },
+        "image": {
+          "$ref": "#/$defs/imageSource",
+          "description": "Optional image/icon for the button"
+        },
+        "imagePlacement": {
+          "type": "string",
+          "enum": ["leading", "trailing", "top", "bottom"],
+          "description": "Position of image relative to text (default: leading)"
+        },
+        "imageSpacing": {
+          "type": "number",
+          "description": "Spacing between image and text in points (default: 8)"
+        },
+        "buttonShape": {
+          "type": "string",
+          "enum": ["circle", "capsule", "roundedSquare"],
+          "description": "Automatic button shape that overrides cornerRadius from style"
         },
         "onTap": {
           "$ref": "#/$defs/actionBinding"
@@ -825,7 +843,7 @@
         "textAlignment": {
           "type": "string",
           "enum": ["leading", "center", "trailing"],
-          "description": "Text alignment"
+          "description": "Text alignment. For buttons, also controls content positioning within the button frame"
         },
         "backgroundColor": {
           "$ref": "#/$defs/color",
@@ -892,9 +910,19 @@
     },
 
     "color": {
-      "type": "string",
-      "pattern": "^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{8})$",
-      "description": "Hex color string (e.g., '#FF0000' or '#FF0000FF' with alpha)"
+      "description": "Color in the IR - stored as hex or rgba format after parsing",
+      "oneOf": [
+        {
+          "type": "string",
+          "pattern": "^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{8})$",
+          "description": "Hex color string (e.g., '#FF0000' or '#FF0000FF' with alpha)"
+        },
+        {
+          "type": "string",
+          "pattern": "^rgba\\(\\s*\\d+\\s*,\\s*\\d+\\s*,\\s*\\d+\\s*,\\s*[0-9]*\\.?[0-9]+\\s*\\)$",
+          "description": "CSS rgba color string (e.g., 'rgba(255, 0, 0, 1.0)', 'rgba(0, 122, 255, 0.5)')"
+        }
+      ]
     },
 
     "alignment": {

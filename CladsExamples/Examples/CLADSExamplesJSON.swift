@@ -106,6 +106,38 @@ public let buttonsJSON = """
       "backgroundColor": "#FF3B30", "textColor": "#FFFFFF",
       "cornerRadius": 22, "height": 44, "padding": { "horizontal": 48 }
     },
+    "autoCircle": {
+      "fontSize": 16, "fontWeight": "semibold",
+      "backgroundColor": "#007AFF", "textColor": "#FFFFFF",
+      "width": 44, "height": 44
+    },
+    "autoCapsule": {
+      "fontSize": 16, "fontWeight": "semibold",
+      "backgroundColor": "#34C759", "textColor": "#FFFFFF",
+      "height": 44, "padding": { "horizontal": 24 }
+    },
+    "autoRoundedSquare": {
+      "fontSize": 16, "fontWeight": "semibold",
+      "backgroundColor": "#FF9500", "textColor": "#FFFFFF",
+      "height": 44, "padding": { "horizontal": 20 }
+    },
+    "closeButton": {
+      "fontSize": 16, "fontWeight": "semibold",
+      "backgroundColor": "rgba(0, 122, 255, 0.15)", "textColor": "#007AFF",
+      "width": 40, "height": 40
+    },
+    "leadingAligned": {
+      "fontSize": 16, "fontWeight": "semibold",
+      "backgroundColor": "#E5E5EA", "textColor": "#000000",
+      "textAlignment": "leading",
+      "cornerRadius": 10, "height": 44, "padding": { "horizontal": 20 }
+    },
+    "trailingAligned": {
+      "fontSize": 16, "fontWeight": "semibold",
+      "backgroundColor": "#E5E5EA", "textColor": "#000000",
+      "textAlignment": "trailing",
+      "cornerRadius": 10, "height": 44, "padding": { "horizontal": 20 }
+    },
     "compactButton": {
       "fontSize": 14, "fontWeight": "medium",
       "backgroundColor": "#F2F2F7", "textColor": "#000000",
@@ -216,6 +248,41 @@ public let buttonsJSON = """
           ]
         },
 
+        { "type": "label", "text": "Automatic Button Shapes", "styleId": "sectionTitle" },
+        {
+          "type": "vstack", "spacing": 12, "alignment": "leading",
+          "children": [
+            {
+              "type": "hstack", "spacing": 12,
+              "children": [
+                { "type": "button", "image": { "sfsymbol": "xmark" }, "buttonShape": "circle", "styleId": "autoCircle", "actions": { "onTap": "increment" } },
+                { "type": "label", "text": "Circle (auto cornerRadius)", "styleId": "countLabel" }
+              ]
+            },
+            {
+              "type": "hstack", "spacing": 12,
+              "children": [
+                { "type": "button", "image": { "sfsymbol": "heart.fill" }, "buttonShape": "capsule", "styleId": "autoCapsule", "actions": { "onTap": "increment" } },
+                { "type": "label", "text": "Capsule (auto cornerRadius)", "styleId": "countLabel" }
+              ]
+            },
+            {
+              "type": "hstack", "spacing": 12,
+              "children": [
+                { "type": "button", "text": "Button", "buttonShape": "roundedSquare", "styleId": "autoRoundedSquare", "actions": { "onTap": "increment" } },
+                { "type": "label", "text": "Rounded Square (10px fixed)", "styleId": "countLabel" }
+              ]
+            },
+            {
+              "type": "hstack", "spacing": 12,
+              "children": [
+                { "type": "button", "image": { "sfsymbol": "xmark" }, "buttonShape": "circle", "styleId": "closeButton", "actions": { "onTap": "increment" } },
+                { "type": "label", "text": "Close (translucent bg)", "styleId": "countLabel" }
+              ]
+            }
+          ]
+        },
+
         { "type": "label", "text": "Custom Spacing", "styleId": "sectionTitle" },
         {
           "type": "vstack", "spacing": 8,
@@ -223,6 +290,16 @@ public let buttonsJSON = """
             { "type": "button", "text": "Tight Spacing", "image": { "sfsymbol": "arrow.right" }, "imagePlacement": "trailing", "imageSpacing": 4, "styleId": "secondary", "fillWidth": true, "actions": { "onTap": "increment" } },
             { "type": "button", "text": "Normal Spacing", "image": { "sfsymbol": "arrow.right" }, "imagePlacement": "trailing", "imageSpacing": 8, "styleId": "secondary", "fillWidth": true, "actions": { "onTap": "increment" } },
             { "type": "button", "text": "Wide Spacing", "image": { "sfsymbol": "arrow.right" }, "imagePlacement": "trailing", "imageSpacing": 16, "styleId": "secondary", "fillWidth": true, "actions": { "onTap": "increment" } }
+          ]
+        },
+
+        { "type": "label", "text": "Content Alignment", "styleId": "sectionTitle" },
+        {
+          "type": "vstack", "spacing": 8,
+          "children": [
+            { "type": "button", "text": "Leading Aligned", "image": { "sfsymbol": "arrow.left" }, "imagePlacement": "leading", "styleId": "leadingAligned", "fillWidth": true, "actions": { "onTap": "increment" } },
+            { "type": "button", "text": "Center Aligned (Default)", "image": { "sfsymbol": "checkmark" }, "imagePlacement": "leading", "styleId": "secondary", "fillWidth": true, "actions": { "onTap": "increment" } },
+            { "type": "button", "text": "Trailing Aligned", "image": { "sfsymbol": "arrow.right" }, "imagePlacement": "trailing", "styleId": "trailingAligned", "fillWidth": true, "actions": { "onTap": "increment" } }
           ]
         },
 

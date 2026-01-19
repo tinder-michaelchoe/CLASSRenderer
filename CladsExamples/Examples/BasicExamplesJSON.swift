@@ -279,12 +279,14 @@ public let componentShowcaseJSON = """
                   {
                     "type": "button",
                     "image": { "sfsymbol": "heart.fill" },
+                    "buttonShape": "roundedSquare",
                     "styleId": "primaryButton",
                     "actions": { "onTap": "incrementCount" }
                   },
                   {
                     "type": "button",
                     "image": { "sfsymbol": "star.fill" },
+                    "buttonShape": "roundedSquare",
                     "styleId": "secondaryButton",
                     "actions": { "onTap": "incrementCount" }
                   },
@@ -294,6 +296,7 @@ public let componentShowcaseJSON = """
                     "image": { "sfsymbol": "square.and.arrow.up" },
                     "imagePlacement": "top",
                     "imageSpacing": 4,
+                    "buttonShape": "roundedSquare",
                     "styleId": "secondaryButton",
                     "actions": { "onTap": "incrementCount" }
                   }
@@ -869,7 +872,6 @@ public let interestsJSON = """
       "backgroundColor": "#F2F2F7",
       "textColor": "#000000",
       "textAlignment": "center",
-      "cornerRadius": 20,
       "height": 40,
       "padding": {
         "horizontal": 22,
@@ -882,7 +884,6 @@ public let interestsJSON = """
       "backgroundColor": "#007AFF",
       "textColor": "#FFFFFF",
       "textAlignment": "center",
-      "cornerRadius": 20,
       "height": 40,
       "padding": {
         "horizontal": 22,
@@ -926,6 +927,7 @@ public let interestsJSON = """
                   {
                     "type": "button",
                     "text": "Technology",
+                    "buttonShape": "capsule",
                     "styles": { "normal": "pillButton", "selected": "pillButtonSelected" },
                     "isSelectedBinding": "${selectedInterests.contains('Technology')}",
                     "actions": { "onTap": { "type": "toggleInArray", "path": "selectedInterests", "value": "Technology" } }
@@ -933,6 +935,7 @@ public let interestsJSON = """
                   {
                     "type": "button",
                     "text": "Sports",
+                    "buttonShape": "capsule",
                     "styles": { "normal": "pillButton", "selected": "pillButtonSelected" },
                     "isSelectedBinding": "${selectedInterests.contains('Sports')}",
                     "actions": { "onTap": { "type": "toggleInArray", "path": "selectedInterests", "value": "Sports" } }
@@ -940,6 +943,7 @@ public let interestsJSON = """
                   {
                     "type": "button",
                     "text": "Music",
+                    "buttonShape": "capsule",
                     "styles": { "normal": "pillButton", "selected": "pillButtonSelected" },
                     "isSelectedBinding": "${selectedInterests.contains('Music')}",
                     "actions": { "onTap": { "type": "toggleInArray", "path": "selectedInterests", "value": "Music" } }
@@ -947,6 +951,7 @@ public let interestsJSON = """
                   {
                     "type": "button",
                     "text": "Art & Design",
+                    "buttonShape": "capsule",
                     "styles": { "normal": "pillButton", "selected": "pillButtonSelected" },
                     "isSelectedBinding": "${selectedInterests.contains('Art & Design')}",
                     "actions": { "onTap": { "type": "toggleInArray", "path": "selectedInterests", "value": "Art & Design" } }
@@ -954,6 +959,7 @@ public let interestsJSON = """
                   {
                     "type": "button",
                     "text": "Travel",
+                    "buttonShape": "capsule",
                     "styles": { "normal": "pillButton", "selected": "pillButtonSelected" },
                     "isSelectedBinding": "${selectedInterests.contains('Travel')}",
                     "actions": { "onTap": { "type": "toggleInArray", "path": "selectedInterests", "value": "Travel" } }
@@ -961,6 +967,7 @@ public let interestsJSON = """
                   {
                     "type": "button",
                     "text": "Food",
+                    "buttonShape": "capsule",
                     "styles": { "normal": "pillButton", "selected": "pillButtonSelected" },
                     "isSelectedBinding": "${selectedInterests.contains('Food')}",
                     "actions": { "onTap": { "type": "toggleInArray", "path": "selectedInterests", "value": "Food" } }
@@ -968,6 +975,7 @@ public let interestsJSON = """
                   {
                     "type": "button",
                     "text": "Gaming",
+                    "buttonShape": "capsule",
                     "styles": { "normal": "pillButton", "selected": "pillButtonSelected" },
                     "isSelectedBinding": "${selectedInterests.contains('Gaming')}",
                     "actions": { "onTap": { "type": "toggleInArray", "path": "selectedInterests", "value": "Gaming" } }
@@ -975,6 +983,7 @@ public let interestsJSON = """
                   {
                     "type": "button",
                     "text": "Fitness",
+                    "buttonShape": "capsule",
                     "styles": { "normal": "pillButton", "selected": "pillButtonSelected" },
                     "isSelectedBinding": "${selectedInterests.contains('Fitness')}",
                     "actions": { "onTap": { "type": "toggleInArray", "path": "selectedInterests", "value": "Fitness" } }
@@ -982,6 +991,7 @@ public let interestsJSON = """
                   {
                     "type": "button",
                     "text": "Photography",
+                    "buttonShape": "capsule",
                     "styles": { "normal": "pillButton", "selected": "pillButtonSelected" },
                     "isSelectedBinding": "${selectedInterests.contains('Photography')}",
                     "actions": { "onTap": { "type": "toggleInArray", "path": "selectedInterests", "value": "Photography" } }
@@ -989,6 +999,7 @@ public let interestsJSON = """
                   {
                     "type": "button",
                     "text": "Movies",
+                    "buttonShape": "capsule",
                     "styles": { "normal": "pillButton", "selected": "pillButtonSelected" },
                     "isSelectedBinding": "${selectedInterests.contains('Movies')}",
                     "actions": { "onTap": { "type": "toggleInArray", "path": "selectedInterests", "value": "Movies" } }
@@ -996,6 +1007,7 @@ public let interestsJSON = """
                   {
                     "type": "button",
                     "text": "Books",
+                    "buttonShape": "capsule",
                     "styles": { "normal": "pillButton", "selected": "pillButtonSelected" },
                     "isSelectedBinding": "${selectedInterests.contains('Books')}",
                     "actions": { "onTap": { "type": "toggleInArray", "path": "selectedInterests", "value": "Books" } }
@@ -1003,6 +1015,7 @@ public let interestsJSON = """
                   {
                     "type": "button",
                     "text": "Science",
+                    "buttonShape": "capsule",
                     "styles": { "normal": "pillButton", "selected": "pillButtonSelected" },
                     "isSelectedBinding": "${selectedInterests.contains('Science')}",
                     "actions": { "onTap": { "type": "toggleInArray", "path": "selectedInterests", "value": "Science" } }

@@ -305,6 +305,13 @@ public struct ButtonNode {
         case bottom
     }
 
+    /// Button shape affecting corner radius
+    public enum ButtonShape: String, Codable {
+        case circle        // cornerRadius = min(width, height) / 2
+        case capsule       // cornerRadius = height / 2
+        case roundedSquare // cornerRadius = fixed (10px)
+    }
+
     public let id: String?
     public let label: String
     public let styleId: String?
@@ -317,6 +324,9 @@ public struct ButtonNode {
     public let image: ImageNode.Source?
     public let imagePlacement: ImagePlacement
     public let imageSpacing: CGFloat
+
+    // Button shape
+    public let buttonShape: ButtonShape?
 
     /// Convenience accessor for backward compatibility
     public var style: IR.Style { styles.normal }
@@ -331,7 +341,8 @@ public struct ButtonNode {
         onTap: Document.Component.ActionBinding? = nil,
         image: ImageNode.Source? = nil,
         imagePlacement: ImagePlacement = .leading,
-        imageSpacing: CGFloat = 8
+        imageSpacing: CGFloat = 8,
+        buttonShape: ButtonShape? = nil
     ) {
         self.id = id
         self.label = label
@@ -343,6 +354,7 @@ public struct ButtonNode {
         self.image = image
         self.imagePlacement = imagePlacement
         self.imageSpacing = imageSpacing
+        self.buttonShape = buttonShape
     }
 }
 

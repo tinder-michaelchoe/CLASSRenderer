@@ -40,8 +40,15 @@ public struct ButtonNodeRenderer: UIKitNodeRendering {
         button.configuration = config
         button.applyStyle(buttonNode.style)
 
+        // Apply button shape if specified
+        applyButtonShape(button, node: buttonNode)
+
         if buttonNode.fillWidth {
             button.setContentHuggingPriority(.defaultLow, for: .horizontal)
+        }
+
+        if let width = buttonNode.style.width {
+            button.widthAnchor.constraint(equalToConstant: width).isActive = true
         }
 
         if let height = buttonNode.style.height {
@@ -49,6 +56,34 @@ public struct ButtonNodeRenderer: UIKitNodeRendering {
         }
 
         return button
+    }
+
+    private func applyButtonShape(_ button: UIButton, node: ButtonNode) {
+        guard let shape = node.buttonShape else {
+            // No shape specified, use style's cornerRadius if present
+            if let cornerRadius = node.style.cornerRadius {
+                button.layer.cornerRadius = cornerRadius
+                button.clipsToBounds = true
+            }
+            return
+        }
+
+        // Calculate corner radius based on shape
+        switch shape {
+        case .circle:
+            let width = node.style.width ?? 44
+            let height = node.style.height ?? 44
+            button.layer.cornerRadius = min(width, height) / 2
+
+        case .capsule:
+            let height = node.style.height ?? 44
+            button.layer.cornerRadius = height / 2
+
+        case .roundedSquare:
+            button.layer.cornerRadius = 10
+        }
+
+        button.clipsToBounds = true
     }
 
     private func uiImagePlacement(_ placement: ButtonNode.ImagePlacement) -> NSDirectionalRectEdge {

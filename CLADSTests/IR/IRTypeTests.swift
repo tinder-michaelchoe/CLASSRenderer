@@ -73,11 +73,54 @@ struct IRColorTests {
     
     @Test func isCodable() throws {
         let original = IR.Color(red: 0.5, green: 0.25, blue: 0.75, alpha: 0.9)
-        
+
         let encoded = try JSONEncoder().encode(original)
         let decoded = try JSONDecoder().decode(IR.Color.self, from: encoded)
-        
+
         #expect(decoded == original)
+    }
+
+    @Test func initializesFromRGBAOpaque() {
+        let color = IR.Color(hex: "rgba(255, 128, 64, 1.0)")
+
+        #expect(color.red == 1.0)
+        #expect(abs(color.green - 0.502) < 0.01)
+        #expect(abs(color.blue - 0.251) < 0.01)
+        #expect(color.alpha == 1.0)
+    }
+
+    @Test func initializesFromRGBATranslucent() {
+        let color = IR.Color(hex: "rgba(0, 122, 255, 0.1)")
+
+        #expect(color.red == 0.0)
+        #expect(abs(color.green - 0.478) < 0.01)
+        #expect(color.blue == 1.0)
+        #expect(color.alpha == 0.1)
+    }
+
+    @Test func initializesFromRGBASemiTransparent() {
+        let color = IR.Color(hex: "rgba(255, 255, 255, 0.15)")
+
+        #expect(color.red == 1.0)
+        #expect(color.green == 1.0)
+        #expect(color.blue == 1.0)
+        #expect(color.alpha == 0.15)
+    }
+
+    @Test func initializesFromRGBAWithSpaces() {
+        let color = IR.Color(hex: "rgba( 128 , 64 , 32 , 0.5 )")
+
+        #expect(abs(color.red - 0.502) < 0.01)
+        #expect(abs(color.green - 0.251) < 0.01)
+        #expect(abs(color.blue - 0.125) < 0.01)
+        #expect(color.alpha == 0.5)
+    }
+
+    @Test func initializesFromRGBACaseInsensitive() {
+        let color1 = IR.Color(hex: "rgba(255, 0, 0, 1.0)")
+        let color2 = IR.Color(hex: "RGBA(255, 0, 0, 1.0)")
+
+        #expect(color1 == color2)
     }
 }
 

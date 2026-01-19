@@ -88,7 +88,7 @@ TextNode(id: "greetingLabel", content: "Hello, World!", style: IR.Style(...))
 
 ## Button
 
-An interactive button that triggers actions when tapped.
+An interactive button that triggers actions when tapped. Supports text, images, and automatic shape handling.
 
 ### JSON Schema
 
@@ -96,7 +96,11 @@ An interactive button that triggers actions when tapped.
 {
   "type": "button",
   "id": "optional-id",
-  "label": "Button Text",
+  "text": "Button Text",
+  "image": { "sfsymbol": "arrow.right" },
+  "imagePlacement": "trailing",
+  "imageSpacing": 8,
+  "buttonShape": "capsule",
   "styleId": "buttonStyle",
   "fillWidth": true,
   "actions": {
@@ -111,56 +115,236 @@ An interactive button that triggers actions when tapped.
 |----------|------|----------|-------------|
 | `type` | `"button"` | Yes | Component type identifier |
 | `id` | `string` | No | Unique identifier |
-| `label` | `string` | Yes | Button text |
+| `text` | `string` | No | Button text label |
+| `image` | `ImageSource` | No | Button icon/image |
+| `imagePlacement` | `string` | No | Image position relative to text: `"leading"`, `"trailing"`, `"top"`, `"bottom"` (default: `"leading"`) |
+| `imageSpacing` | `number` | No | Spacing between image and text in points (default: `8`) |
+| `buttonShape` | `string` | No | Automatic shape: `"circle"`, `"capsule"`, `"roundedSquare"` |
 | `styleId` | `string` | No | Reference to a style definition |
 | `fillWidth` | `boolean` | No | Whether button expands to fill container width |
-| `actions.onTap` | `string` | No | Action ID to execute on tap |
+| `actions.onTap` | `ActionBinding` | No | Action to execute on tap |
+
+### Button Shapes
+
+The `buttonShape` property automatically calculates the appropriate corner radius:
+
+| Shape | Behavior | Best For |
+|-------|----------|----------|
+| `"circle"` | `cornerRadius = min(width, height) / 2` | Icon-only buttons, close buttons, floating action buttons |
+| `"capsule"` | `cornerRadius = height / 2` | Pill-shaped buttons with text, tags |
+| `"roundedSquare"` | `cornerRadius = 10px` (fixed) | Standard buttons with consistent rounding |
+
+**Example: Circular close button**
+```json
+{
+  "type": "button",
+  "image": { "sfsymbol": "xmark" },
+  "buttonShape": "circle",
+  "styleId": "closeButton"
+}
+
+// Style only needs size - no cornerRadius!
+"closeButton": {
+  "width": 44,
+  "height": 44,
+  "backgroundColor": "#007AFF"
+}
+```
+
+**Note:** When `buttonShape` is specified, the style's `cornerRadius` property is ignored.
+
+### Image Support
+
+Buttons can include images from three sources:
+
+**SF Symbols:**
+```json
+{
+  "type": "button",
+  "text": "Continue",
+  "image": { "sfsymbol": "arrow.right" }
+}
+```
+
+**Asset Catalog:**
+```json
+{
+  "type": "button",
+  "text": "Share",
+  "image": { "asset": "shareIcon" }
+}
+```
+
+**Remote URL:**
+```json
+{
+  "type": "button",
+  "text": "Profile",
+  "image": { "url": "https://example.com/icon.png" }
+}
+```
+
+### Image Placement
+
+Control where the image appears relative to text:
+
+```json
+{
+  "type": "button",
+  "text": "Next",
+  "image": { "sfsymbol": "arrow.right" },
+  "imagePlacement": "trailing",  // Image after text
+  "imageSpacing": 12
+}
+```
+
+**Placement Options:**
+- `"leading"` - Image before text (default)
+- `"trailing"` - Image after text
+- `"top"` - Image above text (vertical layout)
+- `"bottom"` - Image below text (vertical layout)
+
+### Content Alignment
+
+Buttons support horizontal content alignment via the `textAlignment` style property:
+
+```json
+{
+  "leadingAligned": {
+    "textAlignment": "leading",  // Align content to left
+    "backgroundColor": "#E5E5EA",
+    "height": 44
+  },
+  "centerAligned": {
+    "textAlignment": "center",  // Center content (default)
+    "backgroundColor": "#007AFF",
+    "height": 44
+  },
+  "trailingAligned": {
+    "textAlignment": "trailing",  // Align content to right
+    "backgroundColor": "#E5E5EA",
+    "height": 44
+  }
+}
+```
+
+**Alignment Options:**
+- `"leading"` - Content aligned to the left edge
+- `"center"` - Content centered (default if not specified)
+- `"trailing"` - Content aligned to the right edge
+
+**Note:** Alignment is most visible on buttons with `fillWidth: true` or explicit width values.
 
 ### Styling
 
-Buttons support additional style properties:
+Buttons support comprehensive style properties:
 
 ```json
 {
   "buttonStyle": {
     "backgroundColor": "#007AFF",
     "textColor": "#FFFFFF",
+    "textAlignment": "center",
     "cornerRadius": 12,
+    "width": 200,
     "height": 50,
     "fontSize": 17,
-    "fontWeight": "semibold"
+    "fontWeight": "semibold",
+    "tintColor": "#FFFFFF"  // For image/icon color
   }
 }
 ```
 
-### Example
+### Examples
 
+**Text-only button:**
+```json
+{
+  "type": "button",
+  "text": "Submit",
+  "styleId": "primaryButton",
+  "fillWidth": true,
+  "actions": { "onTap": "submitForm" }
+}
+```
+
+**Icon-only circular button:**
+```json
+{
+  "type": "button",
+  "image": { "sfsymbol": "xmark" },
+  "buttonShape": "circle",
+  "styleId": "closeButton"
+}
+```
+
+**Button with image and text:**
+```json
+{
+  "type": "button",
+  "text": "Continue",
+  "image": { "sfsymbol": "arrow.right" },
+  "imagePlacement": "trailing",
+  "imageSpacing": 8,
+  "buttonShape": "capsule",
+  "styleId": "primaryButton",
+  "fillWidth": true
+}
+```
+
+**Button with leading alignment:**
+```json
+{
+  "type": "button",
+  "text": "Back",
+  "image": { "sfsymbol": "arrow.left" },
+  "imagePlacement": "leading",
+  "styleId": "backButton",  // textAlignment: "leading"
+  "fillWidth": true
+}
+```
+
+**Complete Example:**
 ```json
 {
   "styles": {
     "primaryButton": {
       "backgroundColor": "#007AFF",
       "textColor": "#FFFFFF",
-      "cornerRadius": 12,
-      "height": 50
+      "height": 56,
+      "fontSize": 17,
+      "fontWeight": "semibold",
+      "tintColor": "#FFFFFF"
+    },
+    "closeButton": {
+      "width": 44,
+      "height": 44,
+      "backgroundColor": "rgba(255, 255, 255, 0.15)",
+      "tintColor": "#FFFFFF"
     }
   },
   "actions": {
-    "submitForm": {
-      "type": "dismiss"
-    }
+    "submitForm": { "type": "dismiss" },
+    "dismiss": { "type": "dismiss" }
   },
   "root": {
     "children": [
       {
         "type": "button",
-        "id": "submitButton",
-        "label": "Submit",
+        "image": { "sfsymbol": "xmark" },
+        "buttonShape": "circle",
+        "styleId": "closeButton",
+        "actions": { "onTap": "dismiss" }
+      },
+      {
+        "type": "button",
+        "text": "Continue",
+        "image": { "sfsymbol": "arrow.right" },
+        "imagePlacement": "trailing",
+        "buttonShape": "capsule",
         "styleId": "primaryButton",
         "fillWidth": true,
-        "actions": {
-          "onTap": "submitForm"
-        }
+        "actions": { "onTap": "submitForm" }
       }
     ]
   }
@@ -424,7 +608,9 @@ Each color stop can be:
 
 ### Color Format
 
-Colors use ARGB hex format:
+Colors support both hex and CSS rgba formats:
+
+**Hex Format:**
 - `#RRGGBB` - Opaque color (alpha = FF)
 - `#AARRGGBB` - Color with alpha
 
@@ -433,6 +619,15 @@ Examples:
 - `#FFFF0000` - Red (opaque, explicit alpha)
 - `#80FF0000` - Red (50% transparent)
 - `#00FFFFFF` - White (fully transparent)
+
+**CSS rgba Format:**
+- `rgba(r, g, b, a)` - Red, green, blue (0-255), alpha (0.0-1.0)
+
+Examples:
+- `rgba(255, 0, 0, 1.0)` - Red (opaque)
+- `rgba(0, 122, 255, 0.1)` - Blue (10% opacity)
+- `rgba(255, 255, 255, 0.15)` - White (15% opacity)
+- `rgba(0, 0, 0, 0.5)` - Black (50% opacity)
 
 ### Example: Image Overlay
 

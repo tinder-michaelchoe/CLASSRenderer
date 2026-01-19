@@ -50,6 +50,7 @@ public enum DoubleDateJSON {
                       {
                         "type": "button",
                         "image": { "sfsymbol": "xmark" },
+                        "buttonShape": "circle",
                         "styleId": "closeButton",
                         "actions": { "onTap": "dismiss" }
                       },
@@ -141,7 +142,6 @@ public enum DoubleDateJSON {
           "fontWeight": "semibold",
           "textColor": "#FFFFFF",
           "backgroundColor": "rgba(255, 255, 255, 0.15)",
-          "cornerRadius": 22,
           "width": 44,
           "height": 44
         },

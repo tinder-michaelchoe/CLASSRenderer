@@ -177,6 +177,9 @@ extension Document {
         public let imagePlacement: String?  // "leading", "trailing", "top", "bottom"
         public let imageSpacing: CGFloat?    // Space between image and text
 
+        // Button-specific properties
+        public let buttonShape: String?  // "circle", "capsule", "roundedSquare"
+
         // Gradient-specific properties
         public let gradientColors: [GradientColorConfig]?
         public let gradientStart: String?  // "top", "bottom", "leading", etc.
@@ -207,6 +210,7 @@ extension Document {
             image: ImageSource? = nil,
             imagePlacement: String? = nil,
             imageSpacing: CGFloat? = nil,
+            buttonShape: String? = nil,
             gradientColors: [GradientColorConfig]? = nil,
             gradientStart: String? = nil,
             gradientEnd: String? = nil,
@@ -232,6 +236,7 @@ extension Document {
             self.image = image
             self.imagePlacement = imagePlacement
             self.imageSpacing = imageSpacing
+            self.buttonShape = buttonShape
             self.gradientColors = gradientColors
             self.gradientStart = gradientStart
             self.gradientEnd = gradientEnd
@@ -246,6 +251,7 @@ extension Document {
             case dataSourceId, text, placeholder, bind, localBind
             case fillWidth, actions, data, state
             case minValue, maxValue, image, imagePlacement, imageSpacing
+            case buttonShape
             case gradientColors, gradientStart, gradientEnd
         }
 
@@ -272,6 +278,7 @@ extension Document {
             image = try container.decodeIfPresent(ImageSource.self, forKey: .image)
             imagePlacement = try container.decodeIfPresent(String.self, forKey: .imagePlacement)
             imageSpacing = try container.decodeIfPresent(CGFloat.self, forKey: .imageSpacing)
+            buttonShape = try container.decodeIfPresent(String.self, forKey: .buttonShape)
             gradientColors = try container.decodeIfPresent([GradientColorConfig].self, forKey: .gradientColors)
             gradientStart = try container.decodeIfPresent(String.self, forKey: .gradientStart)
             gradientEnd = try container.decodeIfPresent(String.self, forKey: .gradientEnd)

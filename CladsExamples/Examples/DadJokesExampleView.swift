@@ -143,8 +143,7 @@ public let dadJokesJSON = """
       "fontSize": 16,
       "fontWeight": "semibold",
       "textColor": "#007AFF",
-      "backgroundColor": "transparent",
-      "cornerRadius": 20,
+      "backgroundColor": "rgba(0, 122, 255, 0.1)",
       "width": 40,
       "height": 40
     },
@@ -225,6 +224,7 @@ public let dadJokesJSON = """
               {
                 "type": "button",
                 "image": { "sfsymbol": "xmark" },
+                "buttonShape": "circle",
                 "styleId": "closeButton",
                 "actions": { "onTap": { "type": "dismiss" } }
               },

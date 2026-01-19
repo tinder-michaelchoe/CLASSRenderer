@@ -45,6 +45,27 @@ struct ButtonNodeView: View {
         node.styles.style(isSelected: isSelected)
     }
 
+    /// Calculate effective corner radius based on buttonShape or style
+    private var effectiveCornerRadius: CGFloat {
+        guard let shape = node.buttonShape else {
+            return currentStyle.cornerRadius ?? 0
+        }
+
+        switch shape {
+        case .circle:
+            let width = currentStyle.width ?? 44
+            let height = currentStyle.height ?? 44
+            return min(width, height) / 2
+
+        case .capsule:
+            let height = currentStyle.height ?? 44
+            return height / 2
+
+        case .roundedSquare:
+            return 10  // Fixed moderate rounding
+        }
+    }
+
     var body: some View {
         Button(action: handleTap) {
             buttonLabel
@@ -53,13 +74,33 @@ struct ButtonNodeView: View {
                 .padding(.bottom, currentStyle.paddingBottom ?? 0)
                 .padding(.leading, currentStyle.paddingLeading ?? 0)
                 .padding(.trailing, currentStyle.paddingTrailing ?? 0)
-                .frame(maxWidth: node.fillWidth ? .infinity : nil)
-                .frame(height: currentStyle.height)
+                .frame(
+                    width: currentStyle.width,
+                    height: currentStyle.height
+                )
+                .frame(
+                    maxWidth: node.fillWidth ? .infinity : nil,
+                    alignment: alignmentForTextAlignment(currentStyle.textAlignment)
+                )
                 // Convert IR.Color to SwiftUI.Color
                 .background(currentStyle.backgroundColor?.swiftUI ?? .clear)
-                .cornerRadius(currentStyle.cornerRadius ?? 0)
+                .cornerRadius(effectiveCornerRadius)
         }
         .buttonStyle(.plain)
+    }
+
+    /// Convert IR.TextAlignment to SwiftUI.Alignment for frame positioning
+    private func alignmentForTextAlignment(_ textAlignment: IR.TextAlignment?) -> Alignment {
+        switch textAlignment {
+        case .leading:
+            return .leading
+        case .center:
+            return .center
+        case .trailing:
+            return .trailing
+        case .none:
+            return .center
+        }
     }
 
     @ViewBuilder

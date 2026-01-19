@@ -59,6 +59,14 @@ public struct ButtonComponentResolver: ComponentResolving {
         // Resolve image spacing
         let imageSpacing = component.imageSpacing ?? 8
 
+        // Resolve button shape
+        let buttonShape: ButtonNode.ButtonShape?
+        if let shapeString = component.buttonShape {
+            buttonShape = ButtonNode.ButtonShape(rawValue: shapeString)
+        } else {
+            buttonShape = nil
+        }
+
         if context.isTracking {
             context.tracker?.endTracking()
         }
@@ -78,7 +86,8 @@ public struct ButtonComponentResolver: ComponentResolving {
             onTap: component.actions?.onTap,
             image: imageSource,
             imagePlacement: imagePlacement,
-            imageSpacing: imageSpacing
+            imageSpacing: imageSpacing,
+            buttonShape: buttonShape
         ))
 
         return ComponentResolutionResult(renderNode: renderNode, viewNode: viewNode)

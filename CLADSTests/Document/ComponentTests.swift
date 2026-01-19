@@ -779,6 +779,123 @@ struct ImageSourceTests {
     }
 }
 
+// MARK: - Button Properties Tests
+
+struct ButtonPropertiesTests {
+
+    @Test func decodesButtonShapeCircle() throws {
+        let json = """
+        {
+            "type": "button",
+            "buttonShape": "circle"
+        }
+        """
+        let data = json.data(using: .utf8)!
+        let component = try JSONDecoder().decode(Document.Component.self, from: data)
+        #expect(component.buttonShape == "circle")
+    }
+
+    @Test func decodesButtonShapeCapsule() throws {
+        let json = """
+        {
+            "type": "button",
+            "buttonShape": "capsule"
+        }
+        """
+        let data = json.data(using: .utf8)!
+        let component = try JSONDecoder().decode(Document.Component.self, from: data)
+        #expect(component.buttonShape == "capsule")
+    }
+
+    @Test func decodesButtonShapeRoundedSquare() throws {
+        let json = """
+        {
+            "type": "button",
+            "buttonShape": "roundedSquare"
+        }
+        """
+        let data = json.data(using: .utf8)!
+        let component = try JSONDecoder().decode(Document.Component.self, from: data)
+        #expect(component.buttonShape == "roundedSquare")
+    }
+
+    @Test func decodesButtonWithImageSFSymbol() throws {
+        let json = """
+        {
+            "type": "button",
+            "image": { "sfsymbol": "heart.fill" }
+        }
+        """
+        let data = json.data(using: .utf8)!
+        let component = try JSONDecoder().decode(Document.Component.self, from: data)
+        #expect(component.image?.sfsymbol == "heart.fill")
+    }
+
+    @Test func decodesButtonWithImageAsset() throws {
+        let json = """
+        {
+            "type": "button",
+            "image": { "asset": "myButtonIcon" }
+        }
+        """
+        let data = json.data(using: .utf8)!
+        let component = try JSONDecoder().decode(Document.Component.self, from: data)
+        #expect(component.image?.asset == "myButtonIcon")
+    }
+
+    @Test func decodesButtonWithImagePlacement() throws {
+        let json = """
+        {
+            "type": "button",
+            "image": { "sfsymbol": "arrow.right" },
+            "imagePlacement": "trailing"
+        }
+        """
+        let data = json.data(using: .utf8)!
+        let component = try JSONDecoder().decode(Document.Component.self, from: data)
+        #expect(component.imagePlacement == "trailing")
+    }
+
+    @Test func decodesButtonWithImageSpacing() throws {
+        let json = """
+        {
+            "type": "button",
+            "image": { "sfsymbol": "plus" },
+            "imageSpacing": 12
+        }
+        """
+        let data = json.data(using: .utf8)!
+        let component = try JSONDecoder().decode(Document.Component.self, from: data)
+        #expect(component.imageSpacing == 12)
+    }
+
+    @Test func decodesCompleteButtonWithShapeAndImage() throws {
+        let json = """
+        {
+            "type": "button",
+            "text": "Continue",
+            "image": { "sfsymbol": "arrow.right" },
+            "imagePlacement": "trailing",
+            "imageSpacing": 8,
+            "buttonShape": "capsule",
+            "styleId": "primaryButton",
+            "fillWidth": true
+        }
+        """
+        let data = json.data(using: .utf8)!
+        let component = try JSONDecoder().decode(Document.Component.self, from: data)
+
+        #expect(component.type.rawValue == "button")
+        #expect(component.text == "Continue")
+        #expect(component.image?.sfsymbol == "arrow.right")
+        #expect(component.imagePlacement == "trailing")
+        #expect(component.imageSpacing == 8)
+        #expect(component.buttonShape == "capsule")
+        #expect(component.styleId == "primaryButton")
+        #expect(component.fillWidth == true)
+    }
+}
+
 // MARK: - Round Trip Tests
 
 struct ComponentRoundTripTests {

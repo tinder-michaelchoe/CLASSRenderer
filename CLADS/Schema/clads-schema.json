@@ -92,16 +92,16 @@
         },
         "textColor": {
           "type": "string",
-          "description": "Text color (hex string, e.g. '#FF0000')"
+          "description": "Text color. Supports hex format ('#FF0000', '#AARRGGBB') or CSS rgba format ('rgba(255, 0, 0, 1.0)', 'rgba(0, 122, 255, 0.5)')"
         },
         "textAlignment": {
           "type": "string",
           "enum": ["leading", "center", "trailing"],
-          "description": "Text alignment"
+          "description": "Text alignment. For buttons, also controls content positioning within the button frame"
         },
         "backgroundColor": {
           "type": "string",
-          "description": "Background color (hex string)"
+          "description": "Background color. Supports hex format ('#FF0000', '#AARRGGBB') or CSS rgba format ('rgba(255, 255, 255, 0.15)')"
         },
         "cornerRadius": {
           "type": "number",
@@ -113,11 +113,11 @@
         },
         "borderColor": {
           "type": "string",
-          "description": "Border color (hex string)"
+          "description": "Border color. Supports hex format or CSS rgba format"
         },
         "tintColor": {
           "type": "string",
-          "description": "Tint color for images (hex string)"
+          "description": "Tint color for images/icons. Supports hex format or CSS rgba format"
         },
         "width": {
           "type": "number",
@@ -490,7 +490,7 @@
       "properties": {
         "backgroundColor": {
           "type": "string",
-          "description": "Background color (hex string)"
+          "description": "Background color. Supports hex format or CSS rgba format"
         },
         "edgeInsets": {
           "$ref": "#/$defs/edgeInsets"
@@ -856,6 +856,20 @@
           "description": "Maximum value (for slider)"
         },
         "image": { "$ref": "#/$defs/imageSource" },
+        "imagePlacement": {
+          "type": "string",
+          "enum": ["leading", "trailing", "top", "bottom"],
+          "description": "Position of image relative to text in button component (default: leading)"
+        },
+        "imageSpacing": {
+          "type": "number",
+          "description": "Spacing between image and text in button component (default: 8)"
+        },
+        "buttonShape": {
+          "type": "string",
+          "enum": ["circle", "capsule", "roundedSquare"],
+          "description": "Automatic button shape: 'circle' (cornerRadius = min(width, height) / 2), 'capsule' (cornerRadius = height / 2), 'roundedSquare' (cornerRadius = 10px fixed)"
+        },
         "gradientColors": {
           "type": "array",
           "items": { "$ref": "#/$defs/gradientColorConfig" }
@@ -968,15 +982,15 @@
       "properties": {
         "color": {
           "type": "string",
-          "description": "Hex color (fixed)"
+          "description": "Color in hex or CSS rgba format (fixed)"
         },
         "lightColor": {
           "type": "string",
-          "description": "Hex color for light mode (adaptive)"
+          "description": "Color for light mode in hex or CSS rgba format (adaptive)"
         },
         "darkColor": {
           "type": "string",
-          "description": "Hex color for dark mode (adaptive)"
+          "description": "Color for dark mode in hex or CSS rgba format (adaptive)"
         },
         "location": {
           "type": "number",

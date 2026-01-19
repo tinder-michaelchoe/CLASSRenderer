@@ -45,16 +45,43 @@ extension IR {
             self.alpha = alpha
         }
         
-        /// Parse a hex color string (e.g., "#FF0000", "FF0000", "#F00")
+        /// Parse a color string (hex or CSS rgba format)
+        ///
+        /// Supports:
+        /// - Hex: "#FF0000", "FF0000", "#F00", "#AARRGGBB"
+        /// - CSS rgba: "rgba(255, 0, 0, 0.5)", "rgba(255, 0, 0, 1.0)"
         public init(hex: String) {
-            var hexSanitized = hex.trimmingCharacters(in: .whitespacesAndNewlines)
-            hexSanitized = hexSanitized.replacingOccurrences(of: "#", with: "")
-            
+            let colorString = hex.trimmingCharacters(in: .whitespacesAndNewlines)
+
+            // Check for CSS rgba() format
+            if colorString.lowercased().hasPrefix("rgba(") && colorString.hasSuffix(")") {
+                // Parse rgba(r, g, b, a) format
+                let content = colorString
+                    .dropFirst(5)  // Remove "rgba("
+                    .dropLast()    // Remove ")"
+                let components = content.split(separator: ",").map { $0.trimmingCharacters(in: .whitespaces) }
+
+                if components.count == 4,
+                   let r = Double(components[0]),
+                   let g = Double(components[1]),
+                   let b = Double(components[2]),
+                   let a = Double(components[3]) {
+                    self.red = r / 255.0
+                    self.green = g / 255.0
+                    self.blue = b / 255.0
+                    self.alpha = a
+                    return
+                }
+            }
+
+            // Parse hex format
+            let hexSanitized = colorString.replacingOccurrences(of: "#", with: "")
+
             var rgb: UInt64 = 0
             Scanner(string: hexSanitized).scanHexInt64(&rgb)
-            
+
             let r, g, b, a: Double
-            
+
             switch hexSanitized.count {
             case 3: // RGB (12-bit)
                 r = Double((rgb & 0xF00) >> 8) / 15.0
@@ -74,7 +101,7 @@ extension IR {
             default:
                 r = 0; g = 0; b = 0; a = 1.0
             }
-            
+
             self.red = r
             self.green = g
             self.blue = b

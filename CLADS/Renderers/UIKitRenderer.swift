@@ -163,6 +163,17 @@ public extension UIButton {
             layer.cornerRadius = cornerRadius
             clipsToBounds = true
         }
+        // Apply horizontal content alignment based on textAlignment
+        if let textAlignment = style.textAlignment {
+            switch textAlignment {
+            case .leading:
+                contentHorizontalAlignment = .leading
+            case .center:
+                contentHorizontalAlignment = .center
+            case .trailing:
+                contentHorizontalAlignment = .trailing
+            }
+        }
     }
 }
 
