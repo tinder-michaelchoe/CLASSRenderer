@@ -7,7 +7,6 @@
 
 import CLADS
 import Foundation
-import SwiftUI
 
 /// Resolves `divider` components into DividerNode
 public struct DividerComponentResolver: ComponentResolving {

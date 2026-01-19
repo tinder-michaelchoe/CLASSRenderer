@@ -7,7 +7,6 @@
 
 import CLADS
 import Foundation
-import SwiftUI
 
 /// Resolves grid-style section layout configurations.
 ///

@@ -7,7 +7,6 @@
 
 import CLADS
 import Foundation
-import SwiftUI
 
 /// Resolves `slider` components into SliderNode
 public struct SliderComponentResolver: ComponentResolving {

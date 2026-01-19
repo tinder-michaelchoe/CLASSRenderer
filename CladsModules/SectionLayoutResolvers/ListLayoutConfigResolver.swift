@@ -7,7 +7,6 @@
 
 import CLADS
 import Foundation
-import SwiftUI
 
 /// Resolves list-style section layout configurations.
 ///

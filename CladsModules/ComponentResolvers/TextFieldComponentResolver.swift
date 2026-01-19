@@ -7,7 +7,6 @@
 
 import CLADS
 import Foundation
-import SwiftUI
 
 /// Resolves `textfield` components into TextFieldNode
 public struct TextFieldComponentResolver: ComponentResolving {

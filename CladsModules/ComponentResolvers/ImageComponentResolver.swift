@@ -7,7 +7,6 @@
 
 import CLADS
 import Foundation
-import SwiftUI
 
 /// Resolves `image` components into ImageNode
 public struct ImageComponentResolver: ComponentResolving {

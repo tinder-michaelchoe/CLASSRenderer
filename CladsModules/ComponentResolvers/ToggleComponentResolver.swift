@@ -7,7 +7,6 @@
 
 import CLADS
 import Foundation
-import SwiftUI
 
 /// Resolves `toggle` components into ToggleNode
 public struct ToggleComponentResolver: ComponentResolving {

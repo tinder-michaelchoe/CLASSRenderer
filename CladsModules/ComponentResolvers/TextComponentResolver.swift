@@ -7,7 +7,6 @@
 
 import CLADS
 import Foundation
-import SwiftUI
 
 /// Resolves `label` components into TextNode
 public struct TextComponentResolver: ComponentResolving {

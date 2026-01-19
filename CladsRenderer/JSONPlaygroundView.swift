@@ -280,26 +280,14 @@ struct JSONPlaygroundView: View {
 
 struct RenderedJSONSheet: View {
     let jsonString: String
-    @Environment(\.dismiss) private var dismiss
     @State private var hasError = false
     
     var body: some View {
-        NavigationStack {
-            Group {
-                if let view = CladsRendererView(jsonString: jsonString, debugMode: true) {
-                    view
-                } else {
-                    errorView
-                }
-            }
-            .navigationTitle("SwiftUI Renderer")
-            .navigationBarTitleDisplayMode(.inline)
-            .toolbar {
-                ToolbarItem(placement: .topBarTrailing) {
-                    Button("Done") {
-                        dismiss()
-                    }
-                }
+        Group {
+            if let view = CladsRendererView(jsonString: jsonString, debugMode: true) {
+                view
+            } else {
+                errorView
             }
         }
         .presentationDetents([.medium, .large])
@@ -351,45 +339,11 @@ struct RenderedJSONSheet: View {
 struct HTMLPreviewSheet: View {
     let html: String
     let jsonString: String
-    @Environment(\.dismiss) private var dismiss
-    @State private var showingHTMLSource = false
     
     var body: some View {
-        NavigationStack {
-            WebViewWrapper(html: html)
-                .navigationTitle("HTML Renderer")
-                .navigationBarTitleDisplayMode(.inline)
-                .toolbar {
-                    ToolbarItem(placement: .topBarLeading) {
-                        Menu {
-                            Button {
-                                UIPasteboard.general.string = html
-                            } label: {
-                                Label("Copy HTML", systemImage: "doc.on.doc")
-                            }
-                            
-                            Button {
-                                showingHTMLSource = true
-                            } label: {
-                                Label("View Source", systemImage: "curlybraces")
-                            }
-                        } label: {
-                            Image(systemName: "square.and.arrow.up")
-                        }
-                    }
-                    
-                    ToolbarItem(placement: .topBarTrailing) {
-                        Button("Done") {
-                            dismiss()
-                        }
-                    }
-                }
-                .sheet(isPresented: $showingHTMLSource) {
-                    HTMLSourceView(html: html)
-                }
-        }
-        .presentationDetents([.medium, .large])
-        .presentationDragIndicator(.visible)
+        WebViewWrapper(html: html)
+            .presentationDetents([.medium, .large])
+            .presentationDragIndicator(.visible)
     }
 }
 

@@ -7,7 +7,6 @@
 
 import CLADS
 import Foundation
-import SwiftUI
 
 /// Resolves `gradient` components into GradientNode
 public struct GradientComponentResolver: ComponentResolving {

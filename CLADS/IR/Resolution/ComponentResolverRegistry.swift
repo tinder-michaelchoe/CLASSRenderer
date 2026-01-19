@@ -30,8 +30,10 @@ public final class ComponentResolverRegistry {
     // MARK: - Storage
 
     private var resolvers: [Document.ComponentKind: any ComponentResolving] = [:]
+    #if !arch(wasm32)
     private var customComponentRegistry: CustomComponentRegistry?
     private var customComponentResolver: CustomComponentResolver?
+    #endif
 
     // MARK: - Initialization
 
@@ -39,11 +41,13 @@ public final class ComponentResolverRegistry {
 
     // MARK: - Custom Component Support
 
+    #if !arch(wasm32)
     /// Set the custom component registry for resolving custom components
     public func setCustomComponentRegistry(_ registry: CustomComponentRegistry) {
         self.customComponentRegistry = registry
         self.customComponentResolver = CustomComponentResolver(registry: registry)
     }
+    #endif
 
     // MARK: - Registration
 
@@ -77,11 +81,13 @@ public final class ComponentResolverRegistry {
             return try resolver.resolve(component, context: context)
         }
 
+        #if !arch(wasm32)
         // Fall back to custom component resolver
         if let customResolver = customComponentResolver,
            customResolver.canResolve(component.type) {
             return try customResolver.resolve(component, context: context)
         }
+        #endif
 
         throw ComponentResolutionError.unknownKind(component.type)
     }
@@ -93,9 +99,11 @@ public final class ComponentResolverRegistry {
         if resolvers[kind] != nil {
             return true
         }
+        #if !arch(wasm32)
         if let customResolver = customComponentResolver {
             return customResolver.canResolve(kind)
         }
+        #endif
         return false
     }
 
