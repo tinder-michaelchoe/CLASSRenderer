@@ -24,8 +24,20 @@ public struct ButtonNodeRenderer: UIKitNodeRendering {
             actionBinding: buttonNode.onTap,
             actionContext: context.actionContext
         )
-        button.setTitle(buttonNode.label, for: .normal)
         button.translatesAutoresizingMaskIntoConstraints = false
+
+        // Configure button with UIButton.Configuration (iOS 17+ minimum)
+        var config = UIButton.Configuration.plain()
+        config.title = buttonNode.label
+
+        // Configure image if present
+        if let imageSource = buttonNode.image {
+            config.image = resolveUIImage(imageSource, context: context)
+            config.imagePlacement = uiImagePlacement(buttonNode.imagePlacement)
+            config.imagePadding = buttonNode.imageSpacing
+        }
+
+        button.configuration = config
         button.applyStyle(buttonNode.style)
 
         if buttonNode.fillWidth {
@@ -37,6 +49,31 @@ public struct ButtonNodeRenderer: UIKitNodeRendering {
         }
 
         return button
+    }
+
+    private func uiImagePlacement(_ placement: ButtonNode.ImagePlacement) -> NSDirectionalRectEdge {
+        switch placement {
+        case .leading: return .leading
+        case .trailing: return .trailing
+        case .top: return .top
+        case .bottom: return .bottom
+        @unknown default: return .leading
+        }
+    }
+
+    private func resolveUIImage(_ source: ImageNode.Source, context: UIKitRenderContext) -> UIImage? {
+        switch source {
+        case .sfsymbol(let name):
+            return UIImage(systemName: name)
+        case .asset(let name):
+            return UIImage(named: name)
+        case .url(let url):
+            // For URLs, we'd need async loading - return placeholder for now
+            return UIImage(systemName: "photo")
+        case .statePath(let template):
+            // For dynamic templates, we'd need to resolve from state - return placeholder for now
+            return UIImage(systemName: "photo")
+        }
     }
 }
 

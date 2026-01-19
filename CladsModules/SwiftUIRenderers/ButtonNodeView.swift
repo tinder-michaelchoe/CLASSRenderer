@@ -47,7 +47,7 @@ struct ButtonNodeView: View {
 
     var body: some View {
         Button(action: handleTap) {
-            Text(node.label)
+            buttonLabel
                 .applyTextStyle(currentStyle)
                 .padding(.top, currentStyle.paddingTop ?? 0)
                 .padding(.bottom, currentStyle.paddingBottom ?? 0)
@@ -60,6 +60,122 @@ struct ButtonNodeView: View {
                 .cornerRadius(currentStyle.cornerRadius ?? 0)
         }
         .buttonStyle(.plain)
+    }
+
+    @ViewBuilder
+    private var buttonLabel: some View {
+        if let image = node.image {
+            // Image + Text or Image-only
+            labelWithImage(image)
+        } else {
+            // Text-only (existing)
+            Text(node.label)
+        }
+    }
+
+    @ViewBuilder
+    private func labelWithImage(_ imageSource: ImageNode.Source) -> some View {
+        let imageView = resolveImage(imageSource)
+
+        switch node.imagePlacement {
+        case .leading:
+            HStack(spacing: node.imageSpacing) {
+                imageView
+                if !node.label.isEmpty {
+                    Text(node.label)
+                }
+            }
+        case .trailing:
+            HStack(spacing: node.imageSpacing) {
+                if !node.label.isEmpty {
+                    Text(node.label)
+                }
+                imageView
+            }
+        case .top:
+            VStack(spacing: node.imageSpacing) {
+                imageView
+                if !node.label.isEmpty {
+                    Text(node.label)
+                }
+            }
+        case .bottom:
+            VStack(spacing: node.imageSpacing) {
+                if !node.label.isEmpty {
+                    Text(node.label)
+                }
+                imageView
+            }
+        }
+    }
+
+    @ViewBuilder
+    private func resolveImage(_ source: ImageNode.Source) -> some View {
+        switch source {
+        case .sfsymbol(let name):
+            Image(systemName: name)
+        case .asset(let name):
+            Image(name)
+        case .url(let url):
+            AsyncImage(url: url) { phase in
+                switch phase {
+                case .success(let image):
+                    image
+                        .resizable()
+                        .aspectRatio(contentMode: .fit)
+                case .failure:
+                    Image(systemName: "exclamationmark.triangle")
+                case .empty:
+                    ProgressView()
+                @unknown default:
+                    EmptyView()
+                }
+            }
+        case .statePath(let template):
+            // Dynamic URL from state - resolve template
+            let resolvedURL = resolveTemplateURL(template)
+            if let url = resolvedURL {
+                AsyncImage(url: url) { phase in
+                    switch phase {
+                    case .success(let image):
+                        image
+                            .resizable()
+                            .aspectRatio(contentMode: .fit)
+                    case .failure:
+                        Image(systemName: "exclamationmark.triangle")
+                    case .empty:
+                        ProgressView()
+                    @unknown default:
+                        EmptyView()
+                    }
+                }
+            } else {
+                Image(systemName: "photo")
+            }
+        }
+    }
+
+    /// Resolves a template URL by replacing ${...} with state values
+    private func resolveTemplateURL(_ template: String) -> URL? {
+        var resolved = template
+        let pattern = #"\$\{([^}]+)\}"#
+
+        guard let regex = try? NSRegularExpression(pattern: pattern) else {
+            return URL(string: template)
+        }
+
+        let matches = regex.matches(in: template, range: NSRange(template.startIndex..., in: template))
+        for match in matches.reversed() {
+            if let range = Range(match.range, in: template),
+               let pathRange = Range(match.range(at: 1), in: template) {
+                let path = String(template[pathRange])
+                if let value = stateStore.get(path) {
+                    resolved.replaceSubrange(range, with: "\(value)")
+                }
+            }
+        }
+
+        return URL(string: resolved)
     }
 
     private func handleTap() {

@@ -243,6 +243,61 @@ public let componentShowcaseJSON = """
                     "actions": { "onTap": { "type": "toggleState", "path": "isToggled" } }
                   }
                 ]
+              },
+              {
+                "type": "label",
+                "text": "Buttons with images:",
+                "styleId": "captionText",
+                "padding": { "top": 12 }
+              },
+              {
+                "type": "hstack",
+                "spacing": 12,
+                "children": [
+                  {
+                    "type": "button",
+                    "text": "Add",
+                    "image": { "sfsymbol": "plus" },
+                    "imagePlacement": "leading",
+                    "styleId": "primaryButton",
+                    "actions": { "onTap": "incrementCount" }
+                  },
+                  {
+                    "type": "button",
+                    "text": "Settings",
+                    "image": { "sfsymbol": "gear" },
+                    "imagePlacement": "trailing",
+                    "styleId": "secondaryButton",
+                    "actions": { "onTap": "incrementCount" }
+                  }
+                ]
+              },
+              {
+                "type": "hstack",
+                "spacing": 12,
+                "children": [
+                  {
+                    "type": "button",
+                    "image": { "sfsymbol": "heart.fill" },
+                    "styleId": "primaryButton",
+                    "actions": { "onTap": "incrementCount" }
+                  },
+                  {
+                    "type": "button",
+                    "image": { "sfsymbol": "star.fill" },
+                    "styleId": "secondaryButton",
+                    "actions": { "onTap": "incrementCount" }
+                  },
+                  {
+                    "type": "button",
+                    "text": "Share",
+                    "image": { "sfsymbol": "square.and.arrow.up" },
+                    "imagePlacement": "top",
+                    "imageSpacing": 4,
+                    "styleId": "secondaryButton",
+                    "actions": { "onTap": "incrementCount" }
+                  }
+                ]
               }
             ]
           },

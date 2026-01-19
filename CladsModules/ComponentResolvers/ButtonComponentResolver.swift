@@ -7,7 +7,6 @@
 
 import CLADS
 import Foundation
-import SwiftUI
 
 /// Resolves `button` components into ButtonNode
 public struct ButtonComponentResolver: ComponentResolving {
@@ -45,6 +44,21 @@ public struct ButtonComponentResolver: ComponentResolving {
         // Resolve content (may record dependencies)
         let contentResult = ContentResolver.resolve(component, context: context, viewNode: viewNode)
 
+        // Resolve image source
+        let imageSource = resolveImageSource(component, context: context)
+
+        // Resolve image placement
+        let imagePlacement: ButtonNode.ImagePlacement
+        if let placementString = component.imagePlacement,
+           let placement = ButtonNode.ImagePlacement(rawValue: placementString) {
+            imagePlacement = placement
+        } else {
+            imagePlacement = .leading  // Default
+        }
+
+        // Resolve image spacing
+        let imageSpacing = component.imageSpacing ?? 8
+
         if context.isTracking {
             context.tracker?.endTracking()
         }
@@ -61,7 +75,10 @@ public struct ButtonComponentResolver: ComponentResolving {
             styles: buttonStyles,
             isSelectedBinding: component.isSelectedBinding,
             fillWidth: component.fillWidth ?? false,
-            onTap: component.actions?.onTap
+            onTap: component.actions?.onTap,
+            image: imageSource,
+            imagePlacement: imagePlacement,
+            imageSpacing: imageSpacing
         ))
 
         return ComponentResolutionResult(renderNode: renderNode, viewNode: viewNode)
@@ -84,6 +101,63 @@ public struct ButtonComponentResolver: ComponentResolving {
         // Fall back to single styleId
         let style = context.styleResolver.resolve(component.styleId)
         return ButtonStyles(normal: style)
+    }
+
+    @MainActor
+    private func resolveImageSource(_ component: Document.Component, context: ResolutionContext) -> ImageNode.Source? {
+        guard let image = component.image else { return nil }
+
+        // SF Symbol
+        if let sfSymbolName = image.sfsymbol {
+            return .sfsymbol(name: sfSymbolName)
+        }
+
+        // Asset catalog
+        if let assetName = image.asset {
+            return .asset(name: assetName)
+        }
+
+        // URL (may be static or dynamic template)
+        if let urlString = image.url {
+            // Check for template syntax ${...}
+            if containsTemplate(urlString) {
+                // Track dependencies for reactivity
+                let paths = extractTemplatePaths(urlString)
+                for path in paths {
+                    if context.iterationVariables[path] == nil {
+                        context.tracker?.recordRead(path)
+                    }
+                }
+                return .statePath(urlString)
+            }
+
+            // Static URL
+            if let url = URL(string: urlString) {
+                return .url(url)
+            }
+        }
+
+        return nil
+    }
+
+    /// Checks if a string contains template syntax ${...}
+    private func containsTemplate(_ string: String) -> Bool {
+        return string.contains("${") && string.contains("}")
+    }
+
+    /// Extracts state paths from a template string like "https://example.com/${artwork.primaryImage}"
+    private func extractTemplatePaths(_ template: String) -> [String] {
+        var paths: [String] = []
+        let pattern = #"\$\{([^}]+)\}"#
+        guard let regex = try? NSRegularExpression(pattern: pattern) else { return paths }
+
+        let matches = regex.matches(in: template, range: NSRange(template.startIndex..., in: template))
+        for match in matches {
+            if let range = Range(match.range(at: 1), in: template) {
+                paths.append(String(template[range]))
+            }
+        }
+        return paths
     }
 
     private func initializeLocalState(on viewNode: ViewNode, from localState: Document.LocalStateDeclaration) {

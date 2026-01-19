@@ -297,6 +297,14 @@ public struct ButtonStyles {
 
 /// A button component
 public struct ButtonNode {
+    /// Image placement relative to text
+    public enum ImagePlacement: String, Codable {
+        case leading
+        case trailing
+        case top
+        case bottom
+    }
+
     public let id: String?
     public let label: String
     public let styleId: String?
@@ -304,6 +312,11 @@ public struct ButtonNode {
     public let isSelectedBinding: String?
     public let fillWidth: Bool
     public let onTap: Document.Component.ActionBinding?
+
+    // Image support
+    public let image: ImageNode.Source?
+    public let imagePlacement: ImagePlacement
+    public let imageSpacing: CGFloat
 
     /// Convenience accessor for backward compatibility
     public var style: IR.Style { styles.normal }
@@ -315,7 +328,10 @@ public struct ButtonNode {
         styles: ButtonStyles = ButtonStyles(),
         isSelectedBinding: String? = nil,
         fillWidth: Bool = false,
-        onTap: Document.Component.ActionBinding? = nil
+        onTap: Document.Component.ActionBinding? = nil,
+        image: ImageNode.Source? = nil,
+        imagePlacement: ImagePlacement = .leading,
+        imageSpacing: CGFloat = 8
     ) {
         self.id = id
         self.label = label
@@ -324,6 +340,9 @@ public struct ButtonNode {
         self.isSelectedBinding = isSelectedBinding
         self.fillWidth = fillWidth
         self.onTap = onTap
+        self.image = image
+        self.imagePlacement = imagePlacement
+        self.imageSpacing = imageSpacing
     }
 }
 

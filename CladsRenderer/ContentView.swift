@@ -409,7 +409,7 @@ enum Example: String, CaseIterable, Identifiable {
         switch self {
         // Components
         case .labels: return "Text display with styles"
-        case .buttons: return "Tappable actions"
+        case .buttons: return "Text, images & placements"
         case .textFields: return "User input"
         case .toggles: return "Boolean switches"
         case .sliders: return "Range selection"
@@ -594,8 +594,10 @@ enum Example: String, CaseIterable, Identifiable {
     var presentation: PresentationStyle {
         switch self {
         // Most basic examples work well with medium detent
-        case .labels, .buttons, .textFields, .toggles, .sliders, .images, .gradients, .sectionLayoutHorizontal:
+        case .labels, .textFields, .toggles, .sliders, .images, .gradients, .sectionLayoutHorizontal:
             return .detent(.medium)
+        case .buttons:
+            return .fullSize
         case .sectionLayoutGrid:
             return .detent(.fraction(0.3))
         case .vstackHstack, .zstack:

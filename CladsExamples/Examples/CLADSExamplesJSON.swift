@@ -50,6 +50,7 @@ public let buttonsJSON = """
   "version": "1.0",
   "state": { "tapCount": 0 },
   "styles": {
+    "sectionTitle": { "fontSize": 18, "fontWeight": "bold", "textColor": "#000000", "padding": { "top": 8, "bottom": 8 } },
     "primary": {
       "fontSize": 16, "fontWeight": "semibold",
       "backgroundColor": "#007AFF", "textColor": "#FFFFFF",
@@ -75,6 +76,46 @@ public let buttonsJSON = """
       "backgroundColor": "#34C759", "textColor": "#FFFFFF",
       "cornerRadius": 20, "height": 36, "padding": { "horizontal": 16 }
     },
+    "iconButton": {
+      "fontSize": 16, "fontWeight": "medium",
+      "backgroundColor": "#E5E5EA", "textColor": "#000000",
+      "cornerRadius": 10, "width": 44, "height": 44
+    },
+    "iconButtonPrimary": {
+      "fontSize": 16, "fontWeight": "semibold",
+      "backgroundColor": "#007AFF", "textColor": "#FFFFFF",
+      "cornerRadius": 10, "width": 44, "height": 44
+    },
+    "circleButton": {
+      "fontSize": 16, "fontWeight": "semibold",
+      "backgroundColor": "#007AFF", "textColor": "#FFFFFF",
+      "cornerRadius": 22, "height": 44, "padding": { "horizontal": 12 }
+    },
+    "smallCapsule": {
+      "fontSize": 16, "fontWeight": "semibold",
+      "backgroundColor": "#34C759", "textColor": "#FFFFFF",
+      "cornerRadius": 22, "height": 44, "padding": { "horizontal": 24 }
+    },
+    "mediumCapsule": {
+      "fontSize": 16, "fontWeight": "semibold",
+      "backgroundColor": "#FF9500", "textColor": "#FFFFFF",
+      "cornerRadius": 22, "height": 44, "padding": { "horizontal": 36 }
+    },
+    "longCapsule": {
+      "fontSize": 16, "fontWeight": "semibold",
+      "backgroundColor": "#FF3B30", "textColor": "#FFFFFF",
+      "cornerRadius": 22, "height": 44, "padding": { "horizontal": 48 }
+    },
+    "compactButton": {
+      "fontSize": 14, "fontWeight": "medium",
+      "backgroundColor": "#F2F2F7", "textColor": "#000000",
+      "cornerRadius": 8, "height": 36, "padding": { "horizontal": 12 }
+    },
+    "verticalButton": {
+      "fontSize": 14, "fontWeight": "medium",
+      "backgroundColor": "#F2F2F7", "textColor": "#000000",
+      "cornerRadius": 8, "padding": { "horizontal": 12, "vertical": 8 }
+    },
     "countLabel": { "fontSize": 14, "textColor": "#666666" }
   },
   "actions": {
@@ -85,24 +126,108 @@ public let buttonsJSON = """
   },
   "root": {
     "backgroundColor": "#FFFFFF",
-    "edgeInsets": { "top": 36, "leading": 28, "trailing": 28 },
     "children": [{
-      "type": "vstack",
-      "spacing": 16,
-      "children": [
-        { "type": "button", "text": "Primary Button", "styleId": "primary", "actions": { "onTap": "increment" } },
-        { "type": "button", "text": "Secondary Button", "styleId": "secondary", "actions": { "onTap": "increment" } },
-        { "type": "button", "text": "Destructive", "styleId": "destructive", "actions": { "onTap": "increment" } },
+      "type": "sectionLayout",
+      "sectionSpacing": 20,
+      "sections": [{
+        "layout": {
+          "type": "list",
+          "showsDividers": false,
+          "itemSpacing": 20,
+          "contentInsets": { "top": 36, "horizontal": 28, "bottom": 20 }
+        },
+        "children": [
+        { "type": "label", "text": "Text Only", "styleId": "sectionTitle" },
+        { "type": "button", "text": "Primary Button", "styleId": "primary", "fillWidth": true, "actions": { "onTap": "increment" } },
+        { "type": "button", "text": "Secondary Button", "styleId": "secondary", "fillWidth": true, "actions": { "onTap": "increment" } },
+        { "type": "button", "text": "Destructive", "styleId": "destructive", "fillWidth": true, "actions": { "onTap": "increment" } },
+
+        { "type": "label", "text": "Image + Text (Leading)", "styleId": "sectionTitle" },
         {
-          "type": "hstack", "spacing": 8,
+          "type": "vstack", "spacing": 8,
           "children": [
-            { "type": "button", "text": "Pill 1", "styleId": "pill" },
-            { "type": "button", "text": "Pill 2", "styleId": "pillSelected" },
-            { "type": "button", "text": "Pill 3", "styleId": "pill" }
+            { "type": "button", "text": "Add Item", "image": { "sfsymbol": "plus" }, "imagePlacement": "leading", "styleId": "primary", "fillWidth": true, "actions": { "onTap": "increment" } },
+            { "type": "button", "text": "Edit", "image": { "sfsymbol": "pencil" }, "imagePlacement": "leading", "styleId": "secondary", "fillWidth": true, "actions": { "onTap": "increment" } },
+            { "type": "button", "text": "Delete", "image": { "sfsymbol": "trash" }, "imagePlacement": "leading", "styleId": "destructive", "fillWidth": true, "actions": { "onTap": "increment" } }
           ]
         },
+
+        { "type": "label", "text": "Image + Text (Trailing)", "styleId": "sectionTitle" },
+        {
+          "type": "vstack", "spacing": 8,
+          "children": [
+            { "type": "button", "text": "Settings", "image": { "sfsymbol": "gear" }, "imagePlacement": "trailing", "styleId": "secondary", "fillWidth": true, "actions": { "onTap": "increment" } },
+            { "type": "button", "text": "Next", "image": { "sfsymbol": "chevron.right" }, "imagePlacement": "trailing", "styleId": "primary", "fillWidth": true, "actions": { "onTap": "increment" } }
+          ]
+        },
+
+        { "type": "label", "text": "Image + Text (Top)", "styleId": "sectionTitle" },
+        {
+          "type": "hstack", "spacing": 12,
+          "children": [
+            { "type": "button", "text": "Share", "image": { "sfsymbol": "square.and.arrow.up" }, "imagePlacement": "top", "imageSpacing": 4, "styleId": "verticalButton", "actions": { "onTap": "increment" } },
+            { "type": "button", "text": "Save", "image": { "sfsymbol": "square.and.arrow.down" }, "imagePlacement": "top", "imageSpacing": 4, "styleId": "verticalButton", "actions": { "onTap": "increment" } },
+            { "type": "button", "text": "Print", "image": { "sfsymbol": "printer" }, "imagePlacement": "top", "imageSpacing": 4, "styleId": "verticalButton", "actions": { "onTap": "increment" } }
+          ]
+        },
+
+        { "type": "label", "text": "Image + Text (Bottom)", "styleId": "sectionTitle" },
+        {
+          "type": "hstack", "spacing": 12,
+          "children": [
+            { "type": "button", "text": "Home", "image": { "sfsymbol": "house" }, "imagePlacement": "bottom", "imageSpacing": 4, "styleId": "verticalButton", "actions": { "onTap": "increment" } },
+            { "type": "button", "text": "Search", "image": { "sfsymbol": "magnifyingglass" }, "imagePlacement": "bottom", "imageSpacing": 4, "styleId": "verticalButton", "actions": { "onTap": "increment" } },
+            { "type": "button", "text": "Profile", "image": { "sfsymbol": "person" }, "imagePlacement": "bottom", "imageSpacing": 4, "styleId": "verticalButton", "actions": { "onTap": "increment" } }
+          ]
+        },
+
+        { "type": "label", "text": "Image Only (Circle to Capsule)", "styleId": "sectionTitle" },
+        {
+          "type": "vstack", "spacing": 12, "alignment": "leading",
+          "children": [
+            {
+              "type": "hstack", "spacing": 12,
+              "children": [
+                { "type": "button", "image": { "sfsymbol": "heart.fill" }, "styleId": "circleButton", "actions": { "onTap": "increment" } },
+                { "type": "label", "text": "Circle (12px padding)", "styleId": "countLabel" }
+              ]
+            },
+            {
+              "type": "hstack", "spacing": 12,
+              "children": [
+                { "type": "button", "image": { "sfsymbol": "star.fill" }, "styleId": "smallCapsule", "actions": { "onTap": "increment" } },
+                { "type": "label", "text": "Small Capsule (24px padding)", "styleId": "countLabel" }
+              ]
+            },
+            {
+              "type": "hstack", "spacing": 12,
+              "children": [
+                { "type": "button", "image": { "sfsymbol": "bookmark.fill" }, "styleId": "mediumCapsule", "actions": { "onTap": "increment" } },
+                { "type": "label", "text": "Medium Capsule (36px padding)", "styleId": "countLabel" }
+              ]
+            },
+            {
+              "type": "hstack", "spacing": 12,
+              "children": [
+                { "type": "button", "image": { "sfsymbol": "paperplane.fill" }, "styleId": "longCapsule", "actions": { "onTap": "increment" } },
+                { "type": "label", "text": "Long Capsule (48px padding)", "styleId": "countLabel" }
+              ]
+            }
+          ]
+        },
+
+        { "type": "label", "text": "Custom Spacing", "styleId": "sectionTitle" },
+        {
+          "type": "vstack", "spacing": 8,
+          "children": [
+            { "type": "button", "text": "Tight Spacing", "image": { "sfsymbol": "arrow.right" }, "imagePlacement": "trailing", "imageSpacing": 4, "styleId": "secondary", "fillWidth": true, "actions": { "onTap": "increment" } },
+            { "type": "button", "text": "Normal Spacing", "image": { "sfsymbol": "arrow.right" }, "imagePlacement": "trailing", "imageSpacing": 8, "styleId": "secondary", "fillWidth": true, "actions": { "onTap": "increment" } },
+            { "type": "button", "text": "Wide Spacing", "image": { "sfsymbol": "arrow.right" }, "imagePlacement": "trailing", "imageSpacing": 16, "styleId": "secondary", "fillWidth": true, "actions": { "onTap": "increment" } }
+          ]
+        },
+
         { "type": "label", "dataSourceId": "countText", "styleId": "countLabel" }
-      ]
+      ]}]
     }]
   }
 }
