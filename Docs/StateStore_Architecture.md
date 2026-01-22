@@ -1,6 +1,6 @@
 # StateStore Architecture
 
-This document describes the internal architecture of the CLADS state management system, including `StateStore` and its sub-components.
+This document describes the internal architecture of the SCALS state management system, including `StateStore` and its sub-components.
 
 ## Overview
 

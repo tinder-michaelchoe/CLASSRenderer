@@ -1,6 +1,6 @@
 # State Management
 
-CLADS includes a reactive state management system that enables dynamic UIs with data binding and state updates.
+SCALS includes a reactive state management system that enables dynamic UIs with data binding and state updates.
 
 ## Overview
 

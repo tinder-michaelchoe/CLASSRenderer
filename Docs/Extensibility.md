@@ -1,6 +1,6 @@
-# CLADS Extensibility Guide
+# SCALS Extensibility Guide
 
-CLADS provides multiple extensibility mechanisms to support different use cases—from quick view-level customizations to building reusable core modules. This guide covers all extensibility options, when to use each, and how to implement them.
+SCALS provides multiple extensibility mechanisms to support different use cases—from quick view-level customizations to building reusable core modules. This guide covers all extensibility options, when to use each, and how to implement them.
 
 ## Overview of Extensibility Options
 
@@ -10,7 +10,7 @@ CLADS provides multiple extensibility mechanisms to support different use cases�
 | **Custom Actions (delegate)** | View controller | Per-controller | When you need access to the owning controller |
 | **Custom Components (`CustomComponent`)** | View-level registration | Per-view | Quick custom UI without full pipeline |
 | **Core Module (full pipeline)** | Global/shared | App-wide | Reusable components across the app |
-| **CLADSPlugin** | Global/shared | App-wide | Bundle multiple related registrations |
+| **SCALSPlugin** | Global/shared | App-wide | Bundle multiple related registrations |
 | **Design System (`DesignSystemProvider`)** | Global/shared | App-wide | Custom styling tokens and native components |
 | **Section Layout Renderers** | Global/shared | App-wide | Custom list/grid/flow layouts |
 | **State Observers** | View-level | Per-view | React to state changes |
@@ -28,7 +28,7 @@ These options are ideal when you need customization scoped to a specific view in
 Use custom action closures when you need view-specific business logic that doesn't warrant a full action handler.
 
 ```swift
-CladsRendererView(
+ScalsRendererView(
     document: document,
     customActions: [
         "submitOrder": { params, context in
@@ -63,11 +63,11 @@ These actions can be referenced in JSON:
 
 ### 1.2 Custom Actions via Delegate
 
-Use the `CladsActionDelegate` when you need access to the owning view controller or prefer a single point for handling multiple custom actions.
+Use the `ScalsActionDelegate` when you need access to the owning view controller or prefer a single point for handling multiple custom actions.
 
 ```swift
-class OrderViewController: UIViewController, CladsActionDelegate {
-    func cladsRenderer(
+class OrderViewController: UIViewController, ScalsActionDelegate {
+    func scalsRenderer(
         handleAction actionId: String,
         parameters: ActionParameters,
         context: ActionExecutionContext
@@ -106,8 +106,8 @@ struct WeatherCardComponent: CustomComponent {
 
         return AnyView(
             WeatherCardView(temperature: temp, condition: condition)
-                .applyCladsStyle(context.style)
-                .applyCladsActions(context.component.actions, context: context)
+                .applyScalsStyle(context.style)
+                .applyScalsActions(context.component.actions, context: context)
         )
     }
 }
@@ -116,7 +116,7 @@ struct WeatherCardComponent: CustomComponent {
 Register at view creation:
 
 ```swift
-CladsRendererView(
+ScalsRendererView(
     document: document,
     customComponents: [WeatherCardComponent.self, PhotoComparisonComponent.self]
 )
@@ -153,19 +153,19 @@ The `CustomComponentContext` provides everything your custom component needs:
 | `resolveBool(forKey:)` | Resolve data reference to Bool |
 | `executeAction(_:)` | Execute an action binding |
 
-#### Applying CLADS Styling and Actions
+#### Applying SCALS Styling and Actions
 
-Use the provided view modifiers to integrate with CLADS systems:
+Use the provided view modifiers to integrate with SCALS systems:
 
 ```swift
 MyCustomView()
-    .applyCladsStyle(context.style)           // Apply IR.Style
-    .applyCladsActions(context.component.actions, context: context)  // Apply actions
+    .applyScalsStyle(context.style)           // Apply IR.Style
+    .applyScalsActions(context.component.actions, context: context)  // Apply actions
 ```
 
 **When to use CustomComponent:**
 - Custom UI that doesn't fit built-in components
-- Wrapping existing SwiftUI views for use in CLADS
+- Wrapping existing SwiftUI views for use in SCALS
 - Complex interactive components (sliders, pickers, animations)
 - When you don't need UIKit support
 
@@ -173,11 +173,11 @@ MyCustomView()
 
 ## Part 2: Core Module Extensibility
 
-When you need components or actions that are reusable across your entire app, implement them as core modules that register with CLADS registries.
+When you need components or actions that are reusable across your entire app, implement them as core modules that register with SCALS registries.
 
 ### 2.1 Architecture Overview
 
-CLADS uses an LLVM-inspired pipeline:
+SCALS uses an LLVM-inspired pipeline:
 
 ```
 JSON → Document (Model) → Resolver → RenderTree (IR) → Renderer → View
@@ -380,7 +380,7 @@ public struct ChartNodeUIKitRenderer: UIKitNodeRendering {
 
 #### Step 7: Register with Default Registries
 
-Add to the appropriate registry extension in CladsModules:
+Add to the appropriate registry extension in ScalsModules:
 
 ```swift
 // ComponentResolverRegistry+Default.swift
@@ -483,15 +483,15 @@ public final class LongRunningActionHandler: CancellableActionHandler {
 }
 ```
 
-### 2.5 Using CLADSPlugin for Bundled Registrations
+### 2.5 Using SCALSPlugin for Bundled Registrations
 
 When you have multiple related components/actions, bundle them as a plugin:
 
 ```swift
-public struct ChartingPlugin: CLADSPlugin {
+public struct ChartingPlugin: SCALSPlugin {
     public init() {}
     
-    public func register(with registry: CladsRegistry) {
+    public func register(with registry: ScalsRegistry) {
         // Register component properties
         registry.registerProperties(BarChartProperties.self)
         registry.registerProperties(LineChartProperties.self)
@@ -513,16 +513,16 @@ public struct ChartingPlugin: CLADSPlugin {
 }
 
 // Usage
-let registry = CladsRegistry()
+let registry = ScalsRegistry()
 registry.load(ChartingPlugin())
 ```
 
-### 2.6 Using CladsRegistry for Complete Registration
+### 2.6 Using ScalsRegistry for Complete Registration
 
-`CladsRegistry` provides unified registration for all pipeline stages:
+`ScalsRegistry` provides unified registration for all pipeline stages:
 
 ```swift
-let registry = CladsRegistry()
+let registry = ScalsRegistry()
 
 // Full registration with all renderers
 registry.registerComponent(
@@ -558,7 +558,7 @@ registry.registerComponent(
 | Action that presents UIKit views | Action delegate |
 | Custom UI for one screen only | `CustomComponent` protocol |
 | Reusable component across app | Full core module |
-| Multiple related components | `CLADSPlugin` |
+| Multiple related components | `SCALSPlugin` |
 | Both SwiftUI and UIKit support | Full core module with both renderers |
 
 ### Migration Path
@@ -631,13 +631,13 @@ The built-in `RequestActionHandler` shows patterns for complex actions:
 - Debug logging
 - Success/error callbacks
 
-See `CladsModules/ActionHandlers/RequestActionHandler.swift` for the full implementation.
+See `ScalsModules/ActionHandlers/RequestActionHandler.swift` for the full implementation.
 
 ---
 
 ## Part 4: Design System Integration
 
-Design systems allow you to provide both style tokens and native component implementations that integrate seamlessly with CLADS.
+Design systems allow you to provide both style tokens and native component implementations that integrate seamlessly with SCALS.
 
 ### 4.1 DesignSystemProvider Protocol
 
@@ -714,7 +714,7 @@ public struct MyDesignSystemProvider: DesignSystemProvider {
     
     @MainActor
     private func renderNativeButton(_ node: ButtonNode, ref: String, context: SwiftUIRenderContext) -> AnyView? {
-        // Return your native design system button with CLADS action handling
+        // Return your native design system button with SCALS action handling
         return AnyView(
             MyDesignSystemButton(
                 label: node.label,
@@ -757,7 +757,7 @@ Pass your provider when creating the view:
 ```swift
 let provider = MyDesignSystemProvider()
 
-CladsRendererView(
+ScalsRendererView(
     document: document,
     designSystemProvider: provider
 )
@@ -765,7 +765,7 @@ CladsRendererView(
 
 ### 4.4 Fallback Behavior
 
-CLADS uses a cascading fallback system:
+SCALS uses a cascading fallback system:
 
 1. **Provider + canRender() returns true** → Native component via `provider.render()`
 2. **Provider + canRender() returns false** → Standard component + `IR.Style` from `provider.resolveStyle()`
@@ -773,10 +773,10 @@ CLADS uses a cascading fallback system:
 
 ### 4.5 Best Practices for Design Systems
 
-1. **Keep components pure** – Design system components should have no CLADS imports
+1. **Keep components pure** – Design system components should have no SCALS imports
 2. **Handle dark mode internally** – Use `@Environment(\.colorScheme)` in your components
 3. **Always implement `resolveStyle()`** – Provides fallback for platforms without native support
-4. **Use the wrapper pattern** – CLADS wraps your components to inject action handling
+4. **Use the wrapper pattern** – SCALS wraps your components to inject action handling
 
 For complete details, see `Docs/DesignSystemGuide.md`.
 
@@ -784,7 +784,7 @@ For complete details, see `Docs/DesignSystemGuide.md`.
 
 ## Part 5: Section Layout Extensibility
 
-CLADS supports custom section layouts through two extension points:
+SCALS supports custom section layouts through two extension points:
 
 ### 5.1 Section Layout Config Resolvers
 
@@ -886,17 +886,17 @@ stateStore.observe("cart.items", as: [CartItem].self) { oldItems, newItems in
 
 ### 6.2 External State Binding
 
-Sync CLADS state with external SwiftUI state using `CladsRendererBindingView`:
+Sync SCALS state with external SwiftUI state using `ScalsRendererBindingView`:
 
 ```swift
 struct MyView: View {
     @State private var orderState = OrderState()
     
     var body: some View {
-        CladsRendererBindingView(
+        ScalsRendererBindingView(
             document: document,
             state: $orderState,
-            configuration: CladsRendererBindingConfiguration(
+            configuration: ScalsRendererBindingConfiguration(
                 onStateChange: { path, old, new in
                     // Analytics, persistence, etc.
                     Analytics.track("state_change", properties: ["path": path])
@@ -910,7 +910,7 @@ struct MyView: View {
 }
 ```
 
-#### CladsRendererBindingConfiguration Callbacks
+#### ScalsRendererBindingConfiguration Callbacks
 
 | Callback | Signature | Use Case |
 |----------|-----------|----------|
@@ -926,7 +926,7 @@ let context = ActionContext(
     stateStore: stateStore,
     actionDefinitions: actions,
     registry: actionRegistry,
-    actionDelegate: myDelegate,           // CladsActionDelegate for action interception
+    actionDelegate: myDelegate,           // ScalsActionDelegate for action interception
     alertPresenter: CustomAlertPresenter() // AlertPresenting for custom alerts
 )
 
@@ -938,7 +938,7 @@ context.navigationHandler = { destination, presentation in /* custom navigation 
 
 | Handler | Type | Purpose |
 |---------|------|---------|
-| `actionDelegate` | `CladsActionDelegate?` | Intercept actions before registry lookup |
+| `actionDelegate` | `ScalsActionDelegate?` | Intercept actions before registry lookup |
 | `alertPresenter` | `AlertPresenting` | Custom alert presentation (injectable at init) |
 | `dismissHandler` | `(() -> Void)?` | Custom dismiss behavior |
 | `alertHandler` | `((AlertConfiguration) -> Void)?` | Legacy alert callback |
@@ -1029,7 +1029,7 @@ context.dismissHandler = {
 
 ## Summary
 
-CLADS extensibility is designed around the principle of "progressive complexity"—start with the simplest solution that works, and upgrade to more powerful options only when needed.
+SCALS extensibility is designed around the principle of "progressive complexity"—start with the simplest solution that works, and upgrade to more powerful options only when needed.
 
 ### Quick Reference
 
@@ -1039,12 +1039,12 @@ CLADS extensibility is designed around the principle of "progressive complexity"
 | Action that presents UIKit views | Action delegate |
 | Custom UI for one screen only | `CustomComponent` protocol |
 | Reusable component across app | Full core module |
-| Multiple related components | `CLADSPlugin` |
+| Multiple related components | `SCALSPlugin` |
 | Both SwiftUI and UIKit support | Full core module with both renderers |
 | Custom styling system | `DesignSystemProvider` |
 | Custom list/grid layouts | Section layout renderer |
 | React to state changes | State observers |
-| Sync with SwiftUI state | `CladsRendererBindingView` |
+| Sync with SwiftUI state | `ScalsRendererBindingView` |
 | Custom navigation | Navigation handler |
 | Custom alerts | `AlertPresenting` |
 
@@ -1055,4 +1055,4 @@ CLADS extensibility is designed around the principle of "progressive complexity"
 3. **Bundle** related modules into plugins
 4. **Ship** plugins as separate frameworks if needed
 
-For most custom UI needs, `CustomComponent` is the right choice. For app-wide reusable components with full pipeline support, implement a core module. For related sets of components, bundle them as a `CLADSPlugin`. For consistent styling across your app, implement a `DesignSystemProvider`.
+For most custom UI needs, `CustomComponent` is the right choice. For app-wide reusable components with full pipeline support, implement a core module. For related sets of components, bundle them as a `SCALSPlugin`. For consistent styling across your app, implement a `DesignSystemProvider`.

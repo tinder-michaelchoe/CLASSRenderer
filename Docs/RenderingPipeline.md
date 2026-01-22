@@ -1,6 +1,6 @@
 # Rendering Pipeline
 
-CladsRenderer uses an LLVM-inspired multi-stage pipeline to transform JSON into native UI. This architecture provides clear separation of concerns, enables multiple rendering backends, and facilitates debugging at each stage.
+ScalsRenderer uses an LLVM-inspired multi-stage pipeline to transform JSON into native UI. This architecture provides clear separation of concerns, enables multiple rendering backends, and facilitates debugging at each stage.
 
 ## Pipeline Overview
 
@@ -75,7 +75,7 @@ The JSON is decoded into a **Document.Definition** using `JSONDecoder`. This sta
 ### File Locations
 
 ```
-CladsRendererFramework/Document/
+ScalsRendererFramework/Document/
 ├── Document.swift         # Document enum namespace, Document.Definition
 ├── RootComponent.swift    # Document.RootComponent
 ├── LayoutNode.swift       # Document.LayoutNode, Document.Layout
@@ -114,7 +114,7 @@ The **Resolver** transforms the Document model into a **RenderTree** (IR). This 
 ### File Location
 
 ```
-CladsRendererFramework/IR/
+ScalsRendererFramework/IR/
 ├── IR.swift           # IR namespace: IR.Style, IR.Section, IR.SectionType
 ├── Resolver.swift     # Main resolver
 ├── RenderTree.swift   # RenderTree, RenderNode, node types
@@ -214,7 +214,7 @@ case .text(let text):
 ### File Locations
 
 ```
-CladsRendererFramework/Renderers/
+ScalsRendererFramework/Renderers/
 ├── Renderer.swift                    // Protocol definition
 ├── SwiftUIRenderer.swift             // SwiftUI implementation
 ├── UIKitRenderer.swift               // UIKit implementation

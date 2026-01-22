@@ -35,7 +35,9 @@
       "Bash(swift sdk:*)",
       "Bash(chmod:*)",
       "Bash(ln:*)",
-      "Bash(npm install @wasmer/wasi)"
+      "Bash(npm install @wasmer/wasi)",
+      "WebFetch(domain:www.swiftanytime.com)",
+      "Bash(git mv:*)"
     ]
   }
 }

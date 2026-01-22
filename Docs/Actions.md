@@ -1,6 +1,6 @@
 # Actions
 
-Actions define behaviors that execute in response to user interactions. CLADS provides a set of built-in action types that can be composed into complex workflows.
+Actions define behaviors that execute in response to user interactions. SCALS provides a set of built-in action types that can be composed into complex workflows.
 
 ## Action Definition
 

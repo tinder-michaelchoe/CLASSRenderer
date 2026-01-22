@@ -1,6 +1,6 @@
 # Styling
 
-CLADS uses a style system with named styles, inheritance, and resolution. Styles are defined once and referenced by ID throughout the document.
+SCALS uses a style system with named styles, inheritance, and resolution. Styles are defined once and referenced by ID throughout the document.
 
 ## Style Definition
 

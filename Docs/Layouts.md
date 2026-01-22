@@ -1,6 +1,6 @@
 # Layouts
 
-Layouts are container nodes that arrange their children in specific patterns. CLADS supports both simple stack-based layouts and complex section-based layouts.
+Layouts are container nodes that arrange their children in specific patterns. SCALS supports both simple stack-based layouts and complex section-based layouts.
 
 ## Layout Types
 

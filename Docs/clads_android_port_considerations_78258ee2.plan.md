@@ -1,6 +1,6 @@
 ---
-name: CLADS Android Port Considerations
-overview: A meta-analysis of what to include, adapt, and potentially exclude when creating a prompt to recreate the CLADS server-driven UI framework on Android, preserving the core architecture while adapting to Android-specific patterns.
+name: SCALS Android Port Considerations
+overview: A meta-analysis of what to include, adapt, and potentially exclude when creating a prompt to recreate the SCALS server-driven UI framework on Android, preserving the core architecture while adapting to Android-specific patterns.
 todos:
   - id: review-plan
     content: Review and discuss the considerations for Android port prompt creation
@@ -10,11 +10,11 @@ todos:
     status: completed
 ---
 
-# CLADS Android Port - Prompt Considerations
+# SCALS Android Port - Prompt Considerations
 
 ## Current Architecture Understanding
 
-The iOS CLADS framework follows an LLVM-inspired multi-stage pipeline:
+The iOS SCALS framework follows an LLVM-inspired multi-stage pipeline:
 
 ```mermaid
 flowchart LR
@@ -38,15 +38,15 @@ The rendering pipeline is platform-agnostic and should be central to the prompt:
 
 - JSON parsing → Document (AST) → Resolution → RenderTree (IR) → Renderer
 - Clear separation between parsing, resolution, and rendering phases
-- Include the [RenderingPipeline.md](CladsRenderer/Docs/RenderingPipeline.md) documentation
+- Include the [RenderingPipeline.md](ScalsRenderer/Docs/RenderingPipeline.md) documentation
 
 ### 2. JSON Schema Definition (Essential)
 
-- Include [clads-schema.json](CladsRenderer/CLADS/Schema/clads-schema.json) - identical schema ensures cross-platform compatibility
+- Include [scals-schema.json](ScalsRenderer/SCALS/Schema/scals-schema.json) - identical schema ensures cross-platform compatibility
 - Document structure: `id`, `version`, `state`, `styles`, `dataSources`, `actions`, `root`
 - This is the contract between server and client
 
-### 3. The 5 CLADS Components (Essential)
+### 3. The 5 SCALS Components (Essential)
 
 | Component | Include | Why |
 
@@ -67,7 +67,7 @@ The rendering pipeline is platform-agnostic and should be central to the prompt:
 - `Document.*` namespace for AST types (parsed JSON)
 - `IR.*` namespace for resolved types
 - `RenderNode` types for render-ready structures
-- Include [Document.swift](CladsRenderer/CLADS/Document/Document.swift) and [IR.swift](CladsRenderer/CLADS/IR/IR.swift) as reference
+- Include [Document.swift](ScalsRenderer/SCALS/Document/Document.swift) and [IR.swift](ScalsRenderer/SCALS/IR/IR.swift) as reference
 
 ### 5. Resolver Architecture (Essential)
 
@@ -75,7 +75,7 @@ The rendering pipeline is platform-agnostic and should be central to the prompt:
 - Style resolution with inheritance
 - Data binding resolution
 - Action resolution
-- Include [Resolver.swift](CladsRenderer/CLADS/IR/Resolver.swift) as reference
+- Include [Resolver.swift](ScalsRenderer/SCALS/IR/Resolver.swift) as reference
 
 ### 6. StateStore Pattern (Essential)
 
@@ -83,18 +83,18 @@ The rendering pipeline is platform-agnostic and should be central to the prompt:
 - Dirty tracking for efficient updates
 - Template interpolation (`${variable}` syntax)
 - Expression evaluation (`$expr` for dynamic values)
-- Include [StateStore.swift](CladsRenderer/CLADS/State/StateStore.swift) as reference
+- Include [StateStore.swift](ScalsRenderer/SCALS/State/StateStore.swift) as reference
 
 ### 7. Extensibility Architecture (Essential)
 
 - Component registration pattern
 - Plugin system for external modules
 - Registry pattern for resolvers and renderers
-- Include [ComponentRegistration.swift](CladsRenderer/CLADS/Extensibility/ComponentRegistration.swift) as reference
+- Include [ComponentRegistration.swift](ScalsRenderer/SCALS/Extensibility/ComponentRegistration.swift) as reference
 
 ### 8. Unit Tests (Important)
 
-- Include key tests from `CLADSTests/` to demonstrate expected behavior
+- Include key tests from `SCALSTests/` to demonstrate expected behavior
 - Document parsing tests, resolution tests, state tests
 
 ---
@@ -105,7 +105,7 @@ The rendering pipeline is platform-agnostic and should be central to the prompt:
 
 The Android implementation MUST use idiomatic Kotlin throughout. Explicitly require:
 
-| Kotlin Feature | Use Case in CLADS |
+| Kotlin Feature | Use Case in SCALS |
 
 |----------------|-------------------|
 
@@ -367,7 +367,7 @@ object Document {
 
 |---------------|---------|
 
-| **Material Design 3** | Should CLADS styles map to Material theme tokens? |
+| **Material Design 3** | Should SCALS styles map to Material theme tokens? |
 
 | **Dynamic colors** | Android 12+ wallpaper-based colors (Material You) |
 
@@ -415,7 +415,7 @@ object Document {
 
 | **Logging** | Timber or custom logger integration |
 
-| **Compose Preview** | `@Preview` support for CLADS components |
+| **Compose Preview** | `@Preview` support for SCALS components |
 
 | **Android Studio tooling** | Layout inspector compatibility |
 
@@ -467,7 +467,7 @@ object Document {
 
 ## Recommended Prompt Structure
 
-1. **Overview Section**: Explain CLADS purpose and pipeline architecture
+1. **Overview Section**: Explain SCALS purpose and pipeline architecture
 2. **JSON Schema Section**: Provide the schema as the contract
 3. **AST Types Section**: Document namespace types with Kotlin mappings suggested
 4. **IR Types Section**: IR namespace types
@@ -488,7 +488,7 @@ object Document {
 
 | Documentation | `README.md`, `Docs/*.md` (all 9 docs) |
 
-| Schema | `clads-schema.json`, `clads-ir-schema.json` |
+| Schema | `scals-schema.json`, `scals-ir-schema.json` |
 
 | AST Types | `Document/*.swift` (11 files) |
 
@@ -500,4 +500,4 @@ object Document {
 
 | Extensibility | `Extensibility/*.swift` (7 files) |
 
-| Key Tests | Selected tests from `CLADSTests/` |
+| Key Tests | Selected tests from `SCALSTests/` |

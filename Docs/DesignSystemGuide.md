@@ -1,10 +1,10 @@
-# CLADS Design System Integration Guide
+# SCALS Design System Integration Guide
 
-This guide explains how to integrate external design systems with CLADS, enabling both style tokens and full native component rendering.
+This guide explains how to integrate external design systems with SCALS, enabling both style tokens and full native component rendering.
 
 ## Overview
 
-CLADS supports design system integration through the `DesignSystemProvider` protocol. A design system provider can:
+SCALS supports design system integration through the `DesignSystemProvider` protocol. A design system provider can:
 
 1. **Style Tokens** - Map design system style references to `IR.Style` values
 2. **Full Components** - Render native SwiftUI components with full fidelity (animations, states, behaviors)
@@ -152,7 +152,7 @@ public struct MyDesignSystemProvider: SwiftUIDesignSystemRenderer {
         
         let style: MyButton.Style = parts[1] == "primary" ? .primary : .secondary
         
-        // Wrap native component with CLADS action handling
+        // Wrap native component with SCALS action handling
         return AnyView(
             MyButton(
                 label: node.label,
@@ -177,12 +177,12 @@ public struct MyDesignSystemProvider: SwiftUIDesignSystemRenderer {
 
 ## Creating Design System Components
 
-Design system components should be **pure SwiftUI** with no CLADS dependency:
+Design system components should be **pure SwiftUI** with no SCALS dependency:
 
 ```swift
 import SwiftUI
 
-/// Pure design system button - no CLADS dependency
+/// Pure design system button - no SCALS dependency
 public struct MyButton: View {
     public enum Style { case primary, secondary }
     
@@ -242,16 +242,16 @@ Components handle dark mode internally using `@Environment(\.colorScheme)`. This
 
 - No renderer swapping needed
 - Colors adapt automatically
-- No changes required to CLADS core
+- No changes required to SCALS core
 
 ## Injecting Your Provider
 
-Pass your provider when creating `CladsRendererView`:
+Pass your provider when creating `ScalsRendererView`:
 
 ```swift
 let provider = MyDesignSystemProvider()
 
-CladsRendererView(
+ScalsRendererView(
     document: document,
     actionRegistry: registry,
     componentRegistry: componentRegistry,
@@ -263,7 +263,7 @@ CladsRendererView(
 Or from JSON string:
 
 ```swift
-CladsRendererView(
+ScalsRendererView(
     jsonString: jsonString,
     actionRegistry: registry,
     componentRegistry: componentRegistry,
@@ -274,7 +274,7 @@ CladsRendererView(
 
 ## Fallback Behavior
 
-CLADS uses a cascading fallback system:
+SCALS uses a cascading fallback system:
 
 1. **Provider + canRender() returns true** → Native component via `provider.render()`
 2. **Provider + canRender() returns false** → Standard component + `IR.Style` from `provider.resolveStyle()`
@@ -286,25 +286,25 @@ This allows gradual adoption - start with style tokens, then add native componen
 
 ### 1. Keep Components Pure
 
-Design system components should have no CLADS imports. This keeps them:
+Design system components should have no SCALS imports. This keeps them:
 - Testable in isolation
-- Reusable outside CLADS
+- Reusable outside SCALS
 - Easy to maintain
 
 ### 2. Use the Wrapper Pattern
 
-CLADS wraps your components to inject action handling:
+SCALS wraps your components to inject action handling:
 
 ```swift
-// Pure component (no CLADS)
+// Pure component (no SCALS)
 MyButton(label: "Save", style: .primary, onTap: { ... })
 
-// CLADS wraps it
+// SCALS wraps it
 MyButton(
     label: node.label,
     style: style,
     onTap: {
-        // Execute CLADS action
+        // Execute SCALS action
         await context.actionContext.executeAction(id: actionId)
     }
 )
@@ -319,14 +319,14 @@ Always implement `resolveStyle()` for graceful degradation:
 
 ### 4. Dark Mode
 
-Handle dark mode in components using `@Environment(\.colorScheme)`. Don't rely on the CLADS renderer to switch themes.
+Handle dark mode in components using `@Environment(\.colorScheme)`. Don't rely on the SCALS renderer to switch themes.
 
 ### 5. Testing
 
 Write tests for:
 - Style resolution (`resolveStyle()` returns expected `IR.Style`)
 - Component selection (`canRender()` returns correct values)
-- Action execution (native components trigger CLADS actions)
+- Action execution (native components trigger SCALS actions)
 
 Example test:
 
@@ -402,9 +402,9 @@ Adding a new design system requires:
 3. Implement `canRender(_:styleId:)` to indicate which nodes can be rendered natively
 4. For SwiftUI: Conform to `SwiftUIDesignSystemRenderer` and implement `render(_:styleId:context:)`
 5. Create pure SwiftUI components with dark mode support via `@Environment(\.colorScheme)`
-6. Inject provider: `CladsRendererView(..., designSystemProvider: NewDesignSystemProvider())`
+6. Inject provider: `ScalsRendererView(..., designSystemProvider: NewDesignSystemProvider())`
 
-**No changes to CLADS core or JSON schema required.**
+**No changes to SCALS core or JSON schema required.**
 
 ### Platform-Specific Rendering
 

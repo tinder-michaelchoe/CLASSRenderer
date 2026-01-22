@@ -1,6 +1,6 @@
 # Future Enhancements
 
-This document outlines potential future enhancements for CLADS, organized by category.
+This document outlines potential future enhancements for SCALS, organized by category.
 
 ---
 
@@ -403,7 +403,7 @@ JSON Schema for IDE support:
 
 ```json
 {
-  "$schema": "https://clads.dev/schema/v1.json"
+  "$schema": "https://scals.dev/schema/v1.json"
 }
 ```
 
@@ -413,13 +413,13 @@ Command-line utilities:
 
 ```bash
 # Validate document
-clads validate document.json
+scals validate document.json
 
 # Generate preview
-clads preview document.json --output preview.png
+scals preview document.json --output preview.png
 
 # Convert between formats
-clads convert document.json --format yaml
+scals convert document.json --format yaml
 ```
 
 ### Debug Mode
@@ -442,7 +442,7 @@ Enhanced debugging:
 Live reload during development:
 
 ```swift
-CladsRendererView(
+ScalsRendererView(
     url: debugServerURL,
     hotReload: true
 )

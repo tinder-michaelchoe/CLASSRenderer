@@ -1,10 +1,10 @@
-# CladsRenderer
+# ScalsRenderer
 
 A server-driven UI framework for iOS that renders native SwiftUI and UIKit views from JSON definitions.
 
 ## Overview
 
-CladsRenderer uses an LLVM-inspired multi-stage pipeline to transform JSON into native UI:
+ScalsRenderer uses an LLVM-inspired multi-stage pipeline to transform JSON into native UI:
 
 ```
 JSON → Document (AST) → RenderTree (IR) → Renderer → Native UI
@@ -20,11 +20,11 @@ This architecture enables:
 
 ```swift
 import SwiftUI
-import CladsRendererFramework
+import ScalsRendererFramework
 
 struct ContentView: View {
     var body: some View {
-        if let view = CladsRendererView(jsonString: jsonDocument) {
+        if let view = ScalsRendererView(jsonString: jsonDocument) {
             view
         }
     }
@@ -81,7 +81,7 @@ struct ContentView: View {
 ## Architecture
 
 ```
-CladsRendererFramework/
+ScalsRendererFramework/
 ├── Document/            # Document.* namespace - JSON schema types (AST)
 │   ├── Document.swift        # Document.Definition, Document.StateValue
 │   ├── Component.swift       # Document.Component
@@ -97,10 +97,10 @@ CladsRendererFramework/
 │   └── Resolution/           # Specialized resolvers
 ├── Renderers/           # Output renderers
 │   ├── SwiftUIRenderer.swift
-│   ├── CladsUIKitView.swift
+│   ├── ScalsUIKitView.swift
 │   └── DebugRenderer.swift
 ├── Rendering/           # SwiftUI view components
-│   ├── CladsRendererView.swift
+│   ├── ScalsRendererView.swift
 │   └── ComponentViews/
 ├── Actions/             # Action handling
 │   └── Handlers/

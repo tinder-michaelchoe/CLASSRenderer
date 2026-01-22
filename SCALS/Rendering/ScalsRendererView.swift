@@ -1,0 +1,430 @@
+//
+//  ScalsRendererView.swift
+//  ScalsRendererFramework
+//
+//  Main entry point for rendering a document using the LLVM-inspired pipeline:
+//  Document (AST) → Resolver → RenderTree (IR) → SwiftUIRenderer → View
+//
+
+import SwiftUI
+import Combine
+
+/// Main entry point for rendering a document
+public struct ScalsRendererView: View {
+    private let renderTree: RenderTree
+    @StateObject private var observableActionContext: ObservableActionContext
+
+    @Environment(\.dismiss) private var dismiss
+
+    private let swiftuiRendererRegistry: SwiftUINodeRendererRegistry
+    private let designSystemProvider: (any DesignSystemProvider)?
+
+    /// Initialize with a document and registries.
+    ///
+    /// - Parameters:
+    ///   - document: The document definition to render
+    ///   - actionRegistry: Registry for action handlers (may include merged custom actions)
+    ///   - componentRegistry: Registry for component resolvers
+    ///   - swiftuiRendererRegistry: Registry for SwiftUI renderers
+    ///   - customComponents: Array of custom component types to register
+    ///   - actionDelegate: Delegate for handling custom actions
+    ///   - designSystemProvider: Optional design system provider for style resolution and native components
+    public init(
+        document: Document.Definition,
+        actionRegistry: ActionRegistry,
+        componentRegistry: ComponentResolverRegistry,
+        swiftuiRendererRegistry: SwiftUINodeRendererRegistry,
+        customComponents: [any CustomComponent.Type] = [],
+        actionDelegate: ScalsActionDelegate? = nil,
+        designSystemProvider: (any DesignSystemProvider)? = nil
+    ) {
+        // Set up custom components if provided
+        if !customComponents.isEmpty {
+            let customRegistry = CustomComponentRegistry()
+            customRegistry.register(customComponents)
+            componentRegistry.setCustomComponentRegistry(customRegistry)
+
+            // Register the custom component SwiftUI renderer
+            let customRenderer = CustomComponentSwiftUIRenderer(customComponentRegistry: customRegistry)
+            swiftuiRendererRegistry.register(customRenderer)
+        }
+
+        self.swiftuiRendererRegistry = swiftuiRendererRegistry
+        self.designSystemProvider = designSystemProvider
+
+        // Resolve Document (AST) into RenderTree (IR)
+        let resolver = Resolver(
+            document: document,
+            componentRegistry: componentRegistry,
+            designSystemProvider: designSystemProvider
+        )
+        let tree: RenderTree
+        do {
+            tree = try resolver.resolve()
+        } catch {
+            tree = RenderTree(
+                root: RootNode(),
+                stateStore: StateStore(),
+                actions: [:]
+            )
+        }
+        self.renderTree = tree
+
+        // Create ActionContext with the resolved state store
+        let ctx = ActionContext(
+            stateStore: tree.stateStore,
+            actionDefinitions: document.actions ?? [:],
+            registry: actionRegistry,
+            actionDelegate: actionDelegate
+        )
+        // Wrap in ObservableActionContext for SwiftUI integration
+        _observableActionContext = StateObject(wrappedValue: ObservableActionContext(wrapping: ctx))
+    }
+
+    public var body: some View {
+        // Use SwiftUIRenderer to render the RenderTree
+        let renderer = SwiftUIRenderer(
+            actionContext: observableActionContext.context,
+            rendererRegistry: swiftuiRendererRegistry,
+            designSystemProvider: designSystemProvider
+        )
+        renderer.render(renderTree)
+            .onAppear {
+                setupContext()
+            }
+    }
+
+    private func setupContext() {
+        observableActionContext.context.dismissHandler = { [dismiss] in
+            dismiss()
+        }
+
+        observableActionContext.context.alertHandler = { config in
+            AlertPresenter.present(config)
+        }
+    }
+}
+
+// MARK: - Convenience Initializers
+
+extension ScalsRendererView {
+    /// Initialize from a JSON string
+    public init?(
+        jsonString: String,
+        actionRegistry: ActionRegistry,
+        componentRegistry: ComponentResolverRegistry,
+        swiftuiRendererRegistry: SwiftUINodeRendererRegistry,
+        customComponents: [any CustomComponent.Type] = [],
+        actionDelegate: ScalsActionDelegate? = nil,
+        designSystemProvider: (any DesignSystemProvider)? = nil,
+        debugMode: Bool = false
+    ) {
+        guard let document = try? Document.Definition(jsonString: jsonString) else {
+            return nil
+        }
+        self.init(
+            document: document,
+            actionRegistry: actionRegistry,
+            componentRegistry: componentRegistry,
+            swiftuiRendererRegistry: swiftuiRendererRegistry,
+            customComponents: customComponents,
+            actionDelegate: actionDelegate,
+            designSystemProvider: designSystemProvider,
+            debugMode: debugMode
+        )
+    }
+
+    /// Initialize from a Document with optional debug output
+    public init(
+        document: Document.Definition,
+        actionRegistry: ActionRegistry,
+        componentRegistry: ComponentResolverRegistry,
+        swiftuiRendererRegistry: SwiftUINodeRendererRegistry,
+        customComponents: [any CustomComponent.Type] = [],
+        actionDelegate: ScalsActionDelegate? = nil,
+        designSystemProvider: (any DesignSystemProvider)? = nil,
+        debugMode: Bool
+    ) {
+        // Set up custom components if provided
+        if !customComponents.isEmpty {
+            let customRegistry = CustomComponentRegistry()
+            customRegistry.register(customComponents)
+            componentRegistry.setCustomComponentRegistry(customRegistry)
+
+            // Register the custom component SwiftUI renderer
+            let customRenderer = CustomComponentSwiftUIRenderer(customComponentRegistry: customRegistry)
+            swiftuiRendererRegistry.register(customRenderer)
+        }
+
+        self.swiftuiRendererRegistry = swiftuiRendererRegistry
+        self.designSystemProvider = designSystemProvider
+
+        // Resolve Document (AST) into RenderTree (IR)
+        let resolver = Resolver(
+            document: document,
+            componentRegistry: componentRegistry,
+            designSystemProvider: designSystemProvider
+        )
+        let tree: RenderTree
+        do {
+            tree = try resolver.resolve()
+        } catch {
+            print("ScalsRendererView: Resolution failed - \(error)")
+            tree = RenderTree(
+                root: RootNode(),
+                stateStore: StateStore(),
+                actions: [:]
+            )
+        }
+        self.renderTree = tree
+
+        // Print RenderTree debug output if enabled
+        if debugMode {
+            let debugRenderer = DebugRenderer()
+            print(debugRenderer.render(tree))
+        }
+
+        // Create ActionContext with the resolved state store
+        let ctx = ActionContext(
+            stateStore: tree.stateStore,
+            actionDefinitions: document.actions ?? [:],
+            registry: actionRegistry,
+            actionDelegate: actionDelegate
+        )
+        // Wrap in ObservableActionContext for SwiftUI integration
+        _observableActionContext = StateObject(wrappedValue: ObservableActionContext(wrapping: ctx))
+    }
+}
+
+// MARK: - Binding-based API
+
+/// Configuration for ScalsRendererBindingView with external state binding
+public struct ScalsRendererBindingConfiguration<State: Codable> {
+    /// Initial typed state (will be merged with document state)
+    public var initialState: State?
+
+    /// Called when state changes (for analytics, persistence, etc.)
+    public var onStateChange: ((_ path: String, _ oldValue: Any?, _ newValue: Any?) -> Void)?
+
+    /// Called when an action is executed
+    public var onAction: ((_ actionId: String, _ parameters: [String: Any]) -> Void)?
+
+    /// Registry for action handlers (may include merged custom actions)
+    public var actionRegistry: ActionRegistry
+
+    /// Registry for component resolvers
+    public var componentRegistry: ComponentResolverRegistry
+
+    /// Registry for SwiftUI renderers
+    public var swiftuiRendererRegistry: SwiftUINodeRendererRegistry
+
+    /// Custom component types to register
+    public var customComponents: [any CustomComponent.Type]
+
+    /// Delegate for handling custom actions
+    public weak var actionDelegate: ScalsActionDelegate?
+
+    /// Enable debug mode
+    public var debugMode: Bool
+
+    public init(
+        initialState: State? = nil,
+        onStateChange: ((_ path: String, _ oldValue: Any?, _ newValue: Any?) -> Void)? = nil,
+        onAction: ((_ actionId: String, _ parameters: [String: Any]) -> Void)? = nil,
+        actionRegistry: ActionRegistry,
+        componentRegistry: ComponentResolverRegistry,
+        swiftuiRendererRegistry: SwiftUINodeRendererRegistry,
+        customComponents: [any CustomComponent.Type] = [],
+        actionDelegate: ScalsActionDelegate? = nil,
+        debugMode: Bool = false
+    ) {
+        self.initialState = initialState
+        self.onStateChange = onStateChange
+        self.onAction = onAction
+        self.actionRegistry = actionRegistry
+        self.componentRegistry = componentRegistry
+        self.swiftuiRendererRegistry = swiftuiRendererRegistry
+        self.customComponents = customComponents
+        self.actionDelegate = actionDelegate
+        self.debugMode = debugMode
+
+        // Set up custom components if provided
+        if !customComponents.isEmpty {
+            let customRegistry = CustomComponentRegistry()
+            customRegistry.register(customComponents)
+            componentRegistry.setCustomComponentRegistry(customRegistry)
+
+            // Register the custom component SwiftUI renderer
+            let customRenderer = CustomComponentSwiftUIRenderer(customComponentRegistry: customRegistry)
+            swiftuiRendererRegistry.register(customRenderer)
+        }
+    }
+}
+
+/// View wrapper that syncs state with an external Binding
+public struct ScalsRendererBindingView<State: Codable & Equatable>: View {
+    private let document: Document.Definition
+    private let configuration: ScalsRendererBindingConfiguration<State>
+    @Binding private var state: State
+
+    @StateObject private var renderContext: BindingRenderContext<State>
+    @Environment(\.dismiss) private var dismiss
+
+    public init(
+        document: Document.Definition,
+        state: Binding<State>,
+        configuration: ScalsRendererBindingConfiguration<State>
+    ) {
+        self.document = document
+        self._state = state
+        self.configuration = configuration
+
+        // Create render context
+        let context = BindingRenderContext<State>(
+            document: document,
+            configuration: configuration
+        )
+        _renderContext = StateObject(wrappedValue: context)
+    }
+
+    public var body: some View {
+        Group {
+            if let renderTree = renderContext.renderTree {
+                let renderer = SwiftUIRenderer(actionContext: renderContext.actionContext, rendererRegistry: configuration.swiftuiRendererRegistry)
+                renderer.render(renderTree)
+            } else {
+                Text("Loading...")
+            }
+        }
+        .onAppear {
+            setupContext()
+            renderContext.syncFromExternal(state)
+        }
+        .onChange(of: state) { _, newValue in
+            renderContext.syncFromExternal(newValue)
+        }
+        .onReceive(renderContext.$internalState) { newState in
+            if let newState = newState {
+                state = newState
+            }
+        }
+    }
+
+    private func setupContext() {
+        renderContext.actionContext.dismissHandler = { [dismiss] in
+            dismiss()
+        }
+        renderContext.actionContext.alertHandler = { config in
+            AlertPresenter.present(config)
+        }
+    }
+}
+
+/// Internal context for binding-based rendering
+class BindingRenderContext<State: Codable>: ObservableObject {
+    @Published var internalState: State?
+    @Published var renderTree: RenderTree?
+
+    @MainActor
+    var actionContext: ActionContext {
+        _actionContext
+    }
+    private var _actionContext: ActionContext!
+    private var stateStore: StateStore!
+    private var stateCallbackId: UUID?
+    private let configuration: ScalsRendererBindingConfiguration<State>
+
+    @MainActor
+    init(document: Document.Definition, configuration: ScalsRendererBindingConfiguration<State>) {
+        self.configuration = configuration
+
+        // Resolve document
+        let resolver = Resolver(document: document, componentRegistry: configuration.componentRegistry)
+        let tree: RenderTree
+        do {
+            tree = try resolver.resolve()
+        } catch {
+            print("BindingRenderContext: Resolution failed - \(error)")
+            tree = RenderTree(root: RootNode(), stateStore: StateStore(), actions: [:])
+        }
+
+        self.renderTree = tree
+        self.stateStore = tree.stateStore
+
+        // Create action context
+        self._actionContext = ActionContext(
+            stateStore: tree.stateStore,
+            actionDefinitions: document.actions ?? [:],
+            registry: configuration.actionRegistry,
+            actionDelegate: configuration.actionDelegate
+        )
+
+        // Set up state change callback
+        if let onStateChange = configuration.onStateChange {
+            stateCallbackId = stateStore.onStateChange { path, oldValue, newValue in
+                onStateChange(path, oldValue, newValue)
+            }
+        }
+
+        // Also sync internal state on every change
+        _ = stateStore.onStateChange { [weak self] _, _, _ in
+            Task { @MainActor in
+                self?.syncToExternal()
+            }
+        }
+
+        // Initialize with external state if provided
+        if let initialState = configuration.initialState {
+            stateStore.setTyped(initialState)
+        }
+
+        // Print debug if enabled
+        if configuration.debugMode {
+            let debugRenderer = DebugRenderer()
+            print(debugRenderer.render(tree))
+        }
+    }
+
+    @MainActor
+    func syncFromExternal(_ state: State) {
+        stateStore.setTyped(state)
+    }
+
+    @MainActor
+    func syncToExternal() {
+        internalState = stateStore.getTyped(State.self)
+    }
+
+    @MainActor
+    func cleanup() {
+        if let id = stateCallbackId {
+            stateStore.removeStateChangeCallback(id)
+        }
+    }
+}
+
+// MARK: - Convenience Extensions for Binding API
+
+extension ScalsRendererBindingView where State: Equatable {
+    /// Initialize from a JSON string with state binding
+    public init?(
+        jsonString: String,
+        state: Binding<State>,
+        configuration: ScalsRendererBindingConfiguration<State>
+    ) {
+        guard let document = try? Document.Definition(jsonString: jsonString) else {
+            return nil
+        }
+        self.init(document: document, state: state, configuration: configuration)
+    }
+}
+
+// MARK: - Snapshot API
+
+extension ScalsRendererView {
+    /// Get a snapshot of the current state
+    public var stateSnapshot: [String: Any] {
+        return renderTree.stateStore.snapshot()
+    }
+}
+

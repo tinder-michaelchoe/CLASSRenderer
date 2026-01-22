@@ -505,7 +505,7 @@ registry.register(contentsOf: chartPlugin.renderers)
 Plugins provide renderers for one or both systems:
 
 ```swift
-protocol CLADSPlugin {
+protocol SCALSPlugin {
     var swiftUIRenderers: [any SwiftUINodeRendering] { get }
     var uiKitRenderers: [any UIKitNodeRendering] { get }
     var bridgingPreferences: [RenderNodeKind: BridgingPreference] { get }
@@ -660,7 +660,7 @@ Animations may not transfer smoothly across bridges:
 ## File Structure
 
 ```
-CLADS/Renderers/
+SCALS/Renderers/
 ├── Unified/
 │   ├── UnifiedNodeRendererRegistry.swift
 │   ├── NodeRendererEntry.swift

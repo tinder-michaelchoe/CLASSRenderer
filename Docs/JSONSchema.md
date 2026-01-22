@@ -1,10 +1,10 @@
-# CLADS JSON Schema Reference
+# SCALS JSON Schema Reference
 
-This document provides a complete reference for authoring CLADS JSON documents. The schema defines the structure for server-driven UI that gets rendered to native SwiftUI or UIKit views.
+This document provides a complete reference for authoring SCALS JSON documents. The schema defines the structure for server-driven UI that gets rendered to native SwiftUI or UIKit views.
 
 ## Document Structure
 
-A CLADS document has the following top-level structure:
+A SCALS document has the following top-level structure:
 
 ```json
 {
@@ -1044,7 +1044,7 @@ Actions can be referenced by ID or defined inline:
 ## Schema Validation
 
 The full JSON Schema is available at:
-- Document Schema: `CLADS/Schema/clads-schema.json`
-- IR Schema: `CLADS/Schema/clads-ir-schema.json`
+- Document Schema: `SCALS/Schema/scals-schema.json`
+- IR Schema: `SCALS/Schema/scals-ir-schema.json`
 
-Use these schemas with your IDE or validation tools to get autocomplete and error checking while authoring CLADS documents.
+Use these schemas with your IDE or validation tools to get autocomplete and error checking while authoring SCALS documents.

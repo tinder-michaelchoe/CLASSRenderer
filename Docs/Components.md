@@ -1,6 +1,6 @@
 # Components
 
-Components are the leaf nodes in the CLADS layout tree. They represent individual UI elements that display content or capture user input.
+Components are the leaf nodes in the SCALS layout tree. They represent individual UI elements that display content or capture user input.
 
 ## Component Types
 

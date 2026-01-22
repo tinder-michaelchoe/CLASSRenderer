@@ -1,0 +1,200 @@
+//
+//  ImageNodeView.swift
+//  ScalsModules
+//
+//  SwiftUI renderer and view for ImageNode.
+//
+
+import SCALS
+import SwiftUI
+
+// MARK: - Image Node SwiftUI Renderer
+
+public struct ImageNodeSwiftUIRenderer: SwiftUINodeRendering {
+    public static let nodeKind = RenderNodeKind.image
+
+    public init() {}
+
+    @MainActor
+    public func render(_ node: RenderNode, context: SwiftUIRenderContext) -> AnyView {
+        guard case .image(let imageNode) = node else {
+            return AnyView(EmptyView())
+        }
+        // Wrap the StateStore in ObservableStateStore for SwiftUI observation
+        let observableStore = ObservableStateStore(wrapping: context.stateStore)
+        return AnyView(
+            ImageNodeView(node: imageNode, actionContext: context.actionContext, stateStore: observableStore)
+        )
+    }
+}
+
+// MARK: - Image Node View
+
+struct ImageNodeView: View {
+    let node: ImageNode
+    let actionContext: ActionContext
+    @ObservedObject var stateStore: ObservableStateStore
+    
+    /// Default placeholder when none specified (shown on error or no URL)
+    private var defaultPlaceholder: ImageNode.Source {
+        .sfsymbol(name: "photo")
+    }
+    
+    /// The effective placeholder to show on error or when URL is empty
+    private var effectivePlaceholder: ImageNode.Source {
+        node.placeholder ?? defaultPlaceholder
+    }
+    
+    /// Computes the URL from a statePath template by interpolating with StateStore
+    private func computeURL(from template: String) -> URL? {
+        let interpolated = stateStore.interpolate(template)
+        // Return nil if the interpolated result is empty or still contains unresolved placeholders
+        guard !interpolated.isEmpty, !interpolated.contains("${") else {
+            return nil
+        }
+        return URL(string: interpolated)
+    }
+
+    var body: some View {
+        if let onTap = node.onTap {
+            Button(action: { handleTap(onTap) }) {
+                imageContent
+            }
+            .buttonStyle(.plain)
+        } else {
+            imageContent
+        }
+    }
+
+    @ViewBuilder
+    private var imageContent: some View {
+        Group {
+            switch node.source {
+            case .sfsymbol(let name):
+                Image(systemName: name)
+                    .resizable()
+                    .aspectRatio(contentMode: .fit)
+                    .modifier(TintModifier(tintColor: node.style.tintColor))
+
+            case .asset(let name):
+                Image(name)
+                    .resizable()
+                    .aspectRatio(contentMode: .fit)
+                    .modifier(TintModifier(tintColor: node.style.tintColor))
+
+            case .url(let url):
+                asyncImageView(url: url)
+                
+            case .statePath(let template):
+                // Compute URL from state and reload when it changes
+                if let url = computeURL(from: template) {
+                    asyncImageView(url: url)
+                        .id(url.absoluteString) // Force reload when URL changes
+                } else {
+                    // Show placeholder when URL is not yet available
+                    placeholderView
+                }
+
+            case .activityIndicator:
+                ProgressView()
+                    .frame(maxWidth: .infinity, maxHeight: .infinity)
+            }
+        }
+        .frame(width: node.style.width, height: node.style.height)
+        .frame(maxWidth: node.style.width == nil ? .infinity : nil)
+        .clipShape(RoundedRectangle(cornerRadius: node.style.cornerRadius ?? 0))
+    }
+    
+    @ViewBuilder
+    private func asyncImageView(url: URL) -> some View {
+        AsyncImage(url: url) { phase in
+            switch phase {
+            case .empty:
+                // Show loading indicator while fetching
+                loadingView
+            case .success(let image):
+                image.resizable().aspectRatio(contentMode: .fit)
+            case .failure:
+                // Show placeholder on error
+                placeholderView
+            @unknown default:
+                loadingView
+            }
+        }
+    }
+    
+    @ViewBuilder
+    private var loadingView: some View {
+        if let loading = node.loading {
+            // Custom loading indicator
+            renderSource(loading)
+        } else {
+            // Default: ProgressView spinner
+            ProgressView()
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
+        }
+    }
+    
+    @ViewBuilder
+    private var placeholderView: some View {
+        renderSource(effectivePlaceholder)
+    }
+    
+    @ViewBuilder
+    private func renderSource(_ source: ImageNode.Source) -> some View {
+        switch source {
+        case .sfsymbol(let name):
+            Image(systemName: name)
+                .resizable()
+                .aspectRatio(contentMode: .fit)
+                .foregroundStyle(.secondary)
+        case .asset(let name):
+            Image(name)
+                .resizable()
+                .aspectRatio(contentMode: .fit)
+        case .url(let url):
+            AsyncImage(url: url) { image in
+                image.resizable().aspectRatio(contentMode: .fit)
+            } placeholder: {
+                ProgressView()
+            }
+        case .statePath:
+            // Loading/placeholder shouldn't be dynamic, fall back to default
+            Image(systemName: "photo")
+                .resizable()
+                .aspectRatio(contentMode: .fit)
+                .foregroundStyle(.secondary)
+
+        case .activityIndicator:
+            ProgressView()
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
+        }
+    }
+
+    private func handleTap(_ binding: Document.Component.ActionBinding) {
+        Task { @MainActor in
+            switch binding {
+            case .reference(let actionId):
+                await actionContext.executeAction(id: actionId)
+            case .inline(let action):
+                await actionContext.executeAction(action)
+            }
+        }
+    }
+}
+
+// MARK: - Tint Modifier
+
+/// Applies tint color to an image if specified
+struct TintModifier: ViewModifier {
+    let tintColor: IR.Color?
+
+    func body(content: Content) -> some View {
+        if let tintColor {
+            // Convert IR.Color to SwiftUI.Color
+            content.foregroundStyle(tintColor.swiftUI)
+        } else {
+            content
+        }
+    }
+}
